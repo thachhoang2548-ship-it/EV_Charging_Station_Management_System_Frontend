@@ -1,0 +1,207 @@
+.home-page {
+  margin: 0;
+  padding: 0;
+  background-color: #f5f5f5;
+}
+
+/* Responsive Image Display */
+.mobile-only {
+  display: block;
+}
+
+.desktop-only {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .mobile-only {
+    display: none;
+  }
+
+  .desktop-only {
+    display: block;
+  }
+}
+
+.img {
+  width: 100%;
+  height: 300px;
+  object-fit: cover;
+  filter: brightness(0.7) contrast(1.2);
+}
+
+/* Hero Section */
+.hero-section {
+  position: relative;
+
+  width: 100%;
+  height: 40vh;
+  overflow: hidden;
+  border-radius: 0 0 30px 30px;
+}
+
+.hero-img {
+  width: 100%;
+  height: 25vh !important;
+  object-fit: cover;
+  filter: brightness(0.7) contrast(1.2);
+}
+
+.hero-text {
+  position: absolute;
+  top: 0px;
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding-top: 2px;
+}
+
+
+.hero-title {
+  margin-left: 30px;
+  color: white;
+  font-size: 4rem;
+  font-weight: bold;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+}
+
+.hero-subtitle {
+  margin-left: 30px;
+  font-size: 1.5rem;
+  letter-spacing: 3px;
+  color: white;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+}
+
+/* Welcome Card */
+.welcome-card {
+  margin-top: -30px;
+  background: white;
+  margin-left: 0px;
+  margin-right: 0px;
+  padding: 0px;
+  border-radius: 30px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+  text-align: center;
+  position: relative;
+  z-index: 10;
+  height: 60rem;
+}
+
+.welcome-title {
+  font-size: 2rem;
+  color: #333;
+  margin: 0 0 10px 0;
+}
+
+.welcome-name {
+  color: #20b2aa;
+  font-size: 1.1rem;
+  margin: 0;
+  font-weight: 500;
+}
+
+/* Car Gallery */
+.car-gallery {
+  display: flex;
+  gap: 15px;
+  padding: 0 20px;
+  margin: 20px 0;
+  justify-content: center;
+}
+
+.car-item {
+  flex: 1;
+  max-width: 300px;
+}
+
+.car-item img {
+  width: 100%;
+  height: 5rem;
+  object-fit: cover;
+  border-radius: 15px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  filter: brightness(0.8) contrast(1.1) saturate(1.1);
+  transition: filter 0.3s ease;
+}
+
+/* Desktop: car images taller */
+@media (min-width: 768px) {
+  .car-item img {
+    height: 10rem;
+  }
+}
+
+.car-item img:hover {
+  filter: brightness(0.9) contrast(1.2) saturate(1.2);
+}
+
+/* About Section with Map Background */
+.about-section {
+  position: relative;
+  height: 23vh;
+  margin: 20px;
+  padding: 10px 10px;
+  border-radius: 20px;
+  text-align: center;
+  margin-bottom: 100px; /* Space for navigation */
+  overflow: hidden;
+}
+
+.about-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: url('../../assets/img/bando.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  z-index: 1;
+}
+
+.about-section > * {
+  position: relative;
+  z-index: 2;
+}
+
+.about-title {
+  font-size: 1.3rem;
+  color: rgb(21, 19, 19);
+  margin: 0 0 20px 0;
+  letter-spacing: 2px;
+  font-weight: bold;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+}
+
+.about-text {
+  color: rgb(21, 16, 16);
+  line-height: 2;
+  font-size: 0.85rem;
+  margin-top: 0px;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+}
+
+/* --- Thêm đoạn code này vào cuối --- */
+@media (min-width: 768px) {
+  .about-text {
+    padding: 0px 20%;
+    font-size: 1.2rem; /* Kích thước chữ lớn hơn cho Tablet và Laptop */
+  }
+
+  .about-title {
+    font-size: 2rem;
+  }
+
+  
+
+  .welcome-title {
+    font-weight: 900;
+    font-size: 2.5rem;
+  }
+}
