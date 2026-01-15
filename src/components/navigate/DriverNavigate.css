@@ -1,257 +1,151 @@
-/* Modern Navigation Component Styles - Horizontal Layout */
-nav.navigationBar {
-  background: linear-gradient(135deg, #ffffff 0%, #f8fffe 100%);
-  padding: 8px 20px;
-  box-shadow: 0 8px 32px rgba(32, 178, 170, 0.12), 0 2px 8px rgba(0, 0, 0, 0.04);
+/* --- GLOBAL RESET --- */
+.modern-header {
   z-index: 1000;
-  backdrop-filter: blur(10px);
-  overflow: visible;
+  transition: all 0.4s ease;
 }
 
-/* Mobile: Navigation ở dưới */
+/* =========================================
+   1. MOBILE VIEW (GIỮ NGUYÊN)
+   ========================================= */
 @media (max-width: 768px) {
-  nav.navigationBar {
+  .brand-logo, .header-actions { display: none; }
+
+  .modern-header {
     position: fixed;
-    bottom: 16px;
-    left: 16px;
-    right: 16px;
-    padding: 8px 12px;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 400px;
+    background: rgba(15, 23, 42, 0.9); /* Tăng độ tối nền mobile */
+    backdrop-filter: blur(16px);
+    border-radius: 24px;
+    padding: 10px 20px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  }
+
+  .nav-links {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+  }
+
+  .nav-item {
+    display: flex; flex-direction: column; align-items: center;
+    text-decoration: none; color: #94a3b8; transition: all 0.3s;
+  }
+  
+  .nav-icon {
+    width: 24px; height: 24px;
+    filter: brightness(0) invert(0.8);
+    margin-bottom: 4px;
+  }
+  
+  .nav-label { font-size: 10px; font-weight: 500; }
+  
+  .nav-item.active { color: #06b6d4; }
+  .nav-item.active .nav-icon {
+    filter: brightness(0) saturate(100%) invert(86%) sepia(21%) saturate(5427%) hue-rotate(156deg) brightness(96%) contrast(92%);
+    transform: translateY(-2px);
   }
 }
 
-/* Desktop: Navigation ở trên */
+/* =========================================
+   2. DESKTOP VIEW (CẬP NHẬT TƯƠNG PHẢN)
+   ========================================= */
 @media (min-width: 769px) {
-  nav.navigationBar {
-    position: static;
-    margin: 3px auto;
-    max-width: 900px;
-    padding: 0px 9px;
-  }
-}
-
-nav.navigationBar .navContainer {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  gap: 12px;
-  height: 60px;
-  position: relative;
-  overflow: visible;
-}
-
-/* Nav Item Container - Horizontal */
-nav.navigationBar .navItem {
-  position: relative;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  text-decoration: none;
-  min-width: 60px;
-  height: 60px;
-  border-radius: 16px;
-  padding: 0 12px;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  overflow: hidden;
-  background-color: transparent;
-}
-
-/* Icon Container */
-nav.navigationBar .navIcon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
-  background-color: transparent;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  flex-shrink: 0;
-}
-
-nav.navigationBar .navIcon img {
-  width: 26px;
-  height: 26px;
-  object-fit: contain;
-  filter: brightness(0) saturate(100%) invert(48%) sepia(79%) saturate(2476%)
-    hue-rotate(148deg) brightness(95%) contrast(86%);
-  transition: all 0.3s ease;
-}
-
-/* Label - Hidden by default, expands horizontally */
-nav.navigationBar .navLabel {
-  font-size: 13px;
-  font-weight: 600;
-  color: #20b2aa;
-  white-space: nowrap;
-  margin-left: 0;
-  max-width: 0;
-  opacity: 0;
-  overflow: hidden;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* Hover Effect - Expand horizontally */
-nav.navigationBar .navItem:hover {
-  background: linear-gradient(
-    135deg,
-    rgba(32, 178, 170, 0.08) 0%,
-    rgba(32, 178, 170, 0.04) 100%
-  );
-  padding: 0 16px;
-  min-width: auto;
-}
-
-nav.navigationBar .navItem:hover .navIcon {
-  background: rgba(32, 178, 170, 0.12);
-  box-shadow: 0 4px 12px rgba(32, 178, 170, 0.15);
-}
-
-nav.navigationBar .navItem:hover .navIcon img {
-  transform: scale(1.1);
-}
-
-nav.navigationBar .navItem:hover .navLabel {
-  max-width: 120px;
-  opacity: 1;
-  margin-left: 8px;
-}
-
-/* Active State - Always show label */
-nav.navigationBar .navItemActive {
-  background: linear-gradient(135deg, #20b2aa 0%, #1a9d96 100%);
-  padding: 0 16px;
-  min-width: auto;
-  box-shadow: 0 0 0 3px rgba(32, 178, 170, 0.2),
-    0 4px 12px rgba(32, 178, 170, 0.3);
-}
-
-nav.navigationBar .navItemActive .navIcon {
-  background: rgba(255, 255, 255, 0.15);
-}
-
-nav.navigationBar .navItemActive .navIcon img {
-  filter: brightness(0) saturate(100%) invert(100%);
-  transform: scale(1.05);
-}
-
-nav.navigationBar .navItemActive .navLabel {
-  max-width: 120px;
-  opacity: 1;
-  margin-left: 0px;
-  color: #ffffff;
-}
-
-/* Active State Hover */
-nav.navigationBar .navItemActive:hover {
-  background: linear-gradient(135deg, #1a9d96 0%, #178d82 100%);
-  box-shadow: 0 0 0 3px rgba(32, 178, 170, 0.3),
-    0 6px 16px rgba(32, 178, 170, 0.4);
-  transform: translateY(-2px);
-}
-
-nav.navigationBar .navItemActive:hover .navIcon {
-  background: rgba(255, 255, 255, 0.2);
-}
-
-nav.navigationBar .navItemActive:hover .navIcon img {
-  transform: scale(1.1);
-}
-
-/* Click Effect */
-nav.navigationBar .navItem:active {
-  transform: scale(0.96);
-}
-
-/* Mobile Responsive - Icon only */
-@media (max-width: 768px) {
-  nav.navigationBar .navContainer {
-    gap: 8px;
-    height: 56px;
+  .modern-header {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%;
+    height: 80px;
+    display: flex; align-items: center; justify-content: center;
+    padding: 0 40px;
+    
+    /* FIX 1: Thêm gradient đen mờ từ trên xuống để đỡ chữ trắng */
+    background: linear-gradient(to bottom, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%);
   }
 
-  nav.navigationBar .navItem {
-    min-width: 56px;
-    height: 56px;
-    padding: 0;
-    border-radius: 14px;
+  /* Khi cuộn xuống thì nền chuyển thành kính đen đặc */
+  .modern-header.scrolled {
+    height: 70px;
+    background: rgba(15, 23, 42, 0.95);
+    backdrop-filter: blur(20px);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    border-bottom: 1px solid rgba(255,255,255,0.05);
   }
 
-  nav.navigationBar .navIcon {
-    width: 40px;
-    height: 40px;
-    border-radius: 12px;
+  .header-container {
+    width: 100%; max-width: 1400px;
+    display: flex; justify-content: space-between; align-items: center;
   }
 
-  nav.navigationBar .navIcon img {
-    width: 24px;
-    height: 24px;
+  /* --- LOGO --- */
+  .brand-logo { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+  .logo-icon { font-size: 32px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3)); }
+  .logo-text {
+    font-size: 24px; font-weight: 800; color: #fff;
+    letter-spacing: -1px;
+    /* FIX 2: Thêm bóng đổ cho Logo */
+    text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+  }
+  .highlight { color: #06b6d4; }
+
+  /* --- NAV LINKS --- */
+  .nav-links { display: flex; gap: 40px; }
+
+  .nav-item {
+    text-decoration: none; display: flex; align-items: center; gap: 8px;
+    position: relative; padding: 8px 0;
+  }
+  .nav-icon { display: none; }
+  
+  .nav-label {
+    font-size: 16px; 
+    /* FIX 3: Chữ trắng hoàn toàn + Đậm hơn + Bóng đổ */
+    color: #ffffff; 
+    font-weight: 600; 
+    text-shadow: 0 1px 4px rgba(0,0,0,0.8); /* Bóng đen giúp chữ nổi trên nền trắng */
+    transition: color 0.3s;
   }
 
-  /* Hide label on mobile, show tooltip on hover */
-  nav.navigationBar .navLabel {
-    display: none;
+  /* Hover line */
+  .nav-item::after {
+    content: ''; position: absolute; bottom: 0; left: 0;
+    width: 0%; height: 2px; background: #06b6d4;
+    transition: width 0.3s ease;
+    box-shadow: 0 0 10px #06b6d4;
+  }
+  .nav-item:hover .nav-label { color: #06b6d4; }
+  .nav-item:hover::after { width: 100%; }
+  
+  .nav-item.active .nav-label { color: #06b6d4; font-weight: 700; }
+  .nav-item.active::after { width: 100%; }
+
+  /* --- BUTTONS --- */
+  .header-actions { display: flex; align-items: center; gap: 20px; }
+
+  .btn-login {
+    /* FIX 4: Nút có nền mờ (Glass) thay vì trong suốt để không bị chìm */
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    color: #fff;
+    border: 1px solid rgba(255,255,255,0.4);
+    
+    padding: 10px 24px;
+    border-radius: 50px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.3);
   }
 
-  /* Mobile hover: only scale icon */
-  nav.navigationBar .navItem:hover {
-    padding: 0;
+  .btn-login:hover {
+    background: #06b6d4;
+    border-color: #06b6d4;
+    box-shadow: 0 0 15px rgba(6, 182, 212, 0.5);
+    transform: translateY(-2px);
   }
-
-  nav.navigationBar .navItem:hover .navIcon img {
-    transform: scale(1.15);
-  }
-
-  /* Active state on mobile */
-  nav.navigationBar .navItemActive {
-    padding: 0;
-  }
-
-  nav.navigationBar .navItemActive .navLabel {
-    display: none;
-  }
-}
-
-@media (max-width: 480px) {
-  nav.navigationBar {
-    padding: 6px 8px;
-  }
-
-  nav.navigationBar .navContainer {
-    gap: 6px;
-    height: 52px;
-  }
-
-  nav.navigationBar .navItem {
-    min-width: 52px;
-    height: 52px;
-    border-radius: 12px;
-  }
-
-  nav.navigationBar .navIcon {
-    width: 38px;
-    height: 38px;
-  }
-
-  nav.navigationBar .navIcon img {
-    width: 22px;
-    height: 22px;
-  }
-}
-
-/* Smooth entrance animation */
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-nav.navigationBar {
-  animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
