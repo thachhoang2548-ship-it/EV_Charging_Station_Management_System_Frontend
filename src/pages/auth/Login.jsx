@@ -14,10 +14,6 @@ const Login = () => {
     rememberMe: false,
   });
   const [showPassword, setShowPassword] = useState(false);
-  const [failedAttempts, setFailedAttempts] = useState(0);
-  const [isLocked, setIsLocked] = useState(false);
-  const [lockEndTime, setLockEndTime] = useState(null);
-  const [countdown, setCountdown] = useState("");
 
   const { login, loading } = useLogin();
   const navigate = useNavigate();
@@ -89,7 +85,10 @@ const Login = () => {
         console.log('🔍 Redux state check:', { isLoggedIn: true, role, accessToken: token.substring(0, 20) });
         
         // Show success message
-        toast.success('Đăng nhập Google thành công!');
+        toast.dismiss(); // Xóa toast cũ
+        toast.success('Đăng nhập Google thành công!', {
+          toastId: 'oauth-success',
+        });
         
         // Xóa token khỏi URL SAU KHI đã lưu và dispatch
         window.history.replaceState({}, document.title, '/');
@@ -110,67 +109,15 @@ const Login = () => {
         
       } catch (error) {
         console.error('❌ Error parsing token:', error);
-        toast.error('Lỗi xử lý token đăng nhập');
+        toast.dismiss(); // Xóa toast cũ
+        toast.error('Lỗi xử lý token đăng nhập', {
+          toastId: 'oauth-error',
+        });
         // Xóa token lỗi khỏi URL
         window.history.replaceState({}, document.title, '/');
       }
     }
   }, [dispatch, navigate]);
-
-  // Khôi phục trạng thái khóa và số lần thất bại từ localStorage
-  useEffect(() => {
-    const savedLockEndTime = localStorage.getItem("loginLockEndTime");
-    const savedFailedAttempts = localStorage.getItem("loginFailedAttempts");
-
-    if (savedLockEndTime) {
-      const lockEnd = parseInt(savedLockEndTime, 10);
-      const now = Date.now();
-
-      if (lockEnd > now) {
-        setIsLocked(true);
-        setLockEndTime(lockEnd);
-        setFailedAttempts(parseInt(savedFailedAttempts || "3", 10));
-      } else {
-        localStorage.removeItem("loginLockEndTime");
-        localStorage.removeItem("loginFailedAttempts");
-      }
-    } else if (savedFailedAttempts) {
-      setFailedAttempts(parseInt(savedFailedAttempts, 10));
-    }
-  }, []);
-
-  // Effect xử lý đồng hồ đếm ngược
-  useEffect(() => {
-    let intervalId = null;
-
-    if (isLocked && lockEndTime) {
-      const updateTimer = () => {
-        const now = Date.now();
-        const remainingMs = Math.max(0, lockEndTime - now);
-
-        const minutes = Math.floor(remainingMs / 60000);
-        const seconds = Math.floor((remainingMs % 60000) / 1000);
-
-        setCountdown(`${minutes}:${seconds.toString().padStart(2, "0")}`);
-
-        if (remainingMs === 0) {
-          clearInterval(intervalId);
-          setFailedAttempts(0);
-          setIsLocked(false);
-          setLockEndTime(null);
-          setCountdown("");
-          localStorage.removeItem("loginLockEndTime");
-          localStorage.removeItem("loginFailedAttempts");
-          toast.info("Tài khoản đã được mở khóa. Bạn có thể đăng nhập lại.");
-        }
-      };
-
-      updateTimer();
-      intervalId = setInterval(updateTimer, 1000);
-    }
-
-    return () => clearInterval(intervalId);
-  }, [isLocked, lockEndTime]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -187,39 +134,16 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (isLocked) {
-      toast.error(`Tài khoản bị khóa! Vui lòng thử lại sau ${countdown}`);
-      return;
-    }
-
     const { success, message } = await login(form.phone.trim(), form.password);
 
-    if (success) {
-      setFailedAttempts(0);
-      setIsLocked(false);
-      setLockEndTime(null);
-      localStorage.removeItem("loginLockEndTime");
-      localStorage.removeItem("loginFailedAttempts");
-    } else {
-      const newFailedAttempts = failedAttempts + 1;
-
-      toast.error(
-        `${message || "Đăng nhập thất bại!"} (${newFailedAttempts}/3)`
-      );
-
-      setFailedAttempts(newFailedAttempts);
-      localStorage.setItem("loginFailedAttempts", newFailedAttempts.toString());
-
-      if (newFailedAttempts >= 3) {
-        setIsLocked(true);
-        const lockEnd = Date.now() + 3 * 60 * 1000;
-        setLockEndTime(lockEnd);
-        localStorage.setItem("loginLockEndTime", lockEnd.toString());
-
-        setTimeout(() => {
-          toast.warn("Tài khoản bị khóa trong 3 phút.");
-        }, 2000);
-      }
+    // Backend sẽ xử lý tất cả logic khóa tài khoản và trả về message phù hợp
+    if (!success && message) {
+      // Xóa tất cả toast cũ trước khi hiển thị toast mới
+      toast.dismiss();
+      // Hiển thị toast mới với toastId để tránh duplicate
+      toast.error(message, {
+        toastId: 'login-error',
+      });
     }
   };
 
@@ -366,29 +290,10 @@ const Login = () => {
           <button
             type="submit"
             className="auth-button"
-            disabled={loading || isLocked}
-            style={isLocked ? { opacity: 0.5, cursor: "not-allowed" } : {}}
+            disabled={loading}
           >
-            {loading
-              ? "Đang đăng nhập..."
-              : isLocked
-              ? `Bị khóa (${countdown})`
-              : "Đăng nhập"}
+            {loading ? "Đang đăng nhập..." : "Đăng nhập"}
           </button>
-
-          {isLocked && (
-            <p
-              style={{
-                color: "red",
-                fontSize: "14px",
-                textAlign: "center",
-                marginTop: "10px",
-                fontWeight: "600",
-              }}
-            >
-              ⚠️ Tài khoản bị khóa. Mở lại sau: {countdown}
-            </p>
-          )}
 
           <div className="auth-social-section">
             <div className="auth-divider">

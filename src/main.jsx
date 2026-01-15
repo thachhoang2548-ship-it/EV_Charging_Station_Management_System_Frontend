@@ -11,7 +11,14 @@ createRoot(document.getElementById('root')).render(
         <>
         <Provider store={store}>
                 <AppRouter />
-                <ToastContainer position="top-center" autoClose={2000} />
+                <ToastContainer 
+                        position="top-center" 
+                        autoClose={2000}
+                        limit={1}
+                        newestOnTop={true}
+                        closeOnClick={true}
+                        pauseOnHover={true}
+                />
         </Provider>
         </>
 );

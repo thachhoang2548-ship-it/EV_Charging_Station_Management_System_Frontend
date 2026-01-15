@@ -38,6 +38,7 @@ export const useLogin = () => {
     setLoading(true);
     try {
       const response = await loginApi(phone, password);
+      
       if (response.success) {
         if (response.data) {
           const { token, roleName, name, email, phone, gender } = response.data;
@@ -85,7 +86,10 @@ export const useLogin = () => {
             })();
           }
           // 3. Chuyển hướng theo Vai trò
-          toast.success("Đăng nhập thành công!");
+          toast.dismiss(); // Xóa tất cả toast cũ
+          toast.success("Đăng nhập thành công!", {
+            toastId: 'login-success',
+          });
           setTimeout(() => {
             if (roleName === "ADMIN") {
               navigate("/admin", { replace: true });
@@ -98,7 +102,37 @@ export const useLogin = () => {
         }
         return { success: true };
       }
-      return { success: false, message: "Đăng nhập thất bại!" };
+      
+      // Xử lý response từ Backend khi đăng nhập thất bại
+      if (response.status === 423) {
+        // HTTP 423 Locked - Tài khoản bị khóa
+        const errorData = response.errorData;
+        if (errorData?.isLocked) {
+          const minutesRemaining = errorData.minutesRemaining || 3;
+          return { 
+            success: false, 
+            message: `Tài khoản bị khóa do đăng nhập sai 3 lần. Vui lòng thử lại sau ${minutesRemaining} phút.`,
+            isLocked: true,
+            minutesRemaining: minutesRemaining
+          };
+        }
+      }
+      
+      // Xử lý response khi đăng nhập sai (chưa bị khóa)
+      if (response.status === 401) {
+        const errorData = response.errorData;
+        if (errorData?.failedAttempts && errorData?.remainingAttempts !== undefined) {
+          return { 
+            success: false, 
+            message: `${response.message || "Đăng nhập thất bại!"} (${errorData.failedAttempts}/3 lần)`,
+            failedAttempts: errorData.failedAttempts,
+            remainingAttempts: errorData.remainingAttempts
+          };
+        }
+      }
+      
+      return { success: false, message: response.message || "Đăng nhập thất bại!" };
+      
     } catch (error) {
       console.error("Error during login:", error);
       return { success: false, message: "Lỗi trong quá trình đăng nhập!" };
@@ -162,7 +196,10 @@ export const useLogout = () => {
         dispatch(logoutAction());
         // Xóa localStorage
         clearAuthData();
-        toast.success("Đăng xuất thành công!");
+        toast.dismiss(); // Xóa toast cũ
+        toast.success("Đăng xuất thành công!", {
+          toastId: 'logout-success',
+        });
         return { success: true, message: "Đăng xuất thành công" };
       } else {
         // Nếu API trả về thất bại nhưng vẫn clear client-side
