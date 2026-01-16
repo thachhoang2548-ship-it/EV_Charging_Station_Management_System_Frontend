@@ -1,207 +1,411 @@
-.home-page {
-  margin: 0;
-  padding: 0;
-  background-color: #f5f5f5;
+/* --- 1. SETTINGS & VARIABLES --- */
+:root {
+  --bg-dark: #0f172a;
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-surface: rgba(30, 41, 59, 0.4);
+  --primary-glow: #0ea5e9;
+  --text-main: #f1f5f9;
+  --text-sub: #94a3b8;
 }
 
-/* Responsive Image Display */
-.mobile-only {
-  display: block;
+.modern-home {
+  background-color: var(--bg-dark);
+  color: var(--text-main);
+  overflow-x: hidden;
 }
 
-.desktop-only {
-  display: none;
+/* --- 2. HERO SECTION --- */
+.hero-wrapper {
+  position: relative; height: 100vh; width: 100%; top: 0; padding-top: 0;
+  display: flex; align-items: center; justify-content: center; overflow: hidden;
 }
 
-@media (min-width: 768px) {
-  .mobile-only {
-    display: none;
-  }
+.hero-slider { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; background: #000; }
 
-  .desktop-only {
-    display: block;
-  }
+.slide-item {
+  position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+  background-size: cover; background-position: center; opacity: 0;
+  transform: scale(1.1); will-change: opacity, transform;
+  transition: opacity 1.5s ease, transform 8s linear;
+  filter: contrast(1.1) saturate(1.1);
 }
 
-.img {
-  width: 100%;
-  height: 300px;
-  object-fit: cover;
-  filter: brightness(0.7) contrast(1.2);
+.slide-item.active { opacity: 1; transform: scale(1); z-index: 1; }
+
+.slide-overlay {
+  position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+  background: linear-gradient(180deg, rgba(15,23,42,0.3) 0%, rgba(15,23,42,0.1) 60%, var(--bg-dark) 100%);
+  z-index: 2;
 }
 
-/* Hero Section */
-.hero-section {
+/* Hero Text */
+.hero-container { position: relative; z-index: 10; width: 100%; max-width: 1200px; padding: 0 20px; padding-top: 60px; }
+.mega-title { font-size: 4rem; font-weight: 800; line-height: 1.1; margin-bottom: 20px; }
+.text-gradient { background: linear-gradient(135deg, #22d3ee 0%, #818cf8 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.btn-glow {
+  background: white; color: #0f172a; padding: 14px 32px; border-radius: 30px; font-weight: 700; border: none; cursor: pointer;
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.3); transition: all 0.3s;
+}
+.btn-glow:hover { transform: scale(1.05); box-shadow: 0 0 30px rgba(255, 255, 255, 0.5); }
+.status-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.1); padding: 6px 16px; border-radius: 20px; backdrop-filter: blur(5px); border: 1px solid rgba(255,255,255,0.1); margin-bottom: 20px; font-size: 0.9rem; }
+.dot { width: 8px; height: 8px; background: #4ade80; border-radius: 50%; box-shadow: 0 0 10px #4ade80; }
+.slider-dots { display: flex; gap: 8px; margin-top: 30px; }
+.dot-indicator { width: 8px; height: 8px; background: rgba(255,255,255,0.3); border-radius: 50%; cursor: pointer; }
+.dot-indicator.active { width: 24px; background: white; border-radius: 10px; }
+
+/* --- 3. FEATURES SECTION (UPDATED HUD STYLE) --- */
+.features-section {
   position: relative;
-
-  width: 100%;
-  height: 40vh;
-  overflow: hidden;
-  border-radius: 0 0 30px 30px;
+  padding: 100px 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  z-index: 10;
 }
 
-.hero-img {
-  width: 100%;
-  height: 25vh !important;
-  object-fit: cover;
-  filter: brightness(0.7) contrast(1.2);
+/* Background Effects (Aurora) */
+.aurora-bg {
+  position: absolute; top: -20%; left: 20%; width: 600px; height: 600px;
+  background: radial-gradient(circle, rgba(14, 165, 233, 0.15) 0%, transparent 70%);
+  filter: blur(80px); z-index: -1; pointer-events: none;
 }
 
-.hero-text {
-  position: absolute;
-  top: 0px;
-  left: 0;
-  right: 0;
+/* === BẮT ĐẦU CẬP NHẬT: CYBER HUD HEADER STYLE === */
+.section-header-wrapper {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  justify-content: flex-start;
-  padding-top: 2px;
-}
-
-
-.hero-title {
-  margin-left: 30px;
-  color: white;
-  font-size: 4rem;
-  font-weight: bold;
-  text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-}
-
-.hero-subtitle {
-  margin-left: 30px;
-  font-size: 1.5rem;
-  letter-spacing: 3px;
-  color: white;
-  text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
-}
-
-/* Welcome Card */
-.welcome-card {
-  margin-top: -30px;
-  background: white;
-  margin-left: 0px;
-  margin-right: 0px;
-  padding: 0px;
-  border-radius: 30px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-  text-align: center;
-  position: relative;
-  z-index: 10;
-  height: 60rem;
-}
-
-.welcome-title {
-  font-size: 2rem;
-  color: #333;
-  margin: 0 0 10px 0;
-}
-
-.welcome-name {
-  color: #20b2aa;
-  font-size: 1.1rem;
-  margin: 0;
-  font-weight: 500;
-}
-
-/* Car Gallery */
-.car-gallery {
-  display: flex;
-  gap: 15px;
-  padding: 0 20px;
-  margin: 20px 0;
-  justify-content: center;
-}
-
-.car-item {
-  flex: 1;
-  max-width: 300px;
-}
-
-.car-item img {
-  width: 100%;
-  height: 5rem;
-  object-fit: cover;
-  border-radius: 15px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-  filter: brightness(0.8) contrast(1.1) saturate(1.1);
-  transition: filter 0.3s ease;
-}
-
-/* Desktop: car images taller */
-@media (min-width: 768px) {
-  .car-item img {
-    height: 10rem;
-  }
-}
-
-.car-item img:hover {
-  filter: brightness(0.9) contrast(1.2) saturate(1.2);
-}
-
-/* About Section with Map Background */
-.about-section {
-  position: relative;
-  height: 23vh;
-  margin: 20px;
-  padding: 10px 10px;
-  border-radius: 20px;
-  text-align: center;
-  margin-bottom: 100px; /* Space for navigation */
-  overflow: hidden;
-}
-
-.about-section::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-image: url('../../assets/img/bando.jpg');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  z-index: 1;
-}
-
-.about-section > * {
+  align-items: center;
+  margin-bottom: 70px;
   position: relative;
   z-index: 2;
 }
 
-.about-title {
-  font-size: 1.3rem;
-  color: rgb(21, 19, 19);
-  margin: 0 0 20px 0;
+/* Badge (Nhãn nhỏ) */
+.header-badge {
+  font-size: 0.75rem;
   letter-spacing: 2px;
-  font-weight: bold;
-  text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+  text-transform: uppercase;
+  color: #38bdf8;
+  background: rgba(56, 189, 248, 0.1);
+  padding: 6px 16px;
+  border-radius: 20px;
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  margin-bottom: 15px;
+  font-weight: 600;
+  box-shadow: 0 0 15px rgba(56, 189, 248, 0.2);
+  display: flex; align-items: center; gap: 8px;
+}
+.badge-icon { font-size: 0.9rem; }
+
+/* Tiêu đề chính */
+.section-title {
+  font-size: 3.5rem;
+  font-weight: 800;
+  color: #fff;
+  margin: 0;
+  line-height: 1.2;
+  text-transform: uppercase;
+  letter-spacing: -1px;
+  text-shadow: 0 10px 30px rgba(0,0,0,0.5);
 }
 
-.about-text {
-  color: rgb(21, 16, 16);
-  line-height: 2;
-  font-size: 0.85rem;
-  margin-top: 0px;
-  text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+/* Gradient Text */
+.highlight-text {
+  background: linear-gradient(135deg, #22d3ee 0%, #3b82f6 50%, #818cf8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  position: relative;
+  display: inline-block;
+}
+.highlight-text::after {
+  content: ''; position: absolute; bottom: 5px; left: 0; width: 100%; height: 6px;
+  background: rgba(34, 211, 238, 0.3); filter: blur(4px); z-index: -1;
 }
 
-/* --- Thêm đoạn code này vào cuối --- */
-@media (min-width: 768px) {
-  .about-text {
-    padding: 0px 20%;
-    font-size: 1.2rem; /* Kích thước chữ lớn hơn cho Tablet và Laptop */
-  }
+/* Tech Lines (Đường kẻ trang trí) */
+.title-decoration {
+  display: flex; align-items: center; gap: 15px;
+  width: 100%; max-width: 400px;
+  margin: 15px 0 20px 0; opacity: 0.7;
+}
+.tech-line {
+  height: 1px; flex: 1;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent);
+}
+.tech-diamond {
+  width: 8px; height: 8px; background: #06b6d4;
+  transform: rotate(45deg); box-shadow: 0 0 10px #06b6d4;
+}
 
-  .about-title {
-    font-size: 2rem;
-  }
+/* Subtitle */
+.section-subtitle {
+  color: #94a3b8; font-size: 1.1rem; max-width: 600px; text-align: center;
+  line-height: 1.6; font-weight: 300;
+}
+/* === KẾT THÚC CẬP NHẬT HEADER === */
 
+/* --- GRID LAYOUT --- */
+.bento-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: 320px 180px;
+  gap: 24px;
+}
+
+/* CARD BASE STYLE */
+.bento-card {
+  position: relative;
+  background: linear-gradient(145deg, rgba(30, 41, 59, 0.6), rgba(15, 23, 42, 0.8));
+  border-radius: 30px;
+  border: 1px solid var(--glass-border);
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+}
+
+.bento-card:hover {
+  transform: translateY(-10px);
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+}
+.bento-card:hover .icon-box { transform: scale(1.1) rotate(5deg); }
+
+.card-content {
+  position: relative; z-index: 2; padding: 32px; height: 100%;
+  display: flex; flex-direction: column; justify-content: space-between;
+}
+
+/* Icon Box Styles */
+.icon-box {
+  width: 64px; height: 64px; border-radius: 20px;
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 20px; transition: transform 0.4s ease;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+}
+.icon-box img { width: 32px; height: 32px; filter: brightness(0) invert(1); }
+
+/* Gradient Icon Backgrounds */
+.blue-gradient { background: linear-gradient(135deg, #0ea5e9, #2563eb); }
+.green-gradient { background: linear-gradient(135deg, #10b981, #059669); }
+.purple-gradient { background: linear-gradient(135deg, #8b5cf6, #6d28d9); }
+.orange-gradient { background: linear-gradient(135deg, #f97316, #ea580c); }
+
+/* Typography inside Card */
+.bento-card h3 { font-size: 1.5rem; font-weight: 700; margin-bottom: 8px; color: white; }
+.bento-card p { color: var(--text-sub); font-size: 0.95rem; line-height: 1.6; }
+
+/* SPECIFIC CARDS */
+.card-station {
+  grid-column: 1 / 2; grid-row: 1 / 3;
+  background: linear-gradient(160deg, #1e293b 0%, #0f172a 100%);
+}
+.card-station .card-stat {
+  margin-top: auto; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1);
+}
+.stat-num { display: block; font-size: 2.5rem; font-weight: 800; color: #38bdf8; line-height: 1; }
+.stat-desc { font-size: 0.85rem; color: var(--text-sub); }
+.mini-btn {
+  margin-top: 20px; background: rgba(56, 189, 248, 0.1); color: #38bdf8;
+  border: none; padding: 10px 20px; border-radius: 50px; font-weight: 600; cursor: pointer;
+  width: fit-content; transition: background 0.3s;
+}
+.mini-btn:hover { background: rgba(56, 189, 248, 0.25); }
+
+.decor-circle {
+  position: absolute; top: -50px; right: -50px; width: 200px; height: 200px;
+  background: radial-gradient(circle, rgba(56, 189, 248, 0.15), transparent 70%);
+  border-radius: 50%; pointer-events: none;
+}
+
+.card-rules {
+  grid-column: 2 / 4; grid-row: 2 / 3;
+}
+.row-layout {
+  flex-direction: row; align-items: center; gap: 24px;
+}
+.row-layout .icon-box { margin-bottom: 0; }
+.arrow-icon {
+  margin-left: auto; width: 40px; height: 40px; border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center;
+  color: white; transition: all 0.3s;
+}
+.card-rules:hover .arrow-icon { background: white; color: black; border-color: white; }
+
+.hover-glow {
+  position: absolute; bottom: 0; right: 0; width: 100%; height: 100%;
+  background: radial-gradient(circle at bottom right, rgba(255,255,255,0.05), transparent 60%);
+  opacity: 0; transition: opacity 0.4s; pointer-events: none;
+}
+.bento-card:hover .hover-glow { opacity: 1; }
+
+/* Responsive Mobile */
+@media (max-width: 992px) {
+  .bento-grid { grid-template-columns: 1fr 1fr; grid-template-rows: auto; }
+  .card-station { grid-column: span 2; min-height: 300px; }
+  .card-rules { grid-column: span 2; }
+}
+
+@media (max-width: 768px) {
+  .section-title { font-size: 2.5rem; }
+  .title-decoration { max-width: 250px; }
+}
+
+@media (max-width: 600px) {
+  .mega-title { font-size: 2.8rem; }
+  .bento-grid { grid-template-columns: 1fr; gap: 16px; }
+  .card-station, .card-booking, .card-profile, .card-rules { grid-column: span 1; }
+  .row-layout { flex-direction: column; align-items: flex-start; text-align: left; }
+  .arrow-icon { display: none; }
+}
+
+/* --- SECTION 3: HOW IT WORKS (STEPS) --- */
+.steps-section {
+  position: relative;
+  padding: 80px 20px 120px; /* Padding dưới nhiều hơn để thoáng */
+  max-width: 1200px;
+  margin: 0 auto;
+  z-index: 10;
+}
+
+.steps-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 40px;
+  position: relative;
+  margin-top: 60px;
+}
+
+/* Đường nối Neon (Connector Line) */
+.neon-connector {
+  position: absolute;
+  top: 60px; /* Căn chỉnh để đường kẻ chạy qua giữa các icon */
+  left: 10%;
+  width: 80%;
+  height: 2px;
+  background: linear-gradient(90deg, 
+    rgba(6, 182, 212, 0) 0%, 
+    rgba(6, 182, 212, 0.5) 50%, 
+    rgba(6, 182, 212, 0) 100%
+  );
+  z-index: 0;
+}
+
+/* STEP CARD */
+.step-card {
+  position: relative;
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 24px;
+  padding: 40px 30px;
+  text-align: center;
+  backdrop-filter: blur(10px);
+  transition: transform 0.3s ease;
+  z-index: 1; /* Nổi lên trên đường kẻ */
+  overflow: hidden;
+}
+
+.step-card:hover {
+  transform: translateY(-10px);
+  background: rgba(15, 23, 42, 0.8);
+  border-color: rgba(6, 182, 212, 0.3);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+/* Số thứ tự chìm (Watermark Number) */
+.step-number {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  font-size: 6rem;
+  font-weight: 900;
+  color: rgba(255, 255, 255, 0.03); /* Rất mờ */
+  line-height: 1;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Icon Box tròn ở giữa */
+.step-icon-box {
+  width: 100px;
+  height: 100px;
+  margin: 0 auto 30px;
+  background: #0f172a; /* Nền tối để che đường kẻ neon chạy qua */
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid rgba(6, 182, 212, 0.3);
+  box-shadow: 0 0 20px rgba(6, 182, 212, 0.1);
+  position: relative;
+  z-index: 2;
+}
+
+.step-icon-box img {
+  width: 40px;
+  height: 40px;
+  filter: brightness(0) invert(1);
+}
+
+/* Màu riêng cho từng bước */
+.box-glow-green {
+  border-color: rgba(16, 185, 129, 0.3);
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.1);
+}
+.box-glow-purple {
+  border-color: rgba(139, 92, 246, 0.3);
+  box-shadow: 0 0 20px rgba(139, 92, 246, 0.1);
+}
+
+/* Nội dung chữ */
+.step-content {
+  position: relative;
+  z-index: 2;
+}
+
+.step-content h3 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 15px;
+}
+
+.step-content p {
+  color: var(--text-sub);
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+/* --- RESPONSIVE MOBILE --- */
+@media (max-width: 992px) {
+  .steps-container {
+    grid-template-columns: 1fr; /* Xếp dọc trên mobile */
+    gap: 30px;
+  }
   
-
-  .welcome-title {
-    font-weight: 900;
-    font-size: 2.5rem;
+  /* Ẩn đường kẻ ngang trên mobile, thay bằng đường dọc nếu muốn (hoặc ẩn luôn) */
+  .neon-connector {
+    display: none; 
+  }
+  
+  .step-card {
+    display: flex; /* Flex ngang cho thẻ mobile */
+    align-items: center;
+    text-align: left;
+    padding: 20px;
+    gap: 20px;
+  }
+  
+  .step-icon-box {
+    margin: 0;
+    width: 70px; height: 70px;
+    flex-shrink: 0;
+  }
+  
+  .step-icon-box img { width: 30px; height: 30px; }
+  
+  .step-number {
+    font-size: 4rem;
+    top: 50%; right: 20px;
+    transform: translateY(-50%);
   }
 }

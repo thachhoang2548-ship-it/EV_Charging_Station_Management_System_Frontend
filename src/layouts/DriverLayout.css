@@ -7,7 +7,8 @@
 }
 
 .driver-layout-header {
-  height: 93px;
+  /* QUAN TRỌNG: Loại bỏ height cố định để header floating không chiếm không gian */
+  /* height: 93px; - ĐÃ XÓA */
   flex-shrink: 0;
   overflow: visible;
   position: relative;
