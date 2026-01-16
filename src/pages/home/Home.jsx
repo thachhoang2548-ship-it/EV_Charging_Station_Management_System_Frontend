@@ -2,12 +2,13 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Home.css";
 import paths from "../../path/paths";
+import Footer from "../../components/Footer/Footer";
 
 // --- IMPORT ẢNH HERO (Đảm bảo đường dẫn ảnh đúng với máy của bạn) ---
-import img1 from "../../assets/img/home/a.jpg";
-import img2 from "../../assets/img/home/b.jpg";
-import img3 from "../../assets/img/home/c.jpg";
-import img4 from "../../assets/img/home/xe3.jpg";
+import img1 from "../../assets/img/home/test1.png";
+import img2 from "../../assets/img/home/test2.png";
+import img3 from "../../assets/img/home/test3.png";
+
 
 // --- IMPORT ICON CHO PHẦN TÍNH NĂNG ---
 import iconStation from "../../assets/logo/chargingStation.png";
@@ -15,7 +16,7 @@ import iconBooking from "../../assets/logo/booking.png";
 import iconUser from "../../assets/logo/user.png";
 import iconRule from "../../assets/logo/rule.png";
 
-const heroImages = [img1, img2, img3, img4];
+const heroImages = [img1, img2, img3];
 
 const Home = () => {
   const navigate = useNavigate();
@@ -122,7 +123,7 @@ const Home = () => {
               </div>
               <div className="text-group">
                 <h3>Tìm trạm sạc</h3>
-                <p>Bản đồ trực quan với hơn 500+ điểm sạc khả dụng.</p>
+                <p>Bản đồ điểm sạc khả dụng.</p>
               </div>
               <div className="card-stat">
                 <span className="stat-num">0.5s</span>
@@ -176,6 +177,8 @@ const Home = () => {
           </div>
         </div>
       </section>
+
+      <Footer />
 
     </div>
   );

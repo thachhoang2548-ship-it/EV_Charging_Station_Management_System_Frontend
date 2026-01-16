@@ -24,12 +24,33 @@ export default function AppNavigation() {
 
   useEffect(() => {
     const handleScroll = () => {
-      // Nếu cuộn quá 50px thì đổi màu header
-      setIsScrolled(window.scrollY > 50);
+      // Tìm container scroll chính (driver-layout-large hoặc driver-layout-main)
+      const scrollContainer = document.querySelector('.driver-layout-large') || 
+                             document.querySelector('.driver-layout-mobile') ||
+                             document.querySelector('.driver-layout-main');
+      
+      if (scrollContainer) {
+        const scrollTop = scrollContainer.scrollTop;
+        setIsScrolled(scrollTop > 50);
+      } else {
+        // Fallback về window scroll nếu không tìm thấy container
+        setIsScrolled(window.scrollY > 50);
+      }
     };
 
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    // Lắng nghe scroll từ container chính
+    const scrollContainer = document.querySelector('.driver-layout-large') || 
+                           document.querySelector('.driver-layout-mobile') ||
+                           document.querySelector('.driver-layout-main');
+    
+    if (scrollContainer) {
+      scrollContainer.addEventListener("scroll", handleScroll);
+      return () => scrollContainer.removeEventListener("scroll", handleScroll);
+    } else {
+      // Fallback về window
+      window.addEventListener("scroll", handleScroll);
+      return () => window.removeEventListener("scroll", handleScroll);
+    }
   }, []);
 
   const navItems = [
