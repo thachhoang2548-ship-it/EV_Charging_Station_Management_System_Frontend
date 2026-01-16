@@ -5,6 +5,7 @@ import paths from "../../path/paths";
 import Footer from "../../components/Footer/Footer";
 import iconPayment from "../../assets/icon/staff/payment-method.png";
 
+
 // --- IMPORT ẢNH HERO (Đảm bảo đường dẫn ảnh đúng với máy của bạn) ---
 import img1 from "../../assets/img/home/test1.png";
 import img2 from "../../assets/img/home/test2.png";
@@ -37,7 +38,7 @@ const Home = () => {
       setCurrentImageIndex((prevIndex) =>
         prevIndex === heroImages.length - 1 ? 0 : prevIndex + 1
       );
-    }, 8000);
+    }, 5000);
 
     return () => clearInterval(interval);
   }, []);
@@ -91,7 +92,7 @@ const Home = () => {
         </div>
       </section>
 
-      --- SECTION 2: PREMIUM BENTO GRID (LÀM MỚI) ---
+      {/* --- SECTION 2: PREMIUM BENTO GRID (LÀM MỚI) --- */}
       <section className="features-section">
         {/* Hiệu ứng nền Aurora mờ ảo phía sau */}
         <div className="aurora-bg"></div>
