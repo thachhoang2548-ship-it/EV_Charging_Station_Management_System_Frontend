@@ -3,12 +3,12 @@ import { useNavigate } from "react-router-dom";
 import "./Home.css";
 import paths from "../../path/paths";
 import Footer from "../../components/Footer/Footer";
+import iconPayment from "../../assets/icon/staff/payment-method.png";
 
 // --- IMPORT ẢNH HERO (Đảm bảo đường dẫn ảnh đúng với máy của bạn) ---
 import img1 from "../../assets/img/home/test1.png";
 import img2 from "../../assets/img/home/test2.png";
 import img3 from "../../assets/img/home/test3.png";
-
 
 // --- IMPORT ICON CHO PHẦN TÍNH NĂNG ---
 import iconStation from "../../assets/logo/chargingStation.png";
@@ -34,24 +34,25 @@ const Home = () => {
   // Slider Logic
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentImageIndex((prevIndex) => 
+      setCurrentImageIndex((prevIndex) =>
         prevIndex === heroImages.length - 1 ? 0 : prevIndex + 1
       );
-    }, 5000); 
+    }, 8000);
 
     return () => clearInterval(interval);
   }, []);
 
   return (
     <div className="modern-home">
-      
       {/* --- SECTION 1: HERO SLIDER --- */}
       <section className="hero-wrapper">
         <div className="hero-slider">
           {heroImages.map((img, index) => (
-            <div 
+            <div
               key={index}
-              className={`slide-item ${index === currentImageIndex ? "active" : ""}`}
+              className={`slide-item ${
+                index === currentImageIndex ? "active" : ""
+              }`}
               style={{ backgroundImage: `url(${img})` }}
             >
               <div className="slide-overlay"></div>
@@ -69,15 +70,20 @@ const Home = () => {
             </h1>
             <div className="slider-dots">
               {heroImages.map((_, index) => (
-                <span 
-                  key={index} 
-                  className={`dot-indicator ${index === currentImageIndex ? "active" : ""}`}
+                <span
+                  key={index}
+                  className={`dot-indicator ${
+                    index === currentImageIndex ? "active" : ""
+                  }`}
                   onClick={() => setCurrentImageIndex(index)}
                 ></span>
               ))}
             </div>
-            <div className="action-group" style={{marginTop: '30px'}}>
-              <button className="btn-glow" onClick={() => navigate(paths.stations)}>
+            <div className="action-group" style={{ marginTop: "30px" }}>
+              <button
+                className="btn-glow"
+                onClick={() => navigate(paths.stations)}
+              >
                 Khám phá ngay
               </button>
             </div>
@@ -85,37 +91,40 @@ const Home = () => {
         </div>
       </section>
 
-      {/* --- SECTION 2: PREMIUM BENTO GRID (LÀM MỚI) --- */}
+      --- SECTION 2: PREMIUM BENTO GRID (LÀM MỚI) ---
       <section className="features-section">
         {/* Hiệu ứng nền Aurora mờ ảo phía sau */}
         <div className="aurora-bg"></div>
 
-<div className="section-header-wrapper">
-  {/* Badge trang trí phía trên */}
-  <div className="header-badge">
-    <span className="badge-icon">❖</span> Các chức năng nổi bật
-  </div>
+        <div className="section-header-wrapper">
+          {/* Badge trang trí phía trên */}
+          <div className="header-badge">
+            <span className="badge-icon">❖</span> Các chức năng nổi bật
+          </div>
 
-  {/* Tiêu đề chính với hiệu ứng Gradient */}
-  <h2 className="section-title">
-    Tiện ích <span className="highlight-text">Độc quyền</span>
-  </h2>
+          {/* Tiêu đề chính với hiệu ứng Gradient */}
+          <h2 className="section-title">
+            Tiện ích <span className="highlight-text">Độc quyền</span>
+          </h2>
 
-  {/* Đường kẻ trang trí phong cách Tech */}
-  <div className="title-decoration">
-    <span className="tech-line left"></span>
-    <span className="tech-diamond"></span>
-    <span className="tech-line right"></span>
-  </div>
+          {/* Đường kẻ trang trí phong cách Tech */}
+          <div className="title-decoration">
+            <span className="tech-line left"></span>
+            <span className="tech-diamond"></span>
+            <span className="tech-line right"></span>
+          </div>
 
-  <p className="section-subtitle">
-    Trải nghiệm hệ sinh thái sạc xe điện thông minh nhất Việt Nam
-  </p>
-</div>
+          <p className="section-subtitle">
+            Trải nghiệm hệ sinh thái sạc xe điện thông minh nhất Việt Nam
+          </p>
+        </div>
 
         <div className="bento-grid">
           {/* Card 1: Map/Stations (Main) */}
-          <div className="bento-card card-station" onClick={() => navigate(paths.stations)}>
+          <div
+            className="bento-card card-station"
+            onClick={() => navigate(paths.stations)}
+          >
             <div className="card-glass-effect"></div>
             <div className="card-content">
               <div className="icon-box blue-gradient">
@@ -136,7 +145,10 @@ const Home = () => {
           </div>
 
           {/* Card 2: Booking */}
-          <div className="bento-card card-booking" onClick={() => navigate(paths.chargingSession)}>
+          <div
+            className="bento-card card-booking"
+            onClick={() => navigate(paths.chargingSession)}
+          >
             <div className="card-glass-effect"></div>
             <div className="card-content">
               <div className="icon-box green-gradient">
@@ -149,7 +161,10 @@ const Home = () => {
           </div>
 
           {/* Card 3: Profile */}
-          <div className="bento-card card-profile" onClick={() => navigate(paths.profile)}>
+          <div
+            className="bento-card card-profile"
+            onClick={() => navigate(paths.profile)}
+          >
             <div className="card-glass-effect"></div>
             <div className="card-content">
               <div className="icon-box purple-gradient">
@@ -162,7 +177,10 @@ const Home = () => {
           </div>
 
           {/* Card 4: Rules (Wide) */}
-          <div className="bento-card card-rules" onClick={() => navigate(paths.rules)}>
+          <div
+            className="bento-card card-rules"
+            onClick={() => navigate(paths.rules)}
+          >
             <div className="card-glass-effect"></div>
             <div className="card-content row-layout">
               <div className="icon-box orange-gradient">
@@ -170,7 +188,10 @@ const Home = () => {
               </div>
               <div className="text-wide">
                 <h3>Tiêu chuẩn & Hướng dẫn</h3>
-                <p>Quy trình an toàn sạc pin và hướng dẫn xử lý sự cố khẩn cấp 24/7.</p>
+                <p>
+                  Quy trình an toàn sạc pin và hướng dẫn xử lý sự cố khẩn cấp
+                  24/7.
+                </p>
               </div>
               <div className="arrow-icon">&rarr;</div>
             </div>
@@ -178,8 +199,77 @@ const Home = () => {
         </div>
       </section>
 
-      <Footer />
+      {/* --- SECTION 3: HOW IT WORKS (QUY TRÌNH) --- */}
+      <section className="steps-section">
+        <div className="section-header-wrapper">
+          <div className="header-badge">
+            <span className="badge-icon">▶</span> Dịch vụ dành cho bạn
+          </div>
+          <h2 className="section-title">
+            Bắt đầu <span className="highlight-text">Dễ dàng</span>
+          </h2>
+          <div className="title-decoration">
+            <span className="tech-line left"></span>
+            <span className="tech-diamond"></span>
+            <span className="tech-line right"></span>
+          </div>
+          <p className="section-subtitle">
+            Sạc đầy năng lượng cho xế yêu chỉ với 3 thao tác chạm trên ứng dụng
+          </p>
+        </div>
 
+        <div className="steps-container">
+          {/* Đường nối neon chạy ngang (Background Line) */}
+          <div className="neon-connector"></div>
+
+          {/* STEP 1 */}
+          <div className="step-card">
+            <div className="step-number">01</div>
+            <div className="step-icon-box">
+              <img src={iconStation} alt="Tìm trạm" />
+            </div>
+            <div className="step-content">
+              <h3>Tìm & Đặt chỗ</h3>
+              <p>
+                Mở ứng dụng, định vị trạm sạc gần nhất và đặt chỗ trước để không
+                phải chờ đợi.
+              </p>
+            </div>
+          </div>
+
+          {/* STEP 2 */}
+          <div className="step-card">
+            <div className="step-number">02</div>
+            <div className="step-icon-box box-glow-green">
+              <img src={iconBooking} alt="Cắm sạc" />
+            </div>
+            <div className="step-content">
+              <h3>Kết nối & Sạc</h3>
+              <p>
+                Quét mã QR tại trụ sạc, cắm súng sạc vào xe. Hệ thống sẽ tự động
+                cấp điện an toàn.
+              </p>
+            </div>
+          </div>
+
+          {/* STEP 3 */}
+          <div className="step-card">
+            <div className="step-number">03</div>
+            <div className="step-icon-box box-glow-purple">
+              <img src={iconPayment} alt="Thanh toán" />
+            </div>
+            <div className="step-content">
+              <h3>Thanh toán & Đi</h3>
+              <p>
+                Theo dõi tiến trình sạc. Thanh toán tự động qua ví điện tử khi
+                hoàn tất.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <Footer />
     </div>
   );
 };

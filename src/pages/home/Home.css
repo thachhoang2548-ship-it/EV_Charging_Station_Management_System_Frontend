@@ -257,3 +257,155 @@
   .row-layout { flex-direction: column; align-items: flex-start; text-align: left; }
   .arrow-icon { display: none; }
 }
+
+/* --- SECTION 3: HOW IT WORKS (STEPS) --- */
+.steps-section {
+  position: relative;
+  padding: 80px 20px 120px; /* Padding dưới nhiều hơn để thoáng */
+  max-width: 1200px;
+  margin: 0 auto;
+  z-index: 10;
+}
+
+.steps-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 40px;
+  position: relative;
+  margin-top: 60px;
+}
+
+/* Đường nối Neon (Connector Line) */
+.neon-connector {
+  position: absolute;
+  top: 60px; /* Căn chỉnh để đường kẻ chạy qua giữa các icon */
+  left: 10%;
+  width: 80%;
+  height: 2px;
+  background: linear-gradient(90deg, 
+    rgba(6, 182, 212, 0) 0%, 
+    rgba(6, 182, 212, 0.5) 50%, 
+    rgba(6, 182, 212, 0) 100%
+  );
+  z-index: 0;
+}
+
+/* STEP CARD */
+.step-card {
+  position: relative;
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 24px;
+  padding: 40px 30px;
+  text-align: center;
+  backdrop-filter: blur(10px);
+  transition: transform 0.3s ease;
+  z-index: 1; /* Nổi lên trên đường kẻ */
+  overflow: hidden;
+}
+
+.step-card:hover {
+  transform: translateY(-10px);
+  background: rgba(15, 23, 42, 0.8);
+  border-color: rgba(6, 182, 212, 0.3);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+/* Số thứ tự chìm (Watermark Number) */
+.step-number {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  font-size: 6rem;
+  font-weight: 900;
+  color: rgba(255, 255, 255, 0.03); /* Rất mờ */
+  line-height: 1;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Icon Box tròn ở giữa */
+.step-icon-box {
+  width: 100px;
+  height: 100px;
+  margin: 0 auto 30px;
+  background: #0f172a; /* Nền tối để che đường kẻ neon chạy qua */
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid rgba(6, 182, 212, 0.3);
+  box-shadow: 0 0 20px rgba(6, 182, 212, 0.1);
+  position: relative;
+  z-index: 2;
+}
+
+.step-icon-box img {
+  width: 40px;
+  height: 40px;
+  filter: brightness(0) invert(1);
+}
+
+/* Màu riêng cho từng bước */
+.box-glow-green {
+  border-color: rgba(16, 185, 129, 0.3);
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.1);
+}
+.box-glow-purple {
+  border-color: rgba(139, 92, 246, 0.3);
+  box-shadow: 0 0 20px rgba(139, 92, 246, 0.1);
+}
+
+/* Nội dung chữ */
+.step-content {
+  position: relative;
+  z-index: 2;
+}
+
+.step-content h3 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 15px;
+}
+
+.step-content p {
+  color: var(--text-sub);
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+/* --- RESPONSIVE MOBILE --- */
+@media (max-width: 992px) {
+  .steps-container {
+    grid-template-columns: 1fr; /* Xếp dọc trên mobile */
+    gap: 30px;
+  }
+  
+  /* Ẩn đường kẻ ngang trên mobile, thay bằng đường dọc nếu muốn (hoặc ẩn luôn) */
+  .neon-connector {
+    display: none; 
+  }
+  
+  .step-card {
+    display: flex; /* Flex ngang cho thẻ mobile */
+    align-items: center;
+    text-align: left;
+    padding: 20px;
+    gap: 20px;
+  }
+  
+  .step-icon-box {
+    margin: 0;
+    width: 70px; height: 70px;
+    flex-shrink: 0;
+  }
+  
+  .step-icon-box img { width: 30px; height: 30px; }
+  
+  .step-number {
+    font-size: 4rem;
+    top: 50%; right: 20px;
+    transform: translateY(-50%);
+  }
+}
