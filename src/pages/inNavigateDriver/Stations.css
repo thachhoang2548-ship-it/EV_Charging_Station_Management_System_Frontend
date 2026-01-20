@@ -1,9 +1,10 @@
-/* === LAYOUT GIỐNG HOME === */
+/* === MODERN MINIMALIST LAYOUT === */
 .home-page {
   margin: 0;
   padding: 0;
-  background-color: #f5f5f5;
+  background: linear-gradient(to bottom, #f8fafc 0%, #f1f5f9 100%);
   position: relative;
+  min-height: 100vh;
 }
 
 /* Responsive Image Display */
@@ -30,7 +31,7 @@
   width: 100%;
   height: 35vh;
   object-fit: cover;
-  filter: brightness(0.7) contrast(1.2);
+  filter: brightness(0.75) contrast(1.15) saturate(1.1);
 }
 
 .hero-text {
@@ -50,16 +51,18 @@
   margin-left: 30px;
   color: white;
   font-size: 4rem;
-  font-weight: bold;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  font-weight: 800;
+  text-shadow: 0 2px 20px rgba(0, 0, 0, 0.3);
+  letter-spacing: -0.02em;
 }
 
 .hero-subtitle {
   margin-left: 30px;
   font-size: 1.5rem;
-  letter-spacing: 3px;
-  color: white;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+  letter-spacing: 0.15em;
+  color: rgba(255, 255, 255, 0.95);
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  font-weight: 300;
 }
 
 /* Welcome Card */
@@ -69,13 +72,14 @@
   margin-left: 0px;
   margin-right: 0px;
   padding: 30px 0 20px;
-  border-radius: 30px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  border-radius: 24px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 10px 30px rgba(0, 0, 0, 0.08);
   text-align: center;
   position: relative;
   z-index: 10;
   min-height: 60rem;
   margin-bottom: 100px;
+  border: 1px solid rgba(226, 232, 240, 0.8);
 }
 
 /* ==== SEARCH BAR (inside welcome card) ==== */
@@ -88,79 +92,84 @@
 }
 
 .search-wrapper {
-  background: white;
-  border-radius: 50px;
-  padding: 10px 16px;
+  background: #f8fafc;
+  border-radius: 12px;
+  padding: 12px 18px;
   display: flex;
   align-items: center;
-  box-shadow: 0 8px 24px rgba(0, 180, 216, 0.15);
-  border: 2px solid transparent;
-  transition: all 0.3s ease;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  border: 1.5px solid #e2e8f0;
+  transition: all 0.2s ease;
 }
 
 .search-wrapper:focus-within {
-  border-color: #00b4d8;
-  box-shadow: 0 12px 32px rgba(0, 180, 216, 0.25);
-  transform: translateY(-2px);
+  border-color: #3b82f6;
+  background: white;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1), 0 1px 3px rgba(0, 0, 0, 0.1);
+  transform: translateY(-1px);
 }
 
 .search-icon {
   font-size: 18px;
-  margin-right: 10px;
-  color: #00b4d8;
-  transition: transform 0.3s ease;
+  margin-right: 12px;
+  color: #64748b;
+  transition: color 0.2s ease;
 }
 
 .search-wrapper:focus-within .search-icon {
-  transform: scale(1.1) rotate(15deg);
+  color: #3b82f6;
 }
 
 .search-input {
   flex: 1;
   border: none;
   outline: none;
-  font-size: 14px;
-  color: #333;
+  font-size: 15px;
+  color: #0f172a;
   background: transparent;
   font-family: inherit;
+  font-weight: 400;
 }
 
 .search-input::placeholder {
-  color: #999;
+  color: #94a3b8;
   font-weight: 400;
 }
 
 .filter-btn {
-  border: none;
-  background: linear-gradient(135deg, #00b4d8 0%, #0096c7 100%);
+  border: 1.5px solid #e2e8f0;
+  background: white;
   cursor: pointer;
   font-size: 16px;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.3s ease;
-  color: white;
-  box-shadow: 0 4px 12px rgba(0, 180, 216, 0.3);
+  transition: all 0.2s ease;
+  color: #64748b;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .filter-btn:hover {
-  transform: rotate(90deg) scale(1.1);
-  box-shadow: 0 6px 16px rgba(0, 180, 216, 0.4);
+  background: #f8fafc;
+  border-color: #cbd5e1;
+  color: #3b82f6;
+  transform: scale(1.05);
 }
 
 .filter-btn:active {
-  transform: rotate(90deg) scale(0.95);
+  transform: scale(0.95);
 }
 
 /* ==== TITLE ==== */
 .stations-header {
-  color: #00b4d8;
-  font-weight: 600;
-  margin: 0 20px 20px;
-  font-size: 1.2rem;
+  color: #0f172a;
+  font-weight: 700;
+  margin: 0 20px 24px;
+  font-size: 1.35rem;
+  letter-spacing: -0.02em;
 }
 
 /* ==== LIST ==== */
@@ -176,20 +185,20 @@
 
 .station-card {
   background: white;
-  border-radius: 14px;
-  padding: 14px 16px;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  border: 1px solid transparent;
+  border-radius: 16px;
+  padding: 18px 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid #e2e8f0;
   
   /* === THAY ĐỔI: Đảm bảo text căn trái trong grid item === */
   text-align: left;
 }
 
 .station-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 24px rgba(0, 180, 216, 0.15);
-  border-color: rgba(0, 180, 216, 0.2);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(59, 130, 246, 0.1);
+  border-color: #cbd5e1;
 }
 
 .station-header {
@@ -199,26 +208,33 @@
 }
 
 .station-name {
-  font-size: 15px;
-  font-weight: 600;
+  font-size: 16px;
+  font-weight: 700;
+  color: #0f172a;
+  letter-spacing: -0.01em;
+  line-height: 1.4;
 }
 
 .status-dot {
   width: 10px;
   height: 10px;
   border-radius: 50%;
+  border: 2px solid white;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.05);
 }
 
 .station-address {
-  font-size: 13px;
-  color: #555;
-  margin-top: 4px;
+  font-size: 13.5px;
+  color: #64748b;
+  margin-top: 6px;
+  line-height: 1.5;
 }
 
 .station-distance {
-  font-size: 12px;
-  color: #777;
-  margin-top: 2px;
+  font-size: 13px;
+  color: #3b82f6;
+  font-weight: 600;
+  margin-top: 4px;
 }
 
 .station-actions {
@@ -230,16 +246,17 @@
 .btn-navigate,
 .btn-detail {
   flex: 1;
-  padding: 10px 12px;
-  font-size: 13px;
-  border: none;
+  padding: 11px 16px;
+  font-size: 13.5px;
+  border: 1.5px solid;
   border-radius: 10px;
   cursor: pointer;
-  margin: 0 3px;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  font-weight: 500;
+  margin: 0 4px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  font-weight: 600;
   position: relative;
   overflow: hidden;
+  letter-spacing: -0.01em;
 }
 
 .btn-navigate::before,
@@ -263,28 +280,31 @@
 }
 
 .btn-navigate {
-  background: linear-gradient(135deg, #e0f7fa 0%, #b2ebf2 100%);
-  color: #00838f;
-  box-shadow: 0 2px 8px rgba(0, 131, 143, 0.15);
+  background: #3b82f6;
+  color: white;
+  border-color: #3b82f6;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .btn-navigate:hover {
-  background: linear-gradient(135deg, #b2ebf2 0%, #80deea 100%);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 131, 143, 0.25);
+  background: #2563eb;
+  border-color: #2563eb;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(59, 130, 246, 0.25);
 }
 
 .btn-detail {
-  background: linear-gradient(135deg, #f5f5f5 0%, #eeeeee 100%);
-  color: #333;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  background: white;
+  color: #475569;
+  border-color: #cbd5e1;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .btn-detail:hover {
-  background: linear-gradient(135deg, #00b4d8 0%, #0096c7 100%);
-  color: white;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 180, 216, 0.3);
+  background: #f8fafc;
+  border-color: #94a3b8;
+  color: #0f172a;
+  transform: translateY(-1px);
 }
 
 /* ==== NAVBAR ==== */
@@ -293,26 +313,33 @@
   bottom: 0;
   left: 0;
   right: 0;
-  height: 60px;
-  background: #00b4d8;
+  height: 68px;
+  background: white;
+  border-top: 1px solid #e2e8f0;
+  box-shadow: 0 -1px 3px rgba(0, 0, 0, 0.05), 0 -4px 12px rgba(0, 0, 0, 0.05);
   display: flex;
   justify-content: space-around;
   align-items: center;
-  border-radius: 20px 20px 0 0;
+  border-radius: 0;
 }
 
 .nav-btn {
   background: transparent;
   border: none;
-  color: white;
-  font-size: 20px;
+  color: #94a3b8;
+  font-size: 22px;
   cursor: pointer;
-  opacity: 0.7;
+  transition: all 0.2s ease;
+  padding: 8px;
 }
 
 .nav-btn.active {
-  opacity: 1;
-  transform: scale(1.1);
+  color: #3b82f6;
+  transform: scale(1.05);
+}
+
+.nav-btn:hover {
+  color: #64748b;
 }
 
 .pagination-container {
@@ -325,16 +352,16 @@
 }
 
 .page-btn {
-  background: linear-gradient(135deg, #00b4d8 0%, #0096c7 100%);
-  color: white;
-  border: none;
-  border-radius: 12px;
+  background: white;
+  color: #475569;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 10px;
   width: 44px;
   height: 44px;
   font-size: 18px;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 4px 12px rgba(0, 180, 216, 0.3);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -360,8 +387,10 @@
 }
 
 .page-btn:hover {
-  transform: translateY(-2px) scale(1.05);
-  box-shadow: 0 8px 20px rgba(0, 180, 216, 0.4);
+  background: #f8fafc;
+  border-color: #94a3b8;
+  color: #3b82f6;
+  transform: scale(1.05);
 }
 
 .page-btn:hover::before {
@@ -369,58 +398,46 @@
 }
 
 .page-btn:active {
-  transform: translateY(0) scale(0.98);
-  box-shadow: 0 2px 8px rgba(0, 180, 216, 0.3);
+  transform: scale(0.95);
 }
 
 .page-btn:disabled {
-  opacity: 0.5;
+  opacity: 0.4;
   cursor: not-allowed;
   transform: none;
+  background: #f8fafc;
 }
 
 .page-dots {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 8px 16px;
+  gap: 8px;
+  padding: 10px 18px;
   background: white;
-  border-radius: 20px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border: 1.5px solid #e2e8f0;
+  border-radius: 12px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .dot {
-  width: 10px;
-  height: 10px;
-  background: #ddd;
+  width: 8px;
+  height: 8px;
+  background: #cbd5e1;
   border-radius: 50%;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
 }
 
 .dot:hover {
-  background: #00b4d8;
-  transform: scale(1.2);
+  background: #94a3b8;
+  transform: scale(1.25);
 }
 
 .dot.active {
-  background: linear-gradient(135deg, #00b4d8 0%, #0096c7 100%);
-  transform: scale(1.4);
-  box-shadow: 0 0 0 4px rgba(0, 180, 216, 0.2);
-}
-
-.dot.active::after {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  border: 2px solid rgba(0, 180, 216, 0.3);
-  animation: pulse 1.5s ease-out infinite;
+  background: #3b82f6;
+  transform: scale(1.5);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
 }
 
 @keyframes pulse {
@@ -542,10 +559,5 @@
   .dot {
     width: 14px;
     height: 14px;
-  }
-
-  .dot.active::after {
-    width: 24px;
-    height: 24px;
   }
 }
