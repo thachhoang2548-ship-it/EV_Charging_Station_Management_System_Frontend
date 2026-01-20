@@ -42,7 +42,7 @@ export default function Stations() {
         const normalized = data.map((item) => ({
           id: item.id || item.stationId,
           name: item.stationName || item.name || "Trạm sạc EcoCharge",
-          address: item.address || "Đang cập nhật địa chỉ...",
+          address: item.address || "Đang cập nhật địa chỉ của bạn...",
           status: item.status ? item.status.toUpperCase() : "AVAILABLE",
           lat: parseFloat(item.latitude || item.lat || 0),
           lng: parseFloat(item.longitude || item.lng || 0),
