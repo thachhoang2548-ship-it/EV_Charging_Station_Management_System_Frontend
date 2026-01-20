@@ -32,11 +32,12 @@ export default function Stations() {
     }
   }, []);
 
-  // 2. Gọi API
+  // 2. Gọi API (reload khi userLocation thay đổi)
   useEffect(() => {
     const fetchStations = async () => {
       try {
-        const response = await stationAPI.getAllStations();
+        // Truyền userLocation để BE tính khoảng cách
+        const response = await stationAPI.getAllStations(userLocation);
         const data = response.data || [];
         const normalized = data.map((item) => ({
           id: item.id || item.stationId,
@@ -45,7 +46,7 @@ export default function Stations() {
           status: item.status ? item.status.toUpperCase() : "AVAILABLE",
           lat: parseFloat(item.latitude || item.lat || 0),
           lng: parseFloat(item.longitude || item.lng || 0),
-          distance: null, 
+          distance: item.distanceKm, // BE đã tính sẵn
           ports: item.ports || ["CCS2", "Type 2"] 
         }));
         setStations(normalized);
@@ -56,26 +57,10 @@ export default function Stations() {
       }
     };
     fetchStations();
-  }, []);
+  }, [userLocation]); // Dependency: reload khi vị trí thay đổi
 
-  // 3. Tính khoảng cách
-  const calcDistanceKm = (lat1, lon1, lat2, lon2) => {
-    const R = 6371; 
-    const dLat = ((lat2 - lat1) * Math.PI) / 180;
-    const dLon = ((lon2 - lon1) * Math.PI) / 180;
-    const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-              Math.cos((lat1 * Math.PI) / 180) * Math.cos((lat2 * Math.PI) / 180) *
-              Math.sin(dLon / 2) * Math.sin(dLon / 2);
-    return (R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))).toFixed(1);
-  };
-
-  // 4. Logic Lọc (Chỉ còn tìm kiếm theo tên/địa chỉ)
-  const processedStations = stations.map((s) => {
-    if (userLocation && s.lat && s.lng) {
-      s.distance = calcDistanceKm(userLocation.lat, userLocation.lng, s.lat, s.lng);
-    }
-    return s;
-  }).filter((station) => {
+  // 3. Logic Lọc (chỉ search, không tính khoảng cách)
+  const processedStations = stations.filter((station) => {
     return (station.name || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
            (station.address || "").toLowerCase().includes(searchQuery.toLowerCase());
   });
@@ -161,7 +146,9 @@ export default function Stations() {
 
                 <div className="station-footer-info">
                   <div className="station-distance">
-                    ⚡ {station.distance ? `${station.distance} km` : "Đang tính..."}
+                    ⚡ {station.distance !== null && station.distance !== undefined
+                      ? `${parseFloat(station.distance).toFixed(2)} km` 
+                      : "Chưa xác định"}
                   </div>
                 </div>
 

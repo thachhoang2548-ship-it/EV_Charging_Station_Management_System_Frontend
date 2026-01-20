@@ -30,9 +30,14 @@ export const addConnectorTypeApi = (connectorTypeData) => {
 };
 
 // ====== Lấy danh sách tất cả trạm sạc ======
-export const getAllStations = () => {
+export const getAllStations = (userLocation = null) => {
+  let endpoint = "/api/charging-stations/stations";
+  if (userLocation?.lat && userLocation?.lng) {
+    endpoint += `?lat=${userLocation.lat}&lng=${userLocation.lng}`;
+  }
+  
   return handleApiCall(
-    () => apiClient.get("/api/charging-stations"),
+    () => apiClient.get(endpoint),
     "Lấy danh sách trạm sạc thất bại"
   );
 };
