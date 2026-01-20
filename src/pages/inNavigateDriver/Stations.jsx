@@ -1,194 +1,145 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Stations.css";
 import { stationAPI } from "../../api/stationApi.js";
 import stationsHeroMobile from "../../assets/img/home/home.jpg"; 
-import stationsHeroDesktop from "../../assets/img/home/home_lab.jpg";
+import stationsHeroDesktop from "../../assets/img/home/background3.avif";
+
+// Chỉ cần import icon Search
+import { Search } from "lucide-react";
 
 export default function Stations() {
   const navigate = useNavigate();
+  
+  // --- STATE DỮ LIỆU ---
   const [stations, setStations] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState("");
   const [userLocation, setUserLocation] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  
+  // --- PHÂN TRANG ---
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
 
-  // ===== Lấy vị trí hiện tại của người dùng =====
+  // 1. Lấy vị trí
   useEffect(() => {
     if ("geolocation" in navigator) {
       navigator.geolocation.getCurrentPosition(
-        (pos) => {
-          setUserLocation({
-            lat: pos.coords.latitude,
-            lng: pos.coords.longitude,
-          });
-        },
-        (err) => {
-          console.warn("Không thể lấy vị trí:", err.message);
-          setUserLocation(null);
-        },
+        (pos) => setUserLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
+        (err) => console.warn("Lỗi vị trí:", err.message),
         { enableHighAccuracy: true }
       );
-    } else {
-      console.warn("Trình duyệt không hỗ trợ geolocation.");
     }
   }, []);
 
-  // ===== Lấy danh sách trạm sạc =====
+  // 2. Gọi API
   useEffect(() => {
+    const fetchStations = async () => {
+      try {
+        const response = await stationAPI.getAllStations();
+        const data = response.data || [];
+        const normalized = data.map((item) => ({
+          id: item.id || item.stationId,
+          name: item.stationName || item.name || "Trạm sạc EcoCharge",
+          address: item.address || "Đang cập nhật địa chỉ...",
+          status: item.status ? item.status.toUpperCase() : "AVAILABLE",
+          lat: parseFloat(item.latitude || item.lat || 0),
+          lng: parseFloat(item.longitude || item.lng || 0),
+          distance: null, 
+          ports: item.ports || ["CCS2", "Type 2"] 
+        }));
+        setStations(normalized);
+      } catch (error) {
+        console.error("Lỗi tải trạm:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
     fetchStations();
   }, []);
 
-  const fetchStations = async () => {
-    try {
-      const response = await stationAPI.getAllStations();
-      // ✅ response.data đã là array rồi, không cần .json()
-      const data = response.data;
-
-      const normalized = data.map((item) => ({
-        id: item.id || item.stationId, // ✅ Ưu tiên id (MockAPI) rồi fallback sang StationID
-        StationID: item.stationId,
-        name: item.stationName || item.name || "Trạm sạc chưa đặt tên",
-        address: item.address || item.address || "Chưa có địa chỉ",
-        status: item.status || item.status || "unknown",
-        lat: parseFloat(item.latitude || item.lat || 0),
-        lng: parseFloat(item.longitude || item.lng || 0),
-        distance: null,
-      }));
-
-      setStations(normalized);
-    } catch (error) {
-      console.error("Error fetching stations:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // ===== Tính khoảng cách (km) theo công thức Haversine =====
+  // 3. Tính khoảng cách
   const calcDistanceKm = (lat1, lon1, lat2, lon2) => {
-    const R = 6371; // bán kính Trái đất (km)
+    const R = 6371; 
     const dLat = ((lat2 - lat1) * Math.PI) / 180;
     const dLon = ((lon2 - lon1) * Math.PI) / 180;
-    const a =
-      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-      Math.cos((lat1 * Math.PI) / 180) *
-        Math.cos((lat2 * Math.PI) / 180) *
-        Math.sin(dLon / 2) *
-        Math.sin(dLon / 2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    return (R * c).toFixed(2);
+    const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+              Math.cos((lat1 * Math.PI) / 180) * Math.cos((lat2 * Math.PI) / 180) *
+              Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    return (R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))).toFixed(1);
   };
 
-  // ===== Gắn khoảng cách thực tế cho mỗi trạm =====
-  const stationsWithDistance = stations.map((s) => {
+  // 4. Logic Lọc (Chỉ còn tìm kiếm theo tên/địa chỉ)
+  const processedStations = stations.map((s) => {
     if (userLocation && s.lat && s.lng) {
-      const distance = calcDistanceKm(
-        userLocation.lat,
-        userLocation.lng,
-        s.lat,
-        s.lng
-      );
-      return { ...s, distance };
+      s.distance = calcDistanceKm(userLocation.lat, userLocation.lng, s.lat, s.lng);
     }
     return s;
+  }).filter((station) => {
+    return (station.name || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
+           (station.address || "").toLowerCase().includes(searchQuery.toLowerCase());
   });
 
-  // ===== Hàm mở Google Maps chỉ đường =====
+  const totalPages = Math.ceil(processedStations.length / itemsPerPage);
+  const currentStations = processedStations.slice(
+    (currentPage - 1) * itemsPerPage, 
+    currentPage * itemsPerPage
+  );
+
   const handleNavigate = (lat, lng) => {
-    if (!lat || !lng) {
-      alert("Tọa độ trạm không hợp lệ!");
-      return;
-    }
-
     const url = userLocation
-      ? `https://www.google.com/maps/dir/?api=1&origin=${userLocation.lat},${userLocation.lng}&destination=${lat},${lng}`
-      : `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
-
+      ? `https://www.google.com/maps/dir/${userLocation.lat},${userLocation.lng}/${lat},${lng}`
+      : `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
     window.open(url, "_blank");
   };
 
-  // ===== Hàm xem chi tiết trạm sạc =====
-  const handleViewDetail = (stationId) => {
-    console.log("Navigating to station:", stationId);
-    console.log("Navigate path:", `/stations/${stationId}`);
-    navigate(`/stations/${stationId}`);
-  };
-
-  // ===== Lọc theo từ khóa =====
-  const filteredStations = stationsWithDistance.filter(
-    (station) =>
-      (station.name || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (station.address || "").toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
-  // ===== PHÂN TRANG =====
-  const totalPages = Math.ceil(filteredStations.length / itemsPerPage);
-  const indexOfLast = currentPage * itemsPerPage;
-  const indexOfFirst = indexOfLast - itemsPerPage;
-  const currentStations = filteredStations.slice(indexOfFirst, indexOfLast);
-
-  const handleNextPage = () => {
-    setCurrentPage((prev) => (prev < totalPages ? prev + 1 : 1)); // quay vòng
-  };
-
-  const handlePrevPage = () => {
-    setCurrentPage((prev) => (prev > 1 ? prev - 1 : totalPages)); // quay vòng
-  };
-
-  // ===== Màu trạng thái =====
   const getStatusColor = (status) => {
-    if (status === "ACTIVE" || status === "active") return "#4CAF50";
-    if (status === "MAINTENANCE" || status === "busy") return "#00BCD4";
-    if (status === "INACTIVE" || status === "maintenance") return "#F44336";
-    return "#9E9E9E";
+    if (status === "AVAILABLE" || status === "ACTIVE") return "#4ade80";
+    if (status === "BUSY") return "#facc15";
+    return "#f87171";
   };
 
-  // ===== Hiển thị =====
-  if (loading) return <div className="stations-loading">Đang tải...</div>;
+  if (loading) return <div className="stations-loading">Đang tải dữ liệu...</div>;
 
   return (
     <div className="home-page">
-      {/* Hero Section - giống Home */}
-      <img
-        className="hero-img mobile-only"
-        src={stationsHeroMobile}
-        alt="Trạm sạc xe điện"
-      />
-      <img
-        className="hero-img desktop-only"
-        src={stationsHeroDesktop}
-        alt="Trạm sạc xe điện"
-      />
-
-      <div className="hero-text">
-        <h1 className="hero-title">TRẠM SẠC</h1>
-        <p className="hero-subtitle">EV STATIONS</p>
+      <div className="hero-wrapper-station">
+        <img className="hero-img mobile-only" src={stationsHeroMobile} alt="Trạm sạc" />
+        <img className="hero-img desktop-only" src={stationsHeroDesktop} alt="Trạm sạc" />
+        <div className="hero-text">
+          <h1 className="hero-title">MẠNG LƯỚI TRẠM SẠC</h1>
+          <p className="hero-subtitle">KẾT NỐI KHÔNG GIỚI HẠN</p>
+        </div>
       </div>
 
-      {/* Welcome Card - giống Home */}
       <div className="welcome-card">
-        {/* Thanh tìm kiếm */}
-        <div className="map-search">
-          <div className="search-wrapper">
-            <span className="search-icon">🔍</span>
+        {/* --- THANH TÌM KIẾM ĐƠN GIẢN (NO FILTER) --- */}
+        <div className="cyber-search-container">
+          <div className="cyber-search-bar">
+            <div className="search-icon-box">
+              <Search size={20} color="#0ea5e9" />
+            </div>
             <input
               type="text"
-              placeholder="Tìm kiếm trạm sạc..."
+              className="cyber-input"
+              placeholder="Nhập tên trạm, địa chỉ, khu vực..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="search-input"
             />
-            
+            {/* Đã xóa nút bộ lọc và đường kẻ ở đây */}
           </div>
         </div>
-        {/* Tiêu đề */}
-        <h2 className="stations-header" style={{paddingTop:'10px'}}>Trạm sạc gần đây</h2>
 
-        {/* Danh sách trạm */}
+        {/* --- DANH SÁCH TRẠM --- */}
+        <h2 className="stations-header">
+          {processedStations.length} Trạm khả dụng
+        </h2>
+
         <div className="station-list">
           {currentStations.length === 0 ? (
-            <p className="no-stations">Không tìm thấy trạm nào.</p>
+            <div className="no-stations">
+              <p>Không tìm thấy trạm nào phù hợp.</p>
+            </div>
           ) : (
             currentStations.map((station) => (
               <div key={station.id} className="station-card">
@@ -199,23 +150,33 @@ export default function Stations() {
                     style={{ background: getStatusColor(station.status) }}
                   ></span>
                 </div>
+                
                 <p className="station-address">{station.address}</p>
-                <p className="station-distance">
-                  ⚡ Cách đây{" "}
-                  {station.distance ? `${station.distance} km` : "—"}
-                </p>
+                
+                <div className="station-tags">
+                   {station.ports.map((p, i) => (
+                     <span key={i} className="port-tag">{p}</span>
+                   ))}
+                </div>
+
+                <div className="station-footer-info">
+                  <div className="station-distance">
+                    ⚡ {station.distance ? `${station.distance} km` : "Đang tính..."}
+                  </div>
+                </div>
+
                 <div className="station-actions">
                   <button
                     className="btn-navigate"
                     onClick={() => handleNavigate(station.lat, station.lng)}
                   >
-                    🗺️ Chỉ đường
+                    Chỉ đường
                   </button>
                   <button
                     className="btn-detail"
-                    onClick={() => handleViewDetail(station.id)}
+                    onClick={() => navigate(`/stations/${station.id}`)}
                   >
-                    Xem chi tiết
+                    Chi tiết
                   </button>
                 </div>
               </div>
@@ -223,12 +184,14 @@ export default function Stations() {
           )}
         </div>
 
-        {/* ==== PAGINATION CONTROLS ==== */}
-        {filteredStations.length > itemsPerPage && (
+        {/* --- PHÂN TRANG --- */}
+        {processedStations.length > itemsPerPage && (
           <div className="pagination-container">
-            <button className="page-btn" onClick={handlePrevPage}>
-              ❮
-            </button>
+            <button 
+              className="page-btn" 
+              onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+              disabled={currentPage === 1}
+            >❮</button>
             <div className="page-dots">
               {Array.from({ length: totalPages }, (_, i) => (
                 <span
@@ -238,9 +201,11 @@ export default function Stations() {
                 ></span>
               ))}
             </div>
-            <button className="page-btn" onClick={handleNextPage}>
-              ❯
-            </button>
+            <button 
+              className="page-btn" 
+              onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+              disabled={currentPage === totalPages}
+            >❯</button>
           </div>
         )}
       </div>

@@ -61,7 +61,7 @@ const Footer = () => {
           </div>
         </div>
 
-        <div className="footer-bottom" color="white">
+        <div className="footer-bottom">
           <p>&copy; 2024 EV Charge System. All rights reserved.</p>
           <div className="legal-links">
             <span>Bảo mật</span>
