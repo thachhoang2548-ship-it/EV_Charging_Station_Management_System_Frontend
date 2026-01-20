@@ -91,7 +91,6 @@ const Home = () => {
         </div>
       </section>
 
-      --- SECTION 2: PREMIUM BENTO GRID (LÀM MỚI) ---
       <section className="features-section">
         {/* Hiệu ứng nền Aurora mờ ảo phía sau */}
         <div className="aurora-bg"></div>

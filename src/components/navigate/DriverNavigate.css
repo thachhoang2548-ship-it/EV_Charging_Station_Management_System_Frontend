@@ -83,10 +83,10 @@
   }
 
   /* --- LOGO --- */
-  .brand-logo { display: flex; align-items: center; gap: 10px; cursor: pointer; }
-  .logo-icon { font-size: 32px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3)); }
+  .brand-logo { display: flex; align-items: center; gap: 12px; cursor: pointer; }
+  .logo-icon { font-size: 40px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3)); }
   .logo-text {
-    font-size: 24px; font-weight: 800; color: #fff;
+    font-size: 28px; font-weight: 800; color: #fff;
     letter-spacing: -1px;
     /* FIX 2: Thêm bóng đổ cho Logo */
     text-shadow: 0 2px 10px rgba(0,0,0,0.5);
@@ -103,7 +103,7 @@
   .nav-icon { display: none; }
   
   .nav-label {
-    font-size: 16px; 
+    font-size: 18px; 
     /* FIX 3: Chữ trắng hoàn toàn + Đậm hơn + Bóng đổ */
     color: #ffffff; 
     font-weight: 600; 
@@ -134,8 +134,9 @@
     color: #fff;
     border: 1px solid rgba(255,255,255,0.4);
     
-    padding: 10px 24px;
+    padding: 12px 32px;
     border-radius: 50px;
+    font-size: 16px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s;
