@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState, useCallback } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 import apiClient from "../../api/apiUrls.js";
@@ -12,7 +12,6 @@ const getBatteryCapacityFromStorage = () => {
   return Number.isFinite(n) && n > 0 ? n : 60;
 };
 
-// Ước tính số phút để tăng từ initialSoc -> targetSoc
 function estimateMinutesToReachTargetSoc({
                                            initialSoc,
                                            targetSoc,
@@ -49,10 +48,8 @@ export default function Payment() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // luôn lấy 1 bản sessionResult ổn định
   const rawSession = location?.state?.sessionResult ?? null;
 
-  // ✅ restore pointNumber từ sessionStorage (không dùng hook)
   const session = useMemo(() => {
     if (!rawSession) return null;
     if (rawSession.pointNumber) return rawSession;
@@ -78,6 +75,25 @@ export default function Payment() {
   const [loadingMethods, setLoadingMethods] = useState(true);
   const [paymentCompleted, setPaymentCompleted] = useState(false);
 
+  // ====== DISCOUNT / LOYALTY ======
+  const [usePoints, setUsePoints] = useState(false);
+  const [discountLoading, setDiscountLoading] = useState(false);
+  const [discountPreview, setDiscountPreview] = useState(null);
+  const [pointsAvailable, setPointsAvailable] = useState(null);
+
+  const invoiceId = useMemo(() => {
+    if (!session) return null;
+    const candidate =
+        session.invoiceId ??
+        session?.invoice?.invoiceId ??
+        session?.invoice?.id ??
+        location?.state?.invoiceId ??
+        null;
+
+    const n = Number(candidate);
+    return Number.isFinite(n) && n > 0 ? n : null;
+  }, [session, location?.state?.invoiceId]);
+
   useEffect(() => {
     if (!session) {
       toast.error("Không có thông tin thanh toán", { position: "top-center" });
@@ -85,7 +101,17 @@ export default function Payment() {
     }
   }, [session, navigate]);
 
-  // ✅ Ước tính công suất (fallback)
+  useEffect(() => {
+    if (!session) return;
+    const c = Number(session.cost);
+    if (!Number.isFinite(c) || c <= 0) {
+      console.warn("[PAYMENT] session.cost invalid:", session.cost, session);
+    }
+    if (!invoiceId) {
+      console.warn("[PAYMENT] invoiceId missing:", session);
+    }
+  }, [session, invoiceId]);
+
   const inferredPowerKW = useMemo(() => {
     if (!session) return 11;
 
@@ -110,15 +136,6 @@ export default function Payment() {
     return Number.isFinite(n) && n > 0 ? n : 11;
   }, [session]);
 
-  /**
-   * ✅ Tách thời gian CHUẨN:
-   * Ưu tiên:
-   * 1) backend: chargingMinutes + overstayMinutes
-   * 2) suy ra từ tiền: overstayMinutes = round((cost - energyCost)/pricePerMin)
-   * 3) fallback estimate theo pin/công suất
-   *
-   * BẢO ĐẢM: chargingMinutes + overstayMinutes = durationMinutes
-   */
   const timeSplit = useMemo(() => {
     if (!session) return null;
 
@@ -126,7 +143,6 @@ export default function Payment() {
     const initialSoc = session.initialSoc;
     const finalSoc = session.finalSoc;
 
-    // ---- (1) BACKEND PROVIDED ----
     const backendCharging = session.chargingMinutes;
     const backendOverstay = session.overstayMinutes;
 
@@ -137,12 +153,6 @@ export default function Payment() {
         Number.isFinite(Number(backendOverstay))
     ) {
       const overstayMinutes = Math.max(0, Math.floor(Number(backendOverstay)));
-      const chargingMinutes = Math.max(
-          0,
-          Math.floor(Math.min(durationMinutes, Number(backendCharging)))
-      );
-
-      // normalize sum
       const normalizedCharging = Math.max(0, durationMinutes - overstayMinutes);
 
       return {
@@ -153,7 +163,6 @@ export default function Payment() {
       };
     }
 
-    // nếu chưa đầy thì không có lãng phí
     if (finalSoc == null || Number(finalSoc) < 100) {
       return {
         mode: "no-full",
@@ -163,10 +172,8 @@ export default function Payment() {
       };
     }
 
-    // ---- (2) INFER FROM MONEY (chuẩn nhất nếu có pricePerMin) ----
-    // NOTE: muốn dùng cái này thì backend nên trả pricePerMin
     const pricePerKWh = Number(session.pricePerKWh ?? 0);
-    const pricePerMin = Number(session.pricePerMin ?? 0); // <-- nếu chưa có, hãy add ở backend response
+    const pricePerMin = Number(session.pricePerMin ?? 0);
     const energyKWh = Number(session.energyKWh ?? 0);
     const totalCost = Number(session.cost ?? 0);
 
@@ -179,7 +186,6 @@ export default function Payment() {
       const energyCost = energyKWh * pricePerKWh;
       const timeCost = Math.max(0, totalCost - energyCost);
 
-      // làm tròn để ra phút (tránh dính round2 ở backend)
       const overstayMinutes = Math.max(0, Math.round(timeCost / pricePerMin));
       const chargingMinutes = Math.max(0, durationMinutes - overstayMinutes);
 
@@ -188,15 +194,10 @@ export default function Payment() {
         durationMinutes,
         chargingMinutes,
         overstayMinutes,
-        derived: {
-          energyCost,
-          timeCost,
-          pricePerMin,
-        },
+        derived: { energyCost, timeCost, pricePerMin },
       };
     }
 
-    // ---- (3) FALLBACK ESTIMATE ----
     if (initialSoc == null) {
       return {
         mode: "estimate",
@@ -233,6 +234,110 @@ export default function Payment() {
     };
   }, [session, inferredPowerKW]);
 
+  const DISCOUNT_BASE = "/api/invoice";
+
+  const discountApi = {
+    preview: (invId, usePts) =>
+        apiClient.post(`${DISCOUNT_BASE}/${invId}/preview-discount`, null, {
+          params: { usePoints: usePts },
+        }),
+    apply: (invId, usePts) =>
+        apiClient.post(`${DISCOUNT_BASE}/${invId}/apply-discount`, null, {
+          params: { usePoints: usePts },
+        }),
+    availableByInvoice: (invId) =>
+        apiClient.get(`/api/loyalty/available-by-invoice`, {
+          params: { invoiceId: invId },
+        }),
+  };
+
+  // ✅ fetchPreview trả về payload để handlePayment dùng ngay
+  const fetchPreview = useCallback(async (invId, usePts) => {
+    if (!invId) return null;
+    try {
+      setDiscountLoading(true);
+      const res = await discountApi.preview(invId, usePts);
+      const payload = res?.data?.data ?? res?.data ?? null;
+
+      const base = Number(payload?.baseAmount);
+      const final = Number(payload?.finalAmount);
+
+      if (
+          payload &&
+          payload.invoiceId &&
+          Number.isFinite(base) &&
+          Number.isFinite(final) &&
+          base >= 0 &&
+          final >= 0
+      ) {
+        setDiscountPreview(payload);
+        if (payload.pointsAvailable != null) {
+          setPointsAvailable(Number(payload.pointsAvailable));
+        }
+        return payload;
+      }
+
+      setDiscountPreview(null);
+      return null;
+    } catch (e) {
+      console.debug("preview-discount failed:", e);
+      setDiscountPreview(null);
+      return null;
+    } finally {
+      setDiscountLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    const run = async () => {
+      if (!invoiceId) {
+        setPointsAvailable(null);
+        setDiscountPreview(null);
+        return;
+      }
+
+      try {
+        const pRes = await discountApi.availableByInvoice(invoiceId);
+        const p = pRes?.data?.pointsAvailable;
+        if (p != null && Number.isFinite(Number(p))) setPointsAvailable(Number(p));
+        else setPointsAvailable(0);
+      } catch (e) {
+        console.debug("available-by-invoice failed:", e);
+        setPointsAvailable(null);
+      }
+
+      await fetchPreview(invoiceId, usePoints);
+    };
+
+    if (session) run();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [session, invoiceId]);
+
+  useEffect(() => {
+    if (!invoiceId) return;
+    fetchPreview(invoiceId, usePoints);
+  }, [usePoints, invoiceId, fetchPreview]);
+
+  const payableAmount = useMemo(() => {
+    const v = discountPreview?.finalAmount;
+    const n = Number(v);
+    if (Number.isFinite(n) && n >= 0) return n;
+    return Number(session?.cost ?? 0);
+  }, [discountPreview?.finalAmount, session]);
+
+  const baseAmount = useMemo(() => {
+    const v = discountPreview?.baseAmount;
+    const n = Number(v);
+    if (Number.isFinite(n) && n >= 0) return n;
+    return Number(session?.cost ?? 0);
+  }, [discountPreview?.baseAmount, session]);
+
+  const discountAmount = useMemo(() => {
+    const v = discountPreview?.discountAmount ?? 0;
+    const n = Number(v);
+    return Number.isFinite(n) ? n : 0;
+  }, [discountPreview?.discountAmount]);
+
   // Fetch payment methods
   useEffect(() => {
     const fetchMethods = async () => {
@@ -241,7 +346,7 @@ export default function Payment() {
         const data = response.data;
         let methods = Array.isArray(data) ? data : data.data || [];
 
-        const totalCost = session?.cost || 0;
+        const totalCost = Number(payableAmount ?? session?.cost ?? 0);
         if (totalCost < 10000) {
           methods = methods.filter(
               (m) => m.provider !== "VNPAY" && m.methodType !== "EWALLET"
@@ -259,17 +364,20 @@ export default function Payment() {
       }
     };
 
-    // chỉ gọi khi có session
     if (session) fetchMethods();
-  }, [session]);
+  }, [session, payableAmount]);
 
+  // ✅ handlePayment (fixed VNPay create)
   const handlePayment = async () => {
     if (!session) return;
 
     if (!selectedMethod) {
-      toast.warning("Vui lòng chọn phương thức thanh toán", {
-        position: "top-center",
-      });
+      toast.warning("Vui lòng chọn phương thức thanh toán", { position: "top-center" });
+      return;
+    }
+
+    if (!invoiceId) {
+      toast.error("Thiếu invoiceId nên không thể thanh toán/áp giảm giá.", { position: "top-center" });
       return;
     }
 
@@ -278,56 +386,107 @@ export default function Payment() {
 
       const method = paymentMethods.find((m) => m.methodId === selectedMethod);
       if (!method) {
-        toast.error("Không tìm thấy phương thức thanh toán!", {
-          position: "top-center",
-        });
+        toast.error("Không tìm thấy phương thức thanh toán!", { position: "top-center" });
         return;
       }
 
-      const response = await apiClient.post(
-          `/api/payment/vnpay/create?sessionId=${session.sessionId}&paymentMethodId=${selectedMethod}`
+      // ✅ 1) apply discount trước
+      let latest = discountPreview;
+      try {
+        await discountApi.apply(invoiceId, usePoints);
+        latest = await fetchPreview(invoiceId, usePoints);
+        if (!latest) latest = discountPreview;
+      } catch (e) {
+        console.debug("apply-discount failed:", e);
+        toast.warning("Không áp dụng được giảm giá (sẽ thanh toán theo giá gốc).", {
+          position: "top-center",
+        });
+      }
+
+      const latestPayable =
+          Number(latest?.finalAmount) >= 0 && Number.isFinite(Number(latest?.finalAmount))
+              ? Number(latest.finalAmount)
+              : Number(session?.cost ?? 0);
+
+      const latestBase =
+          Number(latest?.baseAmount) >= 0 && Number.isFinite(Number(latest?.baseAmount))
+              ? Number(latest.baseAmount)
+              : Number(session?.cost ?? 0);
+
+      const latestDiscount =
+          Number.isFinite(Number(latest?.discountAmount)) ? Number(latest.discountAmount) : 0;
+
+      // ✅ Debug: confirm usePoints actually true/false
+      console.log("[PAYMENT] invoiceId=", invoiceId, "usePoints=", usePoints);
+
+      // ✅ 2) Save pendingPayment
+      sessionStorage.setItem(
+          "pendingPayment",
+          JSON.stringify({
+            amount: latestPayable,
+            baseAmount: latestBase,
+            discountAmount: latestDiscount,
+            usePoints,
+            pointsAvailable: pointsAvailable ?? latest?.pointsAvailable ?? null,
+            discountRatePct: latest?.discountRatePct ?? 0,
+
+            currency: session.currency || "VND",
+            orderInfo: `Thanh toán phiên sạc #${session.sessionId}`,
+            stationName: session.stationName,
+            vehiclePlate: session.vehiclePlate,
+            energyKWh: session.energyKWh,
+            durationMinutes: session.durationMinutes,
+            chargingMinutes: timeSplit?.chargingMinutes ?? null,
+            overstayMinutes: timeSplit?.overstayMinutes ?? null,
+            pricePerKWh: session.pricePerKWh,
+            pricePerMin: session.pricePerMin ?? null,
+            invoiceId,
+          })
       );
 
+      // CASH/EVM => pay invoice directly
+      if (method.methodType === "CASH" || method.provider === "EVM") {
+        await apiClient.post(`/api/invoice/pay/${invoiceId}`, null, {
+          params: { usePoints },
+        });
+
+        toast.success("Thanh toán thành công! Hóa đơn đã được lưu.", {
+          position: "top-center",
+          autoClose: 1500,
+        });
+
+        setTimeout(() => {
+          setPaymentCompleted(true);
+          navigate("/");
+        }, 1500);
+
+        return;
+      }
+
+      // ✅ VNPay/EWALLET => MUST pass usePoints
       if (method.provider === "VNPAY" || method.methodType === "EWALLET") {
+        console.log("[PAYMENT] Creating VNPay with params:", {
+          sessionId: session.sessionId,
+          paymentMethodId: selectedMethod,
+          usePoints,
+        });
+
+        const response = await apiClient.post(`/api/payment/vnpay/create`, null, {
+          params: {
+            sessionId: session.sessionId,
+            paymentMethodId: selectedMethod,
+            usePoints, // ✅ FIX: this was missing
+          },
+        });
+
         if (response.data?.paymentUrl) {
-          sessionStorage.setItem(
-              "pendingPayment",
-              JSON.stringify({
-                amount: session.cost || 0,
-                currency: session.currency || "VND",
-                orderInfo: `Thanh toán phiên sạc #${session.sessionId}`,
-                stationName: session.stationName,
-                vehiclePlate: session.vehiclePlate,
-                energyKWh: session.energyKWh,
-                durationMinutes: session.durationMinutes,
-                chargingMinutes: timeSplit?.chargingMinutes ?? null,
-                overstayMinutes: timeSplit?.overstayMinutes ?? null,
-                pricePerKWh: session.pricePerKWh,
-                pricePerMin: session.pricePerMin ?? null,
-              })
-          );
           window.location.href = response.data.paymentUrl;
           return;
         }
+
         toast.error("Không nhận được liên kết thanh toán từ server!", {
           position: "top-center",
         });
-        return;
-      }
-
-      if (method.methodType === "CASH" || method.provider === "EVM") {
-        if (response.data?.message) {
-          toast.success("Thanh toán thành công! Hóa đơn đã được lưu.", {
-            position: "top-center",
-            autoClose: 2000,
-          });
-          setTimeout(() => {
-            setPaymentCompleted(true);
-            navigate("/");
-          }, 2000);
-          return;
-        }
-        toast.error("Thanh toán thất bại!", { position: "top-center" });
         return;
       }
 
@@ -343,8 +502,7 @@ export default function Payment() {
         const data = error.response.data;
 
         if (status === 409) errorMessage = "Hóa đơn đã được thanh toán rồi!";
-        else if (status === 404)
-          errorMessage = "Không tìm thấy thông tin phiên sạc hoặc hóa đơn!";
+        else if (status === 404) errorMessage = "Không tìm thấy thông tin hóa đơn!";
         else if (data?.message) errorMessage = data.message;
       } else if (error.request) {
         errorMessage = "Không thể kết nối đến server!";
@@ -360,11 +518,12 @@ export default function Payment() {
 
   const currency = session.currency ?? "VND";
 
-  // (optional) hiển thị phí thời gian nếu suy ra được
   const timeFeeView =
       timeSplit?.mode === "money" && timeSplit?.derived?.timeCost > 0
           ? Math.round(timeSplit.derived.timeCost)
           : null;
+
+  const canUsePointsUI = Boolean(invoiceId) && !paymentProcessing;
 
   return (
       <div className="payment-container">
@@ -505,9 +664,7 @@ export default function Payment() {
             <h3 className="section-title">⚡ Năng lượng & SOC</h3>
             <div className="info-row">
               <span className="info-label">Năng lượng đã sạc:</span>
-              <span className="info-value highlight-green">
-              {(Number(session.energyKWh ?? 0)).toFixed(2)} kWh
-            </span>
+              <span className="info-value highlight-green">{Number(session.energyKWh ?? 0).toFixed(2)} kWh</span>
             </div>
             {session.initialSoc != null && (
                 <div className="info-row">
@@ -519,6 +676,85 @@ export default function Payment() {
                 <div className="info-row">
                   <span className="info-label">SOC cuối:</span>
                   <span className="info-value">{session.finalSoc}%</span>
+                </div>
+            )}
+          </div>
+
+          {/* ====== DISCOUNT SECTION ====== */}
+          <div className="payment-section" style={{ marginTop: 10 }}>
+            <h3 className="section-title">🎁 Giảm giá</h3>
+
+            {!invoiceId ? (
+                <div
+                    style={{
+                      padding: "12px 14px",
+                      borderRadius: 10,
+                      background: "rgba(0,0,0,0.04)",
+                      color: "#555",
+                      fontWeight: 600,
+                    }}
+                >
+                  Không tìm thấy <b>invoiceId</b> nên chưa bật giảm giá theo điểm.
+                </div>
+            ) : (
+                <div
+                    style={{
+                      border: "1px solid rgba(102, 126, 234, 0.25)",
+                      borderRadius: 12,
+                      padding: "14px 16px",
+                      background: "rgba(102, 126, 234, 0.06)",
+                    }}
+                >
+                  <div style={{ display: "flex", alignItems: "center", gap: 12, justifyContent: "space-between" }}>
+                    <div>
+                      <div style={{ fontWeight: 900, color: "#2c3e50" }}>
+                        Dùng điểm để giảm giá (1 điểm = 1%, tối đa 100%)
+                      </div>
+                      <div style={{ marginTop: 4, opacity: 0.85 }}>
+                        Điểm hiện có: <b>{pointsAvailable == null ? "—" : pointsAvailable}</b>
+                      </div>
+                    </div>
+
+                    <label style={{ display: "flex", alignItems: "center", gap: 10, fontWeight: 800 }}>
+                      <input
+                          type="checkbox"
+                          checked={usePoints}
+                          disabled={!canUsePointsUI || discountLoading}
+                          onChange={(e) => setUsePoints(e.target.checked)}
+                          style={{ width: 18, height: 18 }}
+                      />
+                      {discountLoading ? "Đang tính..." : usePoints ? "Đang áp dụng" : "Không áp dụng"}
+                    </label>
+                  </div>
+
+                  {discountPreview && (
+                      <div style={{ marginTop: 12, display: "grid", gap: 8 }}>
+                        <div className="info-row">
+                          <span className="info-label">Giá trước giảm:</span>
+                          <span className="info-value" style={{ fontWeight: 900 }}>
+                      {fmtMoney(discountPreview.baseAmount, currency)}
+                    </span>
+                        </div>
+                        <div className="info-row">
+                          <span className="info-label">Tỉ lệ giảm:</span>
+                          <span className="info-value" style={{ fontWeight: 900, color: "#667eea" }}>
+                      {discountPreview.discountRatePct ?? 0}%
+                    </span>
+                        </div>
+                        <div className="info-row">
+                          <span className="info-label">Giảm:</span>
+                          <span className="info-value" style={{ fontWeight: 900, color: "#27ae60" }}>
+                      - {fmtMoney(discountPreview.discountAmount ?? 0, currency)}
+                    </span>
+                        </div>
+                        <div className="info-row">
+                          <span className="info-label">Điểm sẽ dùng:</span>
+                          <span className="info-value" style={{ fontWeight: 900 }}>
+                      {discountPreview.pointsWillUse ?? 0}
+                    </span>
+                        </div>
+                      </div>
+                  )}
                 </div>
             )}
           </div>
@@ -539,7 +775,6 @@ export default function Payment() {
                 </div>
             )}
 
-            {/* (optional) nếu backend có pricePerMin thì show */}
             {session.pricePerMin != null && Number(session.pricePerMin) > 0 && (
                 <div className="info-row">
                   <span className="info-label">⏱️ Đơn giá thời gian:</span>
@@ -552,7 +787,7 @@ export default function Payment() {
             <div className="info-row">
               <span className="info-label">⚡ Năng lượng tiêu thụ:</span>
               <span className="info-value" style={{ fontWeight: "600", color: "#27ae60" }}>
-              {(Number(session.energyKWh ?? 0)).toFixed(2)} kWh
+              {Number(session.energyKWh ?? 0).toFixed(2)} kWh
             </span>
             </div>
 
@@ -570,12 +805,20 @@ export default function Payment() {
                 </div>
             )}
 
-            {/* optional show time fee derived */}
             {timeFeeView != null && timeFeeView > 0 && (
                 <div className="info-row">
                   <span className="info-label">⚠️ Phí thời gian lãng phí:</span>
                   <span className="info-value" style={{ fontWeight: 900, color: "#e67e22" }}>
                 {fmtMoney(timeFeeView, currency)}
+              </span>
+                </div>
+            )}
+
+            {discountAmount > 0 && (
+                <div className="info-row">
+                  <span className="info-label">🎁 Giảm giá (điểm):</span>
+                  <span className="info-value" style={{ fontWeight: 900, color: "#27ae60" }}>
+                - {fmtMoney(discountAmount, currency)}
               </span>
                 </div>
             )}
@@ -591,11 +834,9 @@ export default function Payment() {
                   marginTop: "10px",
                 }}
             >
-            <span style={{ color: "white", fontSize: "18px", fontWeight: "700" }}>
-              💳 Tổng thanh toán:
-            </span>
+              <span style={{ color: "white", fontSize: "18px", fontWeight: "700" }}>💳 Tổng thanh toán:</span>
               <span style={{ color: "white", fontSize: "24px", fontWeight: "800" }}>
-              {fmtMoney(session.cost ?? 0, currency)}
+              {fmtMoney(payableAmount, currency)}
             </span>
             </div>
           </div>
@@ -671,9 +912,7 @@ export default function Payment() {
                               {method.provider === "VNPAY" ? "💳" : "💵"} {method.provider} ({method.methodType})
                             </div>
                             {method.accountNo && (
-                                <div style={{ fontSize: "13px", opacity: 0.9 }}>
-                                  📋 Tài khoản: {method.accountNo}
-                                </div>
+                                <div style={{ fontSize: "13px", opacity: 0.9 }}>📋 Tài khoản: {method.accountNo}</div>
                             )}
                           </button>
                       ))}
@@ -687,9 +926,9 @@ export default function Payment() {
                 <button
                     className="btn-payment"
                     onClick={handlePayment}
-                    disabled={paymentProcessing || !selectedMethod}
+                    disabled={paymentProcessing || !selectedMethod || discountLoading}
                 >
-                  {paymentProcessing ? "Đang xử lý..." : "💳 Thanh toán ngay"}
+                  {paymentProcessing ? "Đang xử lý..." : discountLoading ? "Đang tính giảm giá..." : "💳 Thanh toán ngay"}
                 </button>
             ) : (
                 <button className="btn-payment" onClick={() => navigate("/")}>

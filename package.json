@@ -10,12 +10,15 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@aws-sdk/client-location": "^3.980.0",
+    "@aws/amazon-location-utilities-auth-helper": "^1.2.4",
     "@reduxjs/toolkit": "^2.9.1",
     "@zxing/library": "^0.21.3",
     "axios": "^1.12.2",
     "bootstrap": "^5.3.8",
     "date-fns": "^4.1.0",
     "lucide-react": "^0.546.0",
+    "maplibre-gl": "^5.17.0",
     "react": "^19.1.1",
     "react-bootstrap": "^2.10.10",
     "react-datepicker": "^8.8.0",
