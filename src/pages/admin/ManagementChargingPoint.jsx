@@ -1,4 +1,5 @@
 import Nav from 'react-bootstrap/Nav';
+import ActionMenu from '../../components/ActionMenu/ActionMenu.jsx';
 import { useEffect, useState, useMemo } from 'react';
 import Table from 'react-bootstrap/Table';
 import './ManagementUser.css';
@@ -171,37 +172,38 @@ export default function ManagementChargingPoint() {
             </li>
           </ul>
 
-          {/* Filter Section */}
-          <div className="filter-section">
-            <Nav justify variant="tabs" activeKey={activeTab} onSelect={handleSelect}>
-              <Nav.Item>
-                <Nav.Link eventKey="allChargingPoints">Tất cả trụ sạc</Nav.Link>
-              </Nav.Item>
-              <Nav.Item>
-                <Nav.Link eventKey="active">Đang hoạt động</Nav.Link>
-              </Nav.Item>
-              <Nav.Item>
-                <Nav.Link eventKey={status.maintenance}>Đang bảo trì</Nav.Link>
-              </Nav.Item>
-              <Nav.Item>
-                <Nav.Link eventKey={status.occupied}>Ngưng hoạt động</Nav.Link>
-              </Nav.Item>
-            </Nav>
-            
-            <div style={{ marginTop: '15px' }}>
-              <input 
-                type="text"
-                className="search-input"
-                placeholder="🔍 Tìm kiếm theo tên, cổng, mã trụ sạc..." 
-                value={searchTerm}
-                onChange={handleSearchChange}
-              />
-            </div>
-          </div>
-
           {/* Table Section */}
           <div className="table-section">
-            <Table className="custom-table">
+            <div className="table-scroll-container">
+              {/* Filter Section */}
+              <div className="filter-section">
+                <Nav justify variant="tabs" activeKey={activeTab} onSelect={handleSelect}>
+                  <Nav.Item>
+                    <Nav.Link eventKey="allChargingPoints">Tất cả trụ sạc</Nav.Link>
+                  </Nav.Item>
+                  <Nav.Item>
+                    <Nav.Link eventKey="active">Đang hoạt động</Nav.Link>
+                  </Nav.Item>
+                  <Nav.Item>
+                    <Nav.Link eventKey={status.maintenance}>Đang bảo trì</Nav.Link>
+                  </Nav.Item>
+                  <Nav.Item>
+                    <Nav.Link eventKey={status.occupied}>Ngưng hoạt động</Nav.Link>
+                  </Nav.Item>
+                </Nav>
+
+                <div style={{ marginTop: '15px' }}>
+                  <input
+                    type="text"
+                    className="search-input"
+                    placeholder="🔍 Tìm kiếm theo tên, cổng, mã trụ sạc..."
+                    value={searchTerm}
+                    onChange={handleSearchChange}
+                  />
+                </div>
+              </div>
+
+              <Table className="custom-table">
               <thead>
                 <tr>
                   <th>MÃ TRỤ</th>
@@ -210,7 +212,7 @@ export default function ManagementChargingPoint() {
                   <th>SỐ SERIAL</th>
                   <th>TÊN CỔNG SẠC</th>
                   <th>NĂNG LƯỢNG TỐI ĐA</th>
-                  <th>NGÀY TẠO</th>
+                  <th style={{ width: '160px', whiteSpace: 'nowrap' }}>NGÀY TẠO</th>
                   <th style={{ width: '220px' }}>HÀNH ĐỘNG</th>
                 </tr>
               </thead>
@@ -222,91 +224,36 @@ export default function ManagementChargingPoint() {
                       <td>{point.stationName}</td>
                       <td>
                         {point.status === status.available ? (
-                          <span className="status-active">Đang hoạt động</span>
+                          <span className="status-badge active">
+                            <span className="status-dot" />Đang hoạt động
+                          </span>
                         ) : point.status === status.occupied ? (
-                          <span className="status-inactive">Ngưng hoạt động</span>
+                          <span className="status-badge inactive">
+                            <span className="status-dot" />Ngưng hoạt động
+                          </span>
                         ) : point.status === status.maintenance ? (
-                          <span className="status-maintenance">Đang bảo trì</span>
+                          <span className="status-badge maintenance">
+                            <span className="status-dot" />Đang bảo trì
+                          </span>
                         ) : (
-                          <span className="status-inactive">Không xác định</span>
+                          <span className="status-badge inactive">
+                            <span className="status-dot" />Không xác định
+                          </span>
                         )}
                       </td>
                       <td>{point.serialNumber}</td>
                       <td>{point.connectorType}</td>
                       <td>{point.maxPowerKW}</td>
-                      <td>{point.createdAt?.split('T')[0]}</td>
+                      <td style={{ whiteSpace: 'nowrap' }}>{point.createdAt?.split('T')[0]}</td>
                       <td>
-                        {/* ✅ LUÔN HIỂN THỊ NÚT CÂP NHẬT */}
-                        <div className="action-buttons">
-                          <button 
-                            className="btn-unblock" 
-                            onClick={() => handleUpdateChargingPoint(point.pointId)}
-                            style={{ marginBottom: '5px' }}
-                          >
-                            ✏️ CẬP NHẬT
-                          </button>
-                        </div>
-
-                        {/* TRƯỜNG HỢP 1: Đang hoạt động (AVAILABLE) */}
-                        {point.status === status.available && (
-                          <>
-                            <div className="action-buttons">
-                              <button 
-                                className="btn-delete" 
-                                onClick={() => handleStatusChargingPoint(point.pointId, status.occupied)}>
-                                NGƯNG HOẠT ĐỘNG
-                              </button>
-                            </div>
-                            <div className="action-buttons">
-                              <button 
-                                className="btn-transfer" 
-                                onClick={() => handleStatusChargingPoint(point.pointId, status.maintenance)}>
-                                BẢO TRÌ
-                              </button>
-                            </div>
-                          </>
-                        )}
-
-                        {/* TRƯỜNG HỢP 2: Đang bảo trì (MAINTENANCE) */}
-                        {point.status === status.maintenance && (
-                          <>
-                          <div className="action-buttons">
-                            <button 
-                              className="btn-unblock" 
-                              onClick={() => handleStatusChargingPoint(point.pointId, status.available)}>
-                              KÍCH HOẠT
-                            </button>
-                          </div>
-                          <div className="action-buttons">
-                              <button 
-                                className="btn-delete" 
-                                onClick={() => handleStatusChargingPoint(point.pointId, status.occupied)}>
-                                NGƯNG HOẠT ĐỘNG
-                              </button>
-                            </div>
-                          
-                            </>
-                        )}
-
-                        {/* TRƯỜNG HỢP 3: Ngưng hoạt động (OCCUPIED) */}
-                        {point.status === status.occupied && (
-                          <>
-                          <div className="action-buttons">
-                            <button 
-                              className="btn-unblock" 
-                              onClick={() => handleStatusChargingPoint(point.pointId, status.available)}>
-                              KÍCH HOẠT
-                            </button>
-                          </div>
-                          <div className="action-buttons">
-                              <button 
-                                className="btn-transfer" 
-                                onClick={() => handleStatusChargingPoint(point.pointId, status.maintenance)}>
-                                BẢO TRÌ
-                              </button>
-                            </div>
-                            </>
-                        )}
+                        <ActionMenu
+                          actions={[
+                            { label: "Cập nhật", type: "default", onClick: () => handleUpdateChargingPoint(point.pointId) },
+                            point.status !== status.available    && { label: "Kích hoạt",       type: "success", onClick: () => handleStatusChargingPoint(point.pointId, status.available) },
+                            point.status !== status.occupied     && { label: "Ngưng hoạt động", type: "danger",  onClick: () => handleStatusChargingPoint(point.pointId, status.occupied) },
+                            point.status !== status.maintenance  && { label: "Bảo trì",         type: "warning", onClick: () => handleStatusChargingPoint(point.pointId, status.maintenance) },
+                          ].filter(Boolean)}
+                        />
                       </td>
                       
                     </tr>
@@ -320,6 +267,7 @@ export default function ManagementChargingPoint() {
                 )}
               </tbody>
             </Table>
+            </div>
           </div>
         </div>
       )}

@@ -1,5 +1,6 @@
 
 import Nav from 'react-bootstrap/Nav';
+import ActionMenu from '../../components/ActionMenu/ActionMenu.jsx';
 import { useEffect, useState, useMemo } from 'react';
 import Table from 'react-bootstrap/Table';
 import './ManagementUser.css';
@@ -138,34 +139,35 @@ export default function ManagementModel() {
             </li>
           </ul>
 
-          {/* Filter Section */}
-          <div className="filter-section">
-            <Nav justify variant="tabs" activeKey={activeTab} onSelect={handleSelect}>
-              <Nav.Item>
-                <Nav.Link eventKey="allModels">Tất cả mẫu xe</Nav.Link>
-              </Nav.Item>
-              <Nav.Item>
-                <Nav.Link eventKey="ACTIVE">Đang hoạt động</Nav.Link>
-              </Nav.Item>
-              <Nav.Item>
-                <Nav.Link eventKey={'INACTIVE'}>Ngưng hoạt động</Nav.Link>
-              </Nav.Item>
-            </Nav>
-            
-            <div style={{ marginTop: '15px' }}>
-              <input 
-                type="text"
-                className="search-input"
-                placeholder="🔍 Tìm kiếm theo tên, cổng, hãng, năm,..." 
-                value={searchTerm}
-                onChange={handleSearchChange}
-              />
-            </div>
-          </div>
-
           {/* Table Section */}
           <div className="table-section">
-            <Table className="custom-table">
+            <div className="table-scroll-container">
+              {/* Filter Section */}
+              <div className="filter-section">
+                <Nav justify variant="tabs" activeKey={activeTab} onSelect={handleSelect}>
+                  <Nav.Item>
+                    <Nav.Link eventKey="allModels">Tất cả mẫu xe</Nav.Link>
+                  </Nav.Item>
+                  <Nav.Item>
+                    <Nav.Link eventKey="ACTIVE">Đang hoạt động</Nav.Link>
+                  </Nav.Item>
+                  <Nav.Item>
+                    <Nav.Link eventKey={'INACTIVE'}>Ngưng hoạt động</Nav.Link>
+                  </Nav.Item>
+                </Nav>
+
+                <div style={{ marginTop: '15px' }}>
+                  <input
+                    type="text"
+                    className="search-input"
+                    placeholder="🔍 Tìm kiếm theo tên, cổng, hãng, năm,..."
+                    value={searchTerm}
+                    onChange={handleSearchChange}
+                  />
+                </div>
+              </div>
+
+              <Table className="custom-table">
               <thead>
                 <tr>
                   <th>ẢNH MÔ TẢ</th>
@@ -194,29 +196,25 @@ export default function ManagementModel() {
                       <td>{model.year}</td>
                       <td>{model.connectorTypeDisplayName}</td>
                       <td>{model.batteryCapacityKWh} kWh</td>
-                      <td>{model.status === 'ACTIVE' ? 'ĐANG HOẠT ĐỘNG' : 'NGƯNG PHỤC VỤ'}</td>
                       <td>
-                        <div className="action-buttons">
-                          {(model.status === 'ACTIVE') && (
-                            <button
-                              className="btn-delete"
-                              onClick={() => handleStatusModel(model.modelId, 'INACTIVE')}>
-                              Ngưng phục vụ
-                            </button>
-                          )}
-                          {model.status === 'INACTIVE' && (
-                            <button
-                              className="btn-unblock"
-                              onClick={() => handleStatusModel(model.modelId, 'ACTIVE')}>
-                              Kích hoạt
-                            </button>
-                          )}
-                          <button
-                            className="btn-edit"
-                            onClick={() => handleEditModel(model)}>
-                            Sửa thông tin
-                          </button>
-                        </div>
+                        {model.status === 'ACTIVE' ? (
+                          <span className="status-badge active">
+                            <span className="status-dot" />Đang hoạt động
+                          </span>
+                        ) : (
+                          <span className="status-badge inactive">
+                            <span className="status-dot" />Ngưng phục vụ
+                          </span>
+                        )}
+                      </td>
+                      <td>
+                        <ActionMenu
+                          actions={[
+                            model.status === 'ACTIVE'   && { label: "Ngưng phục vụ", type: "danger",  onClick: () => handleStatusModel(model.modelId, 'INACTIVE') },
+                            model.status === 'INACTIVE' && { label: "Kích hoạt",     type: "success", onClick: () => handleStatusModel(model.modelId, 'ACTIVE') },
+                            { label: "Sửa thông tin", type: "default", onClick: () => handleEditModel(model) },
+                          ].filter(Boolean)}
+                        />
                       </td>
                       
                     </tr>
@@ -230,6 +228,7 @@ export default function ManagementModel() {
                 )}
               </tbody>
             </Table>
+            </div>
           </div>
         </div>
       )}

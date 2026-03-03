@@ -1,4 +1,5 @@
 import Nav from "react-bootstrap/Nav";
+import ActionMenu from "../../components/ActionMenu/ActionMenu.jsx";
 import { useEffect, useState, useMemo } from "react";
 import {
   getAllUsersApi,
@@ -35,6 +36,7 @@ export default function ManagementUser() {
   const [staffsStationData, setStaffsStationData] = useState([]);
   const [stations, setStations] = useState([]);
   const [isLoadingTransfer, setIsLoadingTransfer] = useState(false);
+  const [detailUser, setDetailUser] = useState(null);
 
   useEffect(() => {
     const fetchAllData = async () => {
@@ -313,13 +315,9 @@ export default function ManagementUser() {
               <Table className="custom-table">
                 <thead>
                   <tr>
-                    <th>TÊN</th>
-                    <th>VAI TRÒ</th>
+                    <th>NGƯỜI DÙNG</th>
                     <th>SỐ ĐIỆN THOẠI</th>
                     <th>EMAIL</th>
-                    <th>ĐỊA CHỈ</th>
-                    <th>NGÀY SINH</th>
-                    <th>GIỚI TÍNH</th>
                     <th>THAO TÁC</th>
                   </tr>
                 </thead>
@@ -337,89 +335,52 @@ export default function ManagementUser() {
 
                       return (
                         <tr key={user.phoneNumber || index}>
-                          <td>{user.name}</td>
                           <td>
-                            {user.roleName === "STAFF" ? (
-                              <div>
-                                NHÂN VIÊN
-                                {stationName ? (
-                                  <div
-                                    style={{ fontSize: "0.9em", color: "#666" }}
-                                  >
-                                    ({stationName})
-                                  </div>
-                                ) : (
-                                  " (Chưa gán trạm)"
+                            <div className="user-cell">
+                              <span className="user-cell-name">{user.name}</span>
+                              <span className={`role-badge ${user.roleName.toLowerCase()}`}>
+                                {user.roleName === "STAFF"
+                                  ? "Nhân viên"
+                                  : user.roleName === "ADMIN"
+                                  ? "Quản trị viên"
+                                  : "Tài xế"}
+                                {stationName && (
+                                  <span className="role-station"> · {stationName}</span>
                                 )}
-                              </div>
-                            ) : user.roleName === "ADMIN" ? (
-                              "QUẢN TRỊ VIÊN"
-                            ) : (
-                              "TÀI XẾ"
-                            )}
+                              </span>
+                            </div>
                           </td>
                           <td>{user.phoneNumber}</td>
                           <td>{user.email}</td>
-                          <td>{user.address}</td>
-                          <td>{user.dateOfBirth}</td>
-                          <td>{user.gender === "M" ? "Nam" : "Nữ"}</td>
                           <td>
-                            {user.roleName === "STAFF" &&
-                              user.status === "ACTIVE" && (
-                                <div className="action-buttons">
-                                  <button
-                                    className="btn-delete"
-                                    onClick={() =>
-                                      handleStatusStaff(user.userId, "BANNED")
-                                    }
-                                  >
-                                    Nghỉ việc
-                                  </button>
-
-                                  <button
-                                    className="btn-transfer"
-                                    onClick={() =>
-                                      handleTransferStaff(staffRecord)
-                                    }
-                                    disabled={isLoadingTransfer || !staffRecord}
-                                    title={
-                                      !staffRecord
-                                        ? "Không tìm thấy dữ liệu staff, không thể chuyển công tác"
-                                        : "Chuyển công tác"
-                                    }
-                                  >
-                                    {isLoadingTransfer
-                                      ? "Đang tải..."
-                                      : "Chuyển công tác"}
-                                  </button>
-                                </div>
-                              )}
-                            {user.roleName === "STAFF" &&
-                              user.status === "BANNED" && (
-                                <div className="action-buttons">
-                                  <button
-                                    className="btn-delete"
-                                    onClick={() =>
-                                      handleStatusStaff(user.userId, "ACTIVE")
-                                    }
-                                  >
-                                    Quay lại làm việc
-                                  </button>
-                                </div>
-                              )}
-                            {user.roleName === "DRIVER" &&
-                              user.status === "BANNED" && (
-                                <div className="action-buttons">
-                                  <button
-                                    className="btn-unblock"
-                                    onClick={() =>
-                                      handleDriverUnblock(user.userId)
-                                    }
-                                  >
-                                    Gỡ lệnh khóa tài khoản
-                                  </button>
-                                </div>
-                              )}
+                            <ActionMenu
+                              actions={[
+                                {
+                                  label: "Xem chi tiết",
+                                  type: "default",
+                                  onClick: () => setDetailUser(user),
+                                },
+                                user.roleName === "STAFF" && user.status === "ACTIVE" && {
+                                  label: "Nghỉ việc", type: "danger",
+                                  onClick: () => handleStatusStaff(user.userId, "BANNED"),
+                                },
+                                user.roleName === "STAFF" && user.status === "ACTIVE" && {
+                                  label: isLoadingTransfer ? "Đang tải..." : "Chuyển công tác",
+                                  type: "warning",
+                                  disabled: isLoadingTransfer || !staffRecord,
+                                  title: !staffRecord ? "Không tìm thấy dữ liệu staff" : undefined,
+                                  onClick: () => handleTransferStaff(staffRecord),
+                                },
+                                user.roleName === "STAFF" && user.status === "BANNED" && {
+                                  label: "Quay lại làm việc", type: "success",
+                                  onClick: () => handleStatusStaff(user.userId, "ACTIVE"),
+                                },
+                                user.roleName === "DRIVER" && user.status === "BANNED" && {
+                                  label: "Gỡ lệnh khóa tài khoản", type: "success",
+                                  onClick: () => handleDriverUnblock(user.userId),
+                                },
+                              ].filter(Boolean)}
+                            />
                           </td>
                         </tr>
                       );
@@ -427,7 +388,7 @@ export default function ManagementUser() {
                   ) : (
                     <tr>
                       <td
-                        colSpan="8"
+                        colSpan="4"
                         style={{ textAlign: "center", padding: "30px" }}
                       >
                         Không tìm thấy người dùng phù hợp với yêu cầu.
@@ -436,6 +397,65 @@ export default function ManagementUser() {
                   )}
                 </tbody>
               </Table>
+            </div>
+          </div>
+        </div>
+      )}
+      {detailUser && (
+        <div className="user-detail-overlay" onClick={() => setDetailUser(null)}>
+          <div className="user-detail-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="user-detail-header">
+              <h3>Thông tin người dùng</h3>
+              <button onClick={() => setDetailUser(null)}>✕</button>
+            </div>
+            <div className="user-detail-body">
+              <div className="user-detail-row">
+                <span>Họ tên</span>
+                <strong>{detailUser.name}</strong>
+              </div>
+              <div className="user-detail-row">
+                <span>Vai trò</span>
+                <strong>
+                  {detailUser.roleName === "STAFF"
+                    ? "Nhân viên"
+                    : detailUser.roleName === "ADMIN"
+                    ? "Quản trị viên"
+                    : "Tài xế"}
+                </strong>
+              </div>
+              <div className="user-detail-row">
+                <span>Trạng thái</span>
+                <strong>{detailUser.status === "ACTIVE" ? "Đang hoạt động" : "Đã bị khóa"}</strong>
+              </div>
+              <div className="user-detail-row">
+                <span>Số điện thoại</span>
+                <strong>{detailUser.phoneNumber || "—"}</strong>
+              </div>
+              <div className="user-detail-row">
+                <span>Email</span>
+                <strong>{detailUser.email || "—"}</strong>
+              </div>
+              <div className="user-detail-row">
+                <span>Địa chỉ</span>
+                <strong>{detailUser.address || "—"}</strong>
+              </div>
+              <div className="user-detail-row">
+                <span>Ngày sinh</span>
+                <strong>{detailUser.dateOfBirth || "—"}</strong>
+              </div>
+              <div className="user-detail-row">
+                <span>Giới tính</span>
+                <strong>{detailUser.gender === "M" ? "Nam" : detailUser.gender === "F" ? "Nữ" : "—"}</strong>
+              </div>
+              {detailUser.roleName === "STAFF" && (() => {
+                const sName = getStationNameByUserId(detailUser.userId);
+                return (
+                  <div className="user-detail-row">
+                    <span>Trạm làm việc</span>
+                    <strong>{sName || "Chưa gán trạm"}</strong>
+                  </div>
+                );
+              })()}
             </div>
           </div>
         </div>
