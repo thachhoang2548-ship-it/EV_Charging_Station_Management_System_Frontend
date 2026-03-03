@@ -1,38 +1,38 @@
-/* Header Section */
+/* ============================================================
+   HEADER — Admin / Staff page header
+   Green theme matching homepage
+   ============================================================ */
+
 .header-section {
-  height: 70px;
+  height: 68px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 20px 30px;
-  background: linear-gradient(135deg, #20b2aa 0%, #17a396 100%);
-  border-radius: 15px;
-  box-shadow: 0 4px 15px rgba(32, 178, 170, 0.2);
-  margin-bottom: 25px;
-  animation: slideDown 0.5s ease-out;
+  padding: 0 28px;
+  background: #ffffff;
+  border-bottom: 1px solid #e2e8f0;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  margin-bottom: 0;
+  animation: headerSlideDown 0.4s ease-out;
+  flex-shrink: 0;
 }
 
-@keyframes slideDown {
-  from {
-    opacity: 0;
-    transform: translateY(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+@keyframes headerSlideDown {
+  from { opacity: 0; transform: translateY(-12px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 .header-left {
   display: flex;
   align-items: center;
-  gap: 15px;
+  gap: 12px;
 }
 
 .header-left img {
-  width: 45px;
-  height: 45px;
-  filter: brightness(0) invert(1);
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+  filter: invert(39%) sepia(98%) saturate(400%) hue-rotate(100deg) brightness(90%);
   transition: transform 0.3s ease;
 }
 
@@ -42,26 +42,36 @@
 
 .header-right {
   display: flex;
-  size: 30px;
   align-items: center;
-  gap: 15px;
+  gap: 14px;
   margin-left: auto;
 }
 
 .header-right img {
-  width: 30px;
-  height: 30px;
-  filter: brightness(0) invert(1);
-  transition: transform 0.3s ease;
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  border-radius: 50%;
+  border: 2px solid #e2e8f0;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 2px;
 }
 
 .header-right img:hover {
-  transform: scale(1.1) rotate(5deg);
+  border-color: #16a34a;
+  transform: scale(1.08);
+  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.15);
 }
 
 .header-section h1 {
-  color: white;
+  color: #1e293b;
   margin: 0;
-  font-size: 24px;
-  font-weight: 600;
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: 0.1px;
+}
+
+.header-section h1 strong {
+  color: #16a34a;
 }

@@ -5,23 +5,21 @@ import transition from "../../assets/icon/staff/payment-method.png";
 import incident from "../../assets/icon/admin/incident.png";
 import { NavLink, useLocation } from "react-router-dom";
 import "./AdminNavigate.css";
-import classed from "../../assets/css/Main.module.css";
 import { useNavigate } from "react-router-dom";
 import paths from "../../path/paths.jsx";
 import { useLogout } from '../../hooks/useAuth.js';
 
-export default function AdminNavigate() {
+export default function StaffNavigate() {
     const location = useLocation();
-        const navigate = useNavigate();
-        const { logout, loading } = useLogout();
-    
+    const navigate = useNavigate();
+    const { logout, loading } = useLogout();
+
     const handleLogout = async () => {
-            const result = await logout();
-            if (result.success) {
-              navigate(paths.login);
-            }
-          };
-    
+        const result = await logout();
+        if (result.success) {
+          navigate(paths.login);
+        }
+      };
 
     const navItems = [
     {
@@ -52,13 +50,26 @@ export default function AdminNavigate() {
   ];
 
   return (
-        <div className="navContainer">
+      <div className="navContainer">
+        {/* Brand Header */}
+        <div className="navBrand">
+          <div className="navBrandIcon">⚡</div>
+          <div className="navBrandText">
+            <span className="navBrandName">EV<span>Charge</span></span>
+            <span className="navBrandRole">Staff Portal</span>
+          </div>
+        </div>
+
+        <div className="navDivider" />
+
+        {/* Nav Items */}
+        <div className="navItems">
           {navItems.map((item, index) => {
             const isHomeActive = item.path === "/" && location.pathname === "/";
             const isOtherActive =
               item.path !== "/" && location.pathname === item.path;
             const isActive = isHomeActive || isOtherActive;
-  
+
             return (
               <NavLink
                 key={index}
@@ -73,7 +84,18 @@ export default function AdminNavigate() {
               </NavLink>
             );
           })}
-          <button className={classed.button} onClick={handleLogout} disabled={loading}>{loading ? 'Đang đăng xuất...' : 'Đăng xuất'}</button>
         </div>
-    );
+
+        {/* Footer / Logout */}
+        <div className="navFooter">
+          <button
+            className="navLogoutBtn"
+            onClick={handleLogout}
+            disabled={loading}
+          >
+            {loading ? '⏳ Đang đăng xuất...' : '↩ Đăng xuất'}
+          </button>
+        </div>
+      </div>
+  );
 }
