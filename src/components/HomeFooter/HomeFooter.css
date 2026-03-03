@@ -1,0 +1,245 @@
+/* ============================================================
+   HOME FOOTER — Green theme, shared across project
+   ============================================================ */
+
+.tev-footer {
+  background: #0f172a;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.92rem;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Glow line separator */
+.tev-footer-glow {
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #16a34a, transparent);
+  box-shadow: 0 0 15px rgba(22, 163, 74, 0.4);
+}
+
+.tev-footer-top {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 60px 24px 40px;
+}
+
+.tev-footer-grid {
+  display: grid;
+  grid-template-columns: 1.8fr 1fr 1fr 1.2fr;
+  gap: 48px;
+  margin-bottom: 48px;
+}
+
+/* ---- Brand column ---- */
+.tev-footer-brand {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.tev-footer-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.tev-footer-logo-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: #16a34a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+}
+.tev-footer-logo-icon svg { width: 20px; height: 20px; }
+
+.tev-footer-logo-text {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -0.5px;
+}
+.tev-footer-logo-text span { color: #4ade80; }
+
+.tev-footer-desc {
+  color: #94a3b8;
+  line-height: 1.7;
+  font-size: 0.9rem;
+  max-width: 320px;
+}
+
+.tev-footer-socials {
+  display: flex;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.tev-social-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #94a3b8;
+  cursor: pointer;
+  transition: all 0.25s;
+  text-decoration: none;
+}
+.tev-social-btn:hover {
+  background: rgba(22, 163, 74, 0.15);
+  color: #4ade80;
+  border-color: rgba(22, 163, 74, 0.3);
+  transform: translateY(-2px);
+}
+
+/* ---- Columns ---- */
+.tev-footer-col h4 {
+  font-size: 0.88rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #fff;
+  margin-bottom: 20px;
+  position: relative;
+  display: inline-block;
+}
+
+.tev-footer-col h4::after {
+  content: '';
+  position: absolute;
+  bottom: -6px;
+  left: 0;
+  width: 28px;
+  height: 2px;
+  background: #16a34a;
+  border-radius: 2px;
+}
+
+.tev-footer-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.tev-footer-links li {
+  cursor: pointer;
+  color: #94a3b8;
+  transition: color 0.2s, padding-left 0.2s;
+  padding-left: 0;
+  font-size: 0.92rem;
+}
+.tev-footer-links li:hover {
+  color: #4ade80;
+  padding-left: 4px;
+}
+
+/* ---- Contact ---- */
+.tev-footer-contact {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.tev-contact-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #94a3b8;
+}
+.tev-contact-item svg { flex-shrink: 0; color: #16a34a; }
+
+/* ---- App badges ---- */
+.tev-app-badges {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.tev-app-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #cbd5e1;
+  font-size: 0.82rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.tev-app-badge:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+/* ---- Bottom bar ---- */
+.tev-footer-bottom {
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.tev-footer-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.tev-footer-bottom-inner {
+  padding: 20px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.82rem;
+  color: #64748b;
+}
+
+.tev-footer-legal {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.tev-footer-legal span {
+  cursor: pointer;
+  transition: color 0.2s;
+}
+.tev-footer-legal span:hover { color: #4ade80; }
+
+.tev-footer-dot { color: #334155; }
+
+/* ---- Responsive ---- */
+@media (max-width: 992px) {
+  .tev-footer-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 36px;
+  }
+}
+
+@media (max-width: 600px) {
+  .tev-footer-grid {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+  .tev-footer-top {
+    padding: 40px 20px 32px;
+  }
+  .tev-footer-bottom-inner {
+    flex-direction: column;
+    gap: 12px;
+    text-align: center;
+    padding: 16px 20px;
+  }
+  .tev-footer {
+    padding-bottom: 80px;
+  }
+}
