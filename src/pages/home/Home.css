@@ -1,411 +1,939 @@
-/* --- 1. SETTINGS & VARIABLES --- */
-:root {
-  --bg-dark: #0f172a;
-  --glass-border: rgba(255, 255, 255, 0.08);
-  --glass-surface: rgba(30, 41, 59, 0.4);
-  --primary-glow: #0ea5e9;
-  --text-main: #f1f5f9;
-  --text-sub: #94a3b8;
-}
+/* ============================================================
+   HOME.CSS — Trạm EV Landing Page Clone
+   Light theme, green primary, inspired by tramev.vn
+   ============================================================ */
 
-.modern-home {
-  background-color: var(--bg-dark);
-  color: var(--text-main);
+/* --- RESET & BASE --- */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+.tev-root {
+  font-family: 'Inter', 'SVN-Gilroy', 'Segoe UI', sans-serif;
+  background: #fff;
+  color: #1e293b;
   overflow-x: hidden;
+  line-height: 1.5;
 }
 
-/* --- 2. HERO SECTION --- */
-.hero-wrapper {
-  position: relative; height: 100vh; width: 100%; top: 0; padding-top: 0;
-  display: flex; align-items: center; justify-content: center; overflow: hidden;
+/* Shared green text */
+.tev-green { color: #16a34a; }
+
+/* ============================================================
+   NAVBAR
+   ============================================================ */
+.tev-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 999;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.07);
+  height: 64px;
 }
 
-.hero-slider { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; background: #000; }
-
-.slide-item {
-  position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-  background-size: cover; background-position: center; opacity: 0;
-  transform: scale(1.1); will-change: opacity, transform;
-  transition: opacity 1.5s ease, transform 8s linear;
-  filter: contrast(1.1) saturate(1.1);
-}
-
-.slide-item.active { opacity: 1; transform: scale(1); z-index: 1; }
-
-.slide-overlay {
-  position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-  background: linear-gradient(180deg, rgba(15,23,42,0.3) 0%, rgba(15,23,42,0.1) 60%, var(--bg-dark) 100%);
-  z-index: 2;
-}
-
-/* Hero Text */
-.hero-container { position: relative; z-index: 10; width: 100%; max-width: 1200px; padding: 0 20px; padding-top: 60px; }
-.mega-title { font-size: 4rem; font-weight: 800; line-height: 1.1; margin-bottom: 20px; }
-.text-gradient { background: linear-gradient(135deg, #22d3ee 0%, #818cf8 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-.btn-glow {
-  background: white; color: #0f172a; padding: 14px 32px; border-radius: 30px; font-weight: 700; border: none; cursor: pointer;
-  box-shadow: 0 0 20px rgba(255, 255, 255, 0.3); transition: all 0.3s;
-}
-.btn-glow:hover { transform: scale(1.05); box-shadow: 0 0 30px rgba(255, 255, 255, 0.5); }
-.status-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.1); padding: 6px 16px; border-radius: 20px; backdrop-filter: blur(5px); border: 1px solid rgba(255,255,255,0.1); margin-bottom: 20px; font-size: 0.9rem; }
-.dot { width: 8px; height: 8px; background: #4ade80; border-radius: 50%; box-shadow: 0 0 10px #4ade80; }
-.slider-dots { display: flex; gap: 8px; margin-top: 30px; }
-.dot-indicator { width: 8px; height: 8px; background: rgba(255,255,255,0.3); border-radius: 50%; cursor: pointer; }
-.dot-indicator.active { width: 24px; background: white; border-radius: 10px; }
-
-/* --- 3. FEATURES SECTION (UPDATED HUD STYLE) --- */
-.features-section {
-  position: relative;
-  padding: 100px 20px;
-  max-width: 1200px;
+.tev-nav-inner {
+  max-width: 1240px;
   margin: 0 auto;
-  z-index: 10;
+  padding: 0 24px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  gap: 40px;
 }
 
-/* Background Effects (Aurora) */
-.aurora-bg {
-  position: absolute; top: -20%; left: 20%; width: 600px; height: 600px;
-  background: radial-gradient(circle, rgba(14, 165, 233, 0.15) 0%, transparent 70%);
-  filter: blur(80px); z-index: -1; pointer-events: none;
+/* Logo */
+.tev-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  flex-shrink: 0;
+  text-decoration: none;
+}
+.tev-logo-icon {
+  width: 36px;
+  height: 36px;
+  background: #16a34a;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+.tev-logo-icon svg { width: 20px; height: 20px; }
+.tev-logo-text {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: #1e293b;
+  letter-spacing: -0.5px;
+}
+.tev-logo-text span { color: #16a34a; }
+
+/* Nav links */
+.tev-nav-links {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+}
+.tev-nav-link {
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 0.92rem;
+  font-weight: 500;
+  color: #475569;
+  text-decoration: none;
+  transition: all 0.2s;
+  cursor: pointer;
+  background: none;
+  border: none;
+}
+.tev-nav-link:hover,
+.tev-nav-link.active {
+  background: #f0fdf4;
+  color: #16a34a;
 }
 
-/* === BẮT ĐẦU CẬP NHẬT: CYBER HUD HEADER STYLE === */
-.section-header-wrapper {
+/* Nav action buttons */
+.tev-nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+.tev-btn-ghost {
+  padding: 9px 18px;
+  background: transparent;
+  border: none;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #475569;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+.tev-btn-ghost:hover { background: #f8fafc; color: #1e293b; }
+
+.tev-btn-primary {
+  padding: 9px 20px;
+  background: #16a34a;
+  border: none;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #fff;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+.tev-btn-primary:hover { background: #15803d; transform: translateY(-1px); box-shadow: 0 4px 14px rgba(22, 163, 74, 0.35); }
+
+/* ============================================================
+   HERO
+   ============================================================ */
+.tev-hero {
+  position: relative;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-bottom: 70px;
+  justify-content: center;
+  padding-top: 64px;
+  overflow: hidden;
+}
+
+.tev-hero-map {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  z-index: 0;
+  transform: scale(1.05);
+  transition: transform 12s ease;
+}
+.tev-hero:hover .tev-hero-map { transform: scale(1); }
+
+.tev-hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.55) 0%,
+    rgba(0, 0, 0, 0.45) 60%,
+    rgba(0, 0, 0, 0.7) 100%
+  );
+  z-index: 1;
+}
+
+.tev-hero-body {
   position: relative;
   z-index: 2;
+  text-align: center;
+  max-width: 780px;
+  padding: 0 24px;
+  padding-bottom: 120px;
 }
 
-/* Badge (Nhãn nhỏ) */
-.header-badge {
-  font-size: 0.75rem;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  color: #38bdf8;
-  background: rgba(56, 189, 248, 0.1);
-  padding: 6px 16px;
-  border-radius: 20px;
-  border: 1px solid rgba(56, 189, 248, 0.3);
-  margin-bottom: 15px;
-  font-weight: 600;
-  box-shadow: 0 0 15px rgba(56, 189, 248, 0.2);
-  display: flex; align-items: center; gap: 8px;
-}
-.badge-icon { font-size: 0.9rem; }
-
-/* Tiêu đề chính */
-.section-title {
-  font-size: 3.5rem;
-  font-weight: 800;
+/* Live indicator */
+.tev-hero-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255,255,255,0.12);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,0.25);
   color: #fff;
-  margin: 0;
-  line-height: 1.2;
-  text-transform: uppercase;
-  letter-spacing: -1px;
-  text-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  padding: 7px 16px;
+  border-radius: 50px;
+  font-size: 0.84rem;
+  font-weight: 500;
+  margin-bottom: 22px;
 }
-
-/* Gradient Text */
-.highlight-text {
-  background: linear-gradient(135deg, #22d3ee 0%, #3b82f6 50%, #818cf8 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  position: relative;
+.tev-dot-live {
   display: inline-block;
+  width: 8px;
+  height: 8px;
+  background: #4ade80;
+  border-radius: 50%;
+  flex-shrink: 0;
+  animation: blink 1.6s ease-in-out infinite;
+  box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.3);
 }
-.highlight-text::after {
-  content: ''; position: absolute; bottom: 5px; left: 0; width: 100%; height: 6px;
-  background: rgba(34, 211, 238, 0.3); filter: blur(4px); z-index: -1;
-}
-
-/* Tech Lines (Đường kẻ trang trí) */
-.title-decoration {
-  display: flex; align-items: center; gap: 15px;
-  width: 100%; max-width: 400px;
-  margin: 15px 0 20px 0; opacity: 0.7;
-}
-.tech-line {
-  height: 1px; flex: 1;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent);
-}
-.tech-diamond {
-  width: 8px; height: 8px; background: #06b6d4;
-  transform: rotate(45deg); box-shadow: 0 0 10px #06b6d4;
+@keyframes blink {
+  0%, 100% { opacity: 1; box-shadow: 0 0 0 4px rgba(74, 222, 128, 0.3); }
+  50%       { opacity: 0.6; box-shadow: 0 0 0 8px rgba(74, 222, 128, 0.1); }
 }
 
-/* Subtitle */
-.section-subtitle {
-  color: #94a3b8; font-size: 1.1rem; max-width: 600px; text-align: center;
-  line-height: 1.6; font-weight: 300;
+/* Hero title */
+.tev-hero-title {
+  font-size: 3.6rem;
+  font-weight: 900;
+  color: #fff;
+  line-height: 1.12;
+  margin-bottom: 18px;
+  letter-spacing: -1.5px;
+  text-shadow: 0 2px 20px rgba(0,0,0,0.4);
 }
-/* === KẾT THÚC CẬP NHẬT HEADER === */
+.tev-hero-title .tev-green { color: #4ade80; }
 
-/* --- GRID LAYOUT --- */
-.bento-grid {
+.tev-hero-sub {
+  font-size: 1.05rem;
+  color: rgba(255,255,255,0.82);
+  margin-bottom: 36px;
+  line-height: 1.7;
+  font-weight: 300;
+}
+
+/* Search bar */
+.tev-search-bar {
+  display: flex;
+  align-items: center;
+  background: #fff;
+  border-radius: 14px;
+  padding: 6px 6px 6px 16px;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.25);
+  max-width: 640px;
+  margin: 0 auto 20px;
+  gap: 10px;
+}
+.tev-search-icon {
+  color: #94a3b8;
+  flex-shrink: 0;
+  display: flex;
+}
+.tev-search-icon svg { width: 18px; height: 18px; }
+.tev-search-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 0.97rem;
+  color: #1e293b;
+  background: transparent;
+  min-width: 0;
+}
+.tev-search-input::placeholder { color: #94a3b8; }
+.tev-search-btn {
+  background: #16a34a;
+  color: #fff;
+  border: none;
+  padding: 12px 28px;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background 0.2s;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.tev-search-btn:hover { background: #15803d; }
+
+/* Quick filter tags */
+.tev-hero-tags {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+}
+.tev-tag {
+  background: rgba(255,255,255,0.15);
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(255,255,255,0.25);
+  color: #fff;
+  padding: 7px 16px;
+  border-radius: 50px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  user-select: none;
+}
+.tev-tag:hover { background: rgba(255,255,255,0.28); transform: translateY(-2px); }
+
+/* Floating stats bar at bottom of hero */
+.tev-stats-bar {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 3;
+  background: #fff;
+  border-radius: 20px 20px 0 0;
+  padding: 22px 48px;
+  display: flex;
+  align-items: center;
+  gap: 40px;
+  box-shadow: 0 -8px 40px rgba(0,0,0,0.12);
+  min-width: 700px;
+}
+.tev-stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+.tev-stat-n {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: #16a34a;
+  line-height: 1;
+}
+.tev-stat-l {
+  font-size: 0.8rem;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  font-weight: 500;
+}
+.tev-stat-div {
+  width: 1px;
+  height: 40px;
+  background: #e2e8f0;
+}
+
+/* ============================================================
+   SECTION SHARED
+   ============================================================ */
+.tev-section {
+  padding: 80px 0;
+}
+.tev-section-white { background: #fff; }
+/* tev-section-green-soft: background handled by MeshBackground */
+
+.tev-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.tev-section-head {
+  text-align: center;
+  margin-bottom: 48px;
+}
+
+.tev-section-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 14px;
+  border-radius: 50px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+}
+.tev-section-badge.green {
+  background: #dcfce7;
+  color: #16a34a;
+  border: 1px solid #bbf7d0;
+}
+.tev-section-badge.white {
+  background: rgba(255,255,255,0.25);
+  color: #16a34a;
+  border: 1px solid rgba(22, 163, 74, 0.3);
+}
+
+.tev-section-title {
+  font-size: 2.6rem;
+  font-weight: 800;
+  color: #0f172a;
+  line-height: 1.2;
+  letter-spacing: -1px;
+}
+
+.tev-section-sub {
+  color: #64748b;
+  font-size: 1rem;
+  margin-top: 10px;
+}
+
+.tev-center-btn {
+  text-align: center;
+  margin-top: 40px;
+}
+
+/* ============================================================
+   STATION CARDS
+   ============================================================ */
+.tev-station-tabs {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 28px;
+}
+.tev-tab {
+  padding: 8px 18px;
+  border-radius: 50px;
+  border: 1.5px solid #e2e8f0;
+  background: #fff;
+  color: #64748b;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.tev-tab:hover { border-color: #16a34a; color: #16a34a; }
+.tev-tab.active { background: #16a34a; color: #fff; border-color: #16a34a; }
+
+.tev-station-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  grid-template-rows: 320px 180px;
   gap: 24px;
 }
 
-/* CARD BASE STYLE */
-.bento-card {
-  position: relative;
-  background: linear-gradient(145deg, rgba(30, 41, 59, 0.6), rgba(15, 23, 42, 0.8));
-  border-radius: 30px;
-  border: 1px solid var(--glass-border);
+.tev-station-card {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
   overflow: hidden;
   cursor: pointer;
-  transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+  transition: all 0.25s ease;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+.tev-station-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 16px 40px rgba(0,0,0,0.12);
+  border-color: #bbf7d0;
 }
 
-.bento-card:hover {
-  transform: translateY(-10px);
-  border-color: rgba(255, 255, 255, 0.2);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-}
-.bento-card:hover .icon-box { transform: scale(1.1) rotate(5deg); }
-
-.card-content {
-  position: relative; z-index: 2; padding: 32px; height: 100%;
-  display: flex; flex-direction: column; justify-content: space-between;
-}
-
-/* Icon Box Styles */
-.icon-box {
-  width: 64px; height: 64px; border-radius: 20px;
-  display: flex; align-items: center; justify-content: center;
-  margin-bottom: 20px; transition: transform 0.4s ease;
-  box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-}
-.icon-box img { width: 32px; height: 32px; filter: brightness(0) invert(1); }
-
-/* Gradient Icon Backgrounds */
-.blue-gradient { background: linear-gradient(135deg, #0ea5e9, #2563eb); }
-.green-gradient { background: linear-gradient(135deg, #10b981, #059669); }
-.purple-gradient { background: linear-gradient(135deg, #8b5cf6, #6d28d9); }
-.orange-gradient { background: linear-gradient(135deg, #f97316, #ea580c); }
-
-/* Typography inside Card */
-.bento-card h3 { font-size: 1.5rem; font-weight: 700; margin-bottom: 8px; color: white; }
-.bento-card p { color: var(--text-sub); font-size: 0.95rem; line-height: 1.6; }
-
-/* SPECIFIC CARDS */
-.card-station {
-  grid-column: 1 / 2; grid-row: 1 / 3;
-  background: linear-gradient(160deg, #1e293b 0%, #0f172a 100%);
-}
-.card-station .card-stat {
-  margin-top: auto; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1);
-}
-.stat-num { display: block; font-size: 2.5rem; font-weight: 800; color: #38bdf8; line-height: 1; }
-.stat-desc { font-size: 0.85rem; color: var(--text-sub); }
-.mini-btn {
-  margin-top: 20px; background: rgba(56, 189, 248, 0.1); color: #38bdf8;
-  border: none; padding: 10px 20px; border-radius: 50px; font-weight: 600; cursor: pointer;
-  width: fit-content; transition: background 0.3s;
-}
-.mini-btn:hover { background: rgba(56, 189, 248, 0.25); }
-
-.decor-circle {
-  position: absolute; top: -50px; right: -50px; width: 200px; height: 200px;
-  background: radial-gradient(circle, rgba(56, 189, 248, 0.15), transparent 70%);
-  border-radius: 50%; pointer-events: none;
-}
-
-.card-rules {
-  grid-column: 2 / 4; grid-row: 2 / 3;
-}
-.row-layout {
-  flex-direction: row; align-items: center; gap: 24px;
-}
-.row-layout .icon-box { margin-bottom: 0; }
-.arrow-icon {
-  margin-left: auto; width: 40px; height: 40px; border-radius: 50%;
-  border: 1px solid rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center;
-  color: white; transition: all 0.3s;
-}
-.card-rules:hover .arrow-icon { background: white; color: black; border-color: white; }
-
-.hover-glow {
-  position: absolute; bottom: 0; right: 0; width: 100%; height: 100%;
-  background: radial-gradient(circle at bottom right, rgba(255,255,255,0.05), transparent 60%);
-  opacity: 0; transition: opacity 0.4s; pointer-events: none;
-}
-.bento-card:hover .hover-glow { opacity: 1; }
-
-/* Responsive Mobile */
-@media (max-width: 992px) {
-  .bento-grid { grid-template-columns: 1fr 1fr; grid-template-rows: auto; }
-  .card-station { grid-column: span 2; min-height: 300px; }
-  .card-rules { grid-column: span 2; }
-}
-
-@media (max-width: 768px) {
-  .section-title { font-size: 2.5rem; }
-  .title-decoration { max-width: 250px; }
-}
-
-@media (max-width: 600px) {
-  .mega-title { font-size: 2.8rem; }
-  .bento-grid { grid-template-columns: 1fr; gap: 16px; }
-  .card-station, .card-booking, .card-profile, .card-rules { grid-column: span 1; }
-  .row-layout { flex-direction: column; align-items: flex-start; text-align: left; }
-  .arrow-icon { display: none; }
-}
-
-/* --- SECTION 3: HOW IT WORKS (STEPS) --- */
-.steps-section {
+.tev-station-img-wrap {
   position: relative;
-  padding: 80px 20px 120px; /* Padding dưới nhiều hơn để thoáng */
-  max-width: 1200px;
-  margin: 0 auto;
-  z-index: 10;
+  height: 180px;
+  overflow: hidden;
+}
+.tev-station-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s;
+}
+.tev-station-card:hover .tev-station-img { transform: scale(1.07); }
+
+.tev-station-badge-power {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: rgba(0,0,0,0.65);
+  color: #fff;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  backdrop-filter: blur(4px);
 }
 
-.steps-container {
+.tev-station-avail {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+.tev-station-avail.open { background: #dcfce7; color: #15803d; }
+.tev-station-avail.full { background: #fee2e2; color: #dc2626; }
+
+.tev-station-body { padding: 18px; }
+.tev-station-name {
+  font-size: 1.02rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 7px;
+  line-height: 1.35;
+}
+.tev-station-addr {
+  display: flex;
+  align-items: flex-start;
+  gap: 5px;
+  font-size: 0.85rem;
+  color: #64748b;
+  margin-bottom: 12px;
+  line-height: 1.4;
+}
+.tev-station-addr svg { flex-shrink: 0; margin-top: 2px; }
+
+.tev-station-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+.tev-pill {
+  background: #f1f5f9;
+  color: #475569;
+  padding: 3px 10px;
+  border-radius: 50px;
+  font-size: 0.78rem;
+  font-weight: 500;
+}
+
+.tev-station-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.tev-rating {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.9rem;
+  color: #1e293b;
+}
+.tev-star { color: #f59e0b; font-size: 1rem; }
+.tev-rev-count { color: #94a3b8; font-size: 0.82rem; font-weight: 400; }
+
+.tev-btn-sm {
+  padding: 7px 14px;
+  background: #f0fdf4;
+  color: #16a34a;
+  border: 1px solid #bbf7d0;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+.tev-btn-sm:hover { background: #16a34a; color: #fff; border-color: #16a34a; }
+
+.tev-btn-outline-green {
+  padding: 12px 32px;
+  background: transparent;
+  color: #16a34a;
+  border: 2px solid #16a34a;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.tev-btn-outline-green:hover { background: #16a34a; color: #fff; transform: translateY(-2px); box-shadow: 0 6px 20px rgba(22, 163, 74, 0.3); }
+
+/* ============================================================
+   HOW IT WORKS - 3 STEPS
+   ============================================================ */
+.tev-steps {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 40px;
   position: relative;
-  margin-top: 60px;
+  margin-top: 40px;
 }
 
-/* Đường nối Neon (Connector Line) */
-.neon-connector {
+.tev-step-conn {
   position: absolute;
-  top: 60px; /* Căn chỉnh để đường kẻ chạy qua giữa các icon */
-  left: 10%;
-  width: 80%;
+  top: 56px;
+  left: calc(16.66% + 20px);
+  width: calc(66.66% - 40px);
   height: 2px;
-  background: linear-gradient(90deg, 
-    rgba(6, 182, 212, 0) 0%, 
-    rgba(6, 182, 212, 0.5) 50%, 
-    rgba(6, 182, 212, 0) 100%
+  background: repeating-linear-gradient(
+    90deg,
+    #16a34a 0,
+    #16a34a 8px,
+    transparent 8px,
+    transparent 18px
   );
+  opacity: 0.4;
   z-index: 0;
 }
 
-/* STEP CARD */
-.step-card {
+.tev-step {
   position: relative;
-  background: rgba(15, 23, 42, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: 24px;
-  padding: 40px 30px;
+  z-index: 1;
   text-align: center;
-  backdrop-filter: blur(10px);
-  transition: transform 0.3s ease;
-  z-index: 1; /* Nổi lên trên đường kẻ */
-  overflow: hidden;
+  background: #fff;
+  border-radius: 20px;
+  padding: 36px 28px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+  transition: transform 0.25s, box-shadow 0.25s;
 }
+.tev-step:hover { transform: translateY(-6px); box-shadow: 0 12px 32px rgba(0,0,0,0.1); }
 
-.step-card:hover {
-  transform: translateY(-10px);
-  background: rgba(15, 23, 42, 0.8);
-  border-color: rgba(6, 182, 212, 0.3);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-}
-
-/* Số thứ tự chìm (Watermark Number) */
-.step-number {
+.tev-step-num {
   position: absolute;
-  top: -10px;
-  right: -10px;
-  font-size: 6rem;
+  top: 16px;
+  right: 20px;
+  font-size: 3.5rem;
   font-weight: 900;
-  color: rgba(255, 255, 255, 0.03); /* Rất mờ */
+  color: rgba(22, 163, 74, 0.07);
   line-height: 1;
-  z-index: 0;
   pointer-events: none;
 }
 
-/* Icon Box tròn ở giữa */
-.step-icon-box {
-  width: 100px;
-  height: 100px;
-  margin: 0 auto 30px;
-  background: #0f172a; /* Nền tối để che đường kẻ neon chạy qua */
+.tev-step-icon-circle {
+  width: 72px;
+  height: 72px;
+  background: linear-gradient(135deg, #16a34a, #22c55e);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 2px solid rgba(6, 182, 212, 0.3);
-  box-shadow: 0 0 20px rgba(6, 182, 212, 0.1);
-  position: relative;
-  z-index: 2;
+  margin: 0 auto 22px;
+  color: #fff;
+  box-shadow: 0 8px 20px rgba(22, 163, 74, 0.3);
 }
 
-.step-icon-box img {
+.tev-step h3 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 10px;
+}
+.tev-step p {
+  font-size: 0.92rem;
+  color: #64748b;
+  line-height: 1.65;
+}
+
+/* ============================================================
+   COMMUNITY REVIEWS
+   ============================================================ */
+.tev-review-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.tev-review-card {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 22px 20px;
+  transition: all 0.25s;
+}
+.tev-review-card:hover { box-shadow: 0 10px 30px rgba(0,0,0,0.09); transform: translateY(-4px); border-color: #bbf7d0; }
+
+.tev-review-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.tev-avatar {
   width: 40px;
   height: 40px;
-  filter: brightness(0) invert(1);
-}
-
-/* Màu riêng cho từng bước */
-.box-glow-green {
-  border-color: rgba(16, 185, 129, 0.3);
-  box-shadow: 0 0 20px rgba(16, 185, 129, 0.1);
-}
-.box-glow-purple {
-  border-color: rgba(139, 92, 246, 0.3);
-  box-shadow: 0 0 20px rgba(139, 92, 246, 0.1);
-}
-
-/* Nội dung chữ */
-.step-content {
-  position: relative;
-  z-index: 2;
-}
-
-.step-content h3 {
-  font-size: 1.5rem;
-  font-weight: 700;
+  border-radius: 50%;
   color: #fff;
-  margin-bottom: 15px;
+  font-weight: 700;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.tev-review-meta {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.tev-review-meta strong { font-size: 0.92rem; color: #0f172a; }
+.tev-review-meta span { font-size: 0.8rem; color: #94a3b8; }
+
+.tev-review-stars { font-size: 1rem; flex-shrink: 0; }
+
+.tev-review-station {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.82rem;
+  color: #16a34a;
+  font-weight: 600;
+  margin-bottom: 12px;
+  background: #f0fdf4;
+  padding: 5px 10px;
+  border-radius: 6px;
+  width: fit-content;
 }
 
-.step-content p {
-  color: var(--text-sub);
+.tev-review-text {
+  font-size: 0.9rem;
+  color: #475569;
+  line-height: 1.65;
+  margin-bottom: 16px;
+}
+
+.tev-review-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-top: 12px;
+  border-top: 1px solid #f1f5f9;
+}
+.tev-like-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 7px;
+  font-size: 0.83rem;
+  color: #64748b;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.tev-like-btn:hover { background: #f0fdf4; color: #16a34a; border-color: #bbf7d0; }
+
+.tev-reply-btn {
+  padding: 6px 12px;
+  background: transparent;
+  border: none;
+  font-size: 0.83rem;
+  color: #94a3b8;
+  font-weight: 500;
+  cursor: pointer;
+  border-radius: 7px;
+  transition: color 0.2s;
+}
+.tev-reply-btn:hover { color: #16a34a; }
+
+/* ============================================================
+   FEATURES HIGHLIGHT
+   ============================================================ */
+.tev-features-section {
+  /* background handled by MeshBackground component */
+  padding: 80px 0;
+  border-top: 1px solid rgba(0,0,0,0.06);
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+}
+
+.tev-features-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 64px;
+  align-items: center;
+}
+
+.tev-features-img {
+  position: relative;
+  border-radius: 20px;
+  overflow: hidden;
+}
+.tev-features-img img {
+  width: 100%;
+  height: 440px;
+  object-fit: cover;
+  border-radius: 20px;
+  display: block;
+}
+
+.tev-features-stat-float {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  background: rgba(255,255,255,0.95);
+  backdrop-filter: blur(8px);
+  border-radius: 12px;
+  padding: 14px 20px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.tev-fsf-num { font-size: 1.8rem; font-weight: 800; color: #16a34a; line-height: 1; }
+.tev-fsf-label { font-size: 0.78rem; color: #64748b; font-weight: 500; }
+
+.tev-features-badge-float {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: #16a34a;
+  color: #fff;
+  padding: 8px 14px;
+  border-radius: 10px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 4px 14px rgba(22, 163, 74, 0.4);
+}
+
+.tev-feat-list {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  margin-bottom: 32px;
+}
+.tev-feat-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 16px;
+  border-radius: 12px;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  transition: all 0.2s;
+}
+.tev-feat-item:hover { border-color: #bbf7d0; background: #f0fdf4; transform: translateX(4px); }
+
+.tev-feat-icon {
+  font-size: 1.6rem;
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  background: #f0fdf4;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.tev-feat-item strong { display: block; font-size: 0.95rem; color: #0f172a; margin-bottom: 3px; }
+.tev-feat-item p { font-size: 0.85rem; color: #64748b; line-height: 1.5; }
+
+.tev-btn-lg { padding: 14px 32px; font-size: 1rem; border-radius: 10px; }
+
+/* ============================================================
+   CTA BANNER
+   ============================================================ */
+.tev-cta-section {
+  background: linear-gradient(135deg, #16a34a 0%, #15803d 50%, #166534 100%);
+  padding: 72px 24px;
+}
+
+.tev-cta-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 40px;
+  flex-wrap: wrap;
+}
+
+.tev-cta-text h2 {
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: #fff;
+  line-height: 1.25;
+  margin-bottom: 8px;
+  letter-spacing: -0.5px;
+}
+.tev-cta-text h2 span { color: #bbf7d0; }
+.tev-cta-text p {
+  color: rgba(255,255,255,0.7);
   font-size: 0.95rem;
-  line-height: 1.6;
 }
 
-/* --- RESPONSIVE MOBILE --- */
-@media (max-width: 992px) {
-  .steps-container {
-    grid-template-columns: 1fr; /* Xếp dọc trên mobile */
-    gap: 30px;
-  }
-  
-  /* Ẩn đường kẻ ngang trên mobile, thay bằng đường dọc nếu muốn (hoặc ẩn luôn) */
-  .neon-connector {
-    display: none; 
-  }
-  
-  .step-card {
-    display: flex; /* Flex ngang cho thẻ mobile */
-    align-items: center;
-    text-align: left;
-    padding: 20px;
+.tev-cta-actions {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.tev-btn-white {
+  padding: 13px 28px;
+  background: #fff;
+  color: #16a34a;
+  border: none;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+.tev-btn-white:hover { background: #f0fdf4; transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.15); }
+
+.tev-btn-outline-white {
+  padding: 13px 28px;
+  background: transparent;
+  color: #fff;
+  border: 2px solid rgba(255,255,255,0.5);
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+.tev-btn-outline-white:hover { border-color: #fff; background: rgba(255,255,255,0.12); }
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 1024px) {
+  .tev-station-grid { grid-template-columns: repeat(2, 1fr); }
+  .tev-features-layout { grid-template-columns: 1fr; gap: 40px; }
+  .tev-features-img img { height: 320px; }
+}
+
+@media (max-width: 768px) {
+  .tev-nav-links { display: none; }
+  .tev-nav-actions .tev-btn-ghost { display: none; }
+
+  .tev-hero-title { font-size: 2.4rem; }
+  .tev-hero-sub { font-size: 0.95rem; }
+
+  .tev-stats-bar {
+    min-width: unset;
+    width: calc(100% - 32px);
     gap: 20px;
+    padding: 18px 24px;
+    flex-wrap: wrap;
+    justify-content: center;
   }
-  
-  .step-icon-box {
-    margin: 0;
-    width: 70px; height: 70px;
-    flex-shrink: 0;
-  }
-  
-  .step-icon-box img { width: 30px; height: 30px; }
-  
-  .step-number {
-    font-size: 4rem;
-    top: 50%; right: 20px;
-    transform: translateY(-50%);
-  }
+
+  .tev-station-grid { grid-template-columns: 1fr; }
+  .tev-review-grid { grid-template-columns: 1fr; }
+  .tev-steps { grid-template-columns: 1fr; gap: 20px; }
+  .tev-step-conn { display: none; }
+
+  .tev-section-title { font-size: 2rem; }
+
+  .tev-cta-content { flex-direction: column; align-items: flex-start; gap: 24px; }
+  .tev-cta-text h2 { font-size: 1.8rem; }
+}
+
+@media (max-width: 500px) {
+  .tev-hero-title { font-size: 1.9rem; }
+  .tev-search-bar { flex-direction: column; padding: 10px; }
+  .tev-search-btn { width: 100%; }
+  .tev-stats-bar { justify-content: space-around; }
+  .tev-stat-div { display: none; }
+  .tev-section { padding: 56px 0; }
 }
