@@ -98,7 +98,7 @@ export default function StaffDashboard() {
     if (!myStation) return;
     const interval = setInterval(
       () => fetchDashboardData(myStation.stationId, true),
-      30000
+      30000,
     );
     return () => clearInterval(interval);
   }, [myStation]);
@@ -180,21 +180,21 @@ export default function StaffDashboard() {
       : "";
 
   const getActivityIcon = (type) =>
-    ({ SESSION_START: "⚡", BOOKING_NEW: "📅", PAYMENT_SUCCESS: "💳" }[type] ||
-    "📋");
+    ({ SESSION_START: "⚡", BOOKING_NEW: "📅", PAYMENT_SUCCESS: "💳" })[type] ||
+    "📋";
   const getSessionStatusBadge = (status) =>
     ({
       IN_PROGRESS: { text: "Đang sạc", color: "#28a745" },
       COMPLETED: { text: "Hoàn thành", color: "#6c757d" },
       CANCELLED: { text: "Đã hủy", color: "#dc3545" },
-    }[status] || { text: status, color: "#6c757d" });
+    })[status] || { text: status, color: "#6c757d" };
   const getBookingStatusBadge = (status) =>
     ({
       PENDING: { text: "Chờ xác nhận", color: "#ffc107" },
       CONFIRMED: { text: "Đã xác nhận", color: "#28a745" },
       CANCELLED: { text: "Đã hủy", color: "#dc3545" },
       COMPLETED: { text: "Hoàn thành", color: "#6c757d" },
-    }[status] || { text: status, color: "#6c757d" });
+    })[status] || { text: status, color: "#6c757d" };
 
   if (loading)
     return <div className="loading-overlay">Đang tải dữ liệu dashboard...</div>;
@@ -213,196 +213,204 @@ export default function StaffDashboard() {
   const activeCount = activeSessions.length;
   const todayBookings = confirmedBookings.length;
   const completedToday = allSessions.filter(
-    (s) => s.status === "COMPLETED"
+    (s) => s.status === "COMPLETED",
   ).length;
 
   return (
     <div className="management-user-container">
       <Header />
 
-      <div className="action-section">
-        <h2>Dashboard Trạm #{myStation.stationId}</h2>
-        <button
-          className="btn-add-staff"
-          onClick={() => fetchDashboardData(myStation.stationId, true)}
-          disabled={refreshing}
-        >
-          {refreshing ? "🔄 Đang làm mới..." : "🔄 Làm mới"}
-        </button>
-      </div>
+      <div className="staff-dashboard">
+        {/* ===== HEADER ===== */}
+        <div className="dashboard-header">
+          <div>
+            <h2 className="dashboard-title">
+              Dashboard Trạm #{myStation.stationId}
+            </h2>
+            <p className="dashboard-subtitle">
+              {myStation.stationName || "Trạm sạc EV"} — cập nhật mỗi 30 giây
+            </p>
+          </div>
+          <button
+            className="refresh-button"
+            onClick={() => fetchDashboardData(myStation.stationId, true)}
+            disabled={refreshing}
+          >
+            <span className={refreshing ? "spinning" : ""}>🔄</span>
+            {refreshing ? "Đang làm mới..." : "Làm mới"}
+          </button>
+        </div>
 
-      <ul className="statistics-section">
-        <li className="stat-card">
-          ⚡ Phiên Đang Sạc <strong>{activeCount}</strong>
-        </li>
-        <li className="stat-card">
-          📅 Booking Đã Xác Nhận <strong>{todayBookings}</strong>
-        </li>
-        <li className="stat-card">
-          ✅ Hoàn Thành Hôm Nay <strong>{completedToday}</strong>
-        </li>
-        <li className="stat-card">
-          📊 Tổng Phiên Sạc <strong>{allSessions.length}</strong>
-        </li>
-      </ul>
+        {/* ===== KPI CARDS ===== */}
+        <div className="stats-grid">
+          <div className="stat-card active-sessions">
+            <div className="stat-icon">⚡</div>
+            <div className="stat-content">
+              <h3>Phiên Đang Sạc</h3>
+              <p className="stat-value">{activeCount}</p>
+            </div>
+          </div>
+          <div className="stat-card today-bookings">
+            <div className="stat-icon">📅</div>
+            <div className="stat-content">
+              <h3>Booking Xác Nhận</h3>
+              <p className="stat-value">{todayBookings}</p>
+            </div>
+          </div>
+          <div className="stat-card active-stations">
+            <div className="stat-icon">✅</div>
+            <div className="stat-content">
+              <h3>Hoàn Thành Hôm Nay</h3>
+              <p className="stat-value">{completedToday}</p>
+            </div>
+          </div>
+          <div className="stat-card today-revenue">
+            <div className="stat-icon">📊</div>
+            <div className="stat-content">
+              <h3>Tổng Phiên Sạc</h3>
+              <p className="stat-value">{allSessions.length}</p>
+            </div>
+          </div>
+        </div>
 
-      <div className="table-section">
-        <div className="table-scroll-container">
-          <div className="dashboard-content">
-            <div className="dashboard-left">
-              <div className="dashboard-card">
-                <h2 className="card-title">
-                  Phiên Sạc Đang Hoạt Động{" "}
-                  <span className="badge">{activeCount}</span>
-                </h2>
-                <div className="sessions-list">
-                  {activeSessions.length > 0 ? (
-                    activeSessions.map((session) => {
-                      const badge = getSessionStatusBadge(session.status);
-                      return (
-                        <div key={session.sessionId} className="session-item">
-                          <div className="session-header">
-                            <span className="session-id">
-                              #{session.sessionId}
-                            </span>
-                            <span
-                              className="session-status"
-                              style={{
-                                backgroundColor: "#20b2aa",
-                                color: "#fff",
-                                borderRadius: "20px",
-                                height: "24px",
-                                lineHeight: "24px",
-                                padding: "0 10px",
-                                fontSize: "12px",
-                              }}
-                            >
-                              {badge.text}
-                            </span>
-                          </div>
-                          <div className="session-info">
-                            <p>🚗 {session.vehiclePlate || "N/A"}</p>
-                            <p>
-                              🕐 Bắt đầu: {formatDateTime(session.startTime)}
-                            </p>
-                            {session.estimatedEndTime && (
-                              <p>
-                                ⏰ Dự kiến:{" "}
-                                {formatTime(session.estimatedEndTime)}
-                              </p>
-                            )}
-                          </div>
-                        </div>
-                      );
-                    })
-                  ) : (
-                    <div className="no-data">
-                      Không có phiên sạc đang hoạt động
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* ----- BIỂU ĐỒ VÙNG (AREA CHART) ----- */}
-              <div className="dashboard-card">
-                <h2 className="card-title">Lưu Lượng Sạc (Thời Gian Thực)</h2>
-                <div
-                  className="chart-container"
-                  style={{ width: "100%", height: "300px" }}
-                >
-                  {realTimeChartData.length > 0 ? (
-                    <ResponsiveContainer width="100%" height="100%">
-                      <AreaChart
-                        data={realTimeChartData}
-                        margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
-                      >
-                        {/* Định nghĩa Gradient màu */}
-                        <defs>
-                          <linearGradient
-                            id="colorCount"
-                            x1="0"
-                            y1="0"
-                            x2="0"
-                            y2="1"
+        {/* ===== MAIN CONTENT ===== */}
+        <div className="dashboard-content">
+          {/* LEFT COLUMN */}
+          <div className="dashboard-left">
+            {/* Phiên đang hoạt động */}
+            <div className="dashboard-card">
+              <h2 className="card-title">
+                Phiên Sạc Đang Hoạt Động
+                <span className="badge">{activeCount}</span>
+              </h2>
+              <div className="sessions-list">
+                {activeSessions.length > 0 ? (
+                  activeSessions.map((session) => {
+                    const badge = getSessionStatusBadge(session.status);
+                    return (
+                      <div key={session.sessionId} className="session-item">
+                        <div className="session-header">
+                          <span className="session-id">
+                            #{session.sessionId}
+                          </span>
+                          <span
+                            className="session-status"
+                            style={{ backgroundColor: badge.color }}
                           >
-                            <stop
-                              offset="5%"
-                              stopColor="#20b2aa"
-                              stopOpacity={0.8}
-                            />
-                            <stop
-                              offset="95%"
-                              stopColor="#20b2aa"
-                              stopOpacity={0}
-                            />
-                          </linearGradient>
-                        </defs>
-
-                        <CartesianGrid
-                          strokeDasharray="3 3"
-                          vertical={false}
-                          stroke="#eee"
-                        />
-
-                        <XAxis
-                          dataKey="timestamp"
-                          type="number"
-                          domain={["dataMin", "dataMax"]}
-                          tickFormatter={(unixTime) =>
-                            new Date(unixTime).toLocaleTimeString("vi-VN", {
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            })
-                          }
-                          scale="time"
-                          tick={{ fontSize: 12, fill: "#666" }}
-                        />
-
-                        <YAxis
-                          allowDecimals={false}
-                          tick={{ fontSize: 12, fill: "#666" }}
-                        />
-
-                        <Tooltip
-                          labelFormatter={(label) =>
-                            new Date(label).toLocaleTimeString("vi-VN")
-                          }
-                          formatter={(value) => [value, "Xe đang sạc"]}
-                          contentStyle={{
-                            borderRadius: "8px",
-                            border: "none",
-                            boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
-                          }}
-                        />
-
-                        {/* Dùng Area với type monotone để đường cong mềm mại */}
-                        <Area
-                          type="monotone"
-                          dataKey="count"
-                          stroke="#20b2aa"
-                          strokeWidth={3}
-                          fillOpacity={1}
-                          fill="url(#colorCount)"
-                          dot={false}
-                          activeDot={{ r: 6, strokeWidth: 0 }}
-                          animationDuration={1500}
-                        />
-                      </AreaChart>
-                    </ResponsiveContainer>
-                  ) : (
-                    <div className="no-data">Chưa có dữ liệu hôm nay</div>
-                  )}
-                </div>
+                            {badge.text}
+                          </span>
+                        </div>
+                        <div className="session-info">
+                          <p>🚗 {session.vehiclePlate || "N/A"}</p>
+                          <p>🕐 Bắt đầu: {formatDateTime(session.startTime)}</p>
+                          {session.estimatedEndTime && (
+                            <p>
+                              ⏰ Dự kiến: {formatTime(session.estimatedEndTime)}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })
+                ) : (
+                  <div className="no-data">
+                    Không có phiên sạc đang hoạt động
+                  </div>
+                )}
               </div>
-              {/* ----------------------------------- */}
+            </div>
 
-              <div className="dashboard-card">
-                <h2 className="card-title" style={{ marginBottom: "10px" }}>
-                  Lịch Sử Phiên Sạc{" "}
-                  <span className="badge">{allSessions.length}</span>
-                </h2>
-                <div className="sessions-list sessions-history">
-                  {allSessions.slice(0, 10).map((session) => {
+            {/* Biểu đồ */}
+            <div className="dashboard-card">
+              <h2 className="card-title">Lưu Lượng Sạc (Thời Gian Thực)</h2>
+              <div className="chart-container" style={{ height: "280px" }}>
+                {realTimeChartData.length > 0 ? (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart
+                      data={realTimeChartData}
+                      margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
+                    >
+                      <defs>
+                        <linearGradient
+                          id="colorCount"
+                          x1="0"
+                          y1="0"
+                          x2="0"
+                          y2="1"
+                        >
+                          <stop
+                            offset="5%"
+                            stopColor="#16a34a"
+                            stopOpacity={0.8}
+                          />
+                          <stop
+                            offset="95%"
+                            stopColor="#16a34a"
+                            stopOpacity={0}
+                          />
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid
+                        strokeDasharray="3 3"
+                        vertical={false}
+                        stroke="#eee"
+                      />
+                      <XAxis
+                        dataKey="timestamp"
+                        type="number"
+                        domain={["dataMin", "dataMax"]}
+                        tickFormatter={(unixTime) =>
+                          new Date(unixTime).toLocaleTimeString("vi-VN", {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })
+                        }
+                        scale="time"
+                        tick={{ fontSize: 12, fill: "#666" }}
+                      />
+                      <YAxis
+                        allowDecimals={false}
+                        tick={{ fontSize: 12, fill: "#666" }}
+                      />
+                      <Tooltip
+                        labelFormatter={(label) =>
+                          new Date(label).toLocaleTimeString("vi-VN")
+                        }
+                        formatter={(value) => [value, "Xe đang sạc"]}
+                        contentStyle={{
+                          borderRadius: "8px",
+                          border: "none",
+                          boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+                        }}
+                      />
+                      <Area
+                        type="monotone"
+                        dataKey="count"
+                        stroke="#16a34a"
+                        strokeWidth={3}
+                        fillOpacity={1}
+                        fill="url(#colorCount)"
+                        dot={false}
+                        activeDot={{ r: 6, strokeWidth: 0 }}
+                        animationDuration={1500}
+                      />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <div className="no-data">Chưa có dữ liệu hôm nay</div>
+                )}
+              </div>
+            </div>
+
+            {/* Lịch sử phiên sạc */}
+            <div className="dashboard-card">
+              <h2 className="card-title">
+                Lịch Sử Phiên Sạc
+                <span className="badge">{allSessions.length}</span>
+              </h2>
+              <div className="sessions-list sessions-history">
+                {allSessions.length > 0 ? (
+                  allSessions.slice(0, 10).map((session) => {
                     const badge = getSessionStatusBadge(session.status);
                     return (
                       <div
@@ -415,15 +423,7 @@ export default function StaffDashboard() {
                           </span>
                           <span
                             className="session-status"
-                            style={{
-                              backgroundColor: "#20b2aa",
-                              borderRadius: "20px",
-                              color: "#fff",
-                              height: "24px",
-                              lineHeight: "24px",
-                              padding: "0 10px",
-                              fontSize: "12px",
-                            }}
+                            style={{ backgroundColor: badge.color }}
                           >
                             {badge.text}
                           </span>
@@ -434,112 +434,113 @@ export default function StaffDashboard() {
                         </div>
                       </div>
                     );
-                  })}
-                  {allSessions.length === 0 && (
-                    <div className="no-data">Chưa có phiên sạc nào</div>
-                  )}
-                </div>
+                  })
+                ) : (
+                  <div className="no-data">Chưa có phiên sạc nào</div>
+                )}
               </div>
             </div>
+          </div>
 
-            <div className="dashboard-right">
-              <div className="dashboard-card">
-                <h2 className="card-title">
-                  Booking Đã Xác Nhận{" "}
-                  <span className="badge">{confirmedBookings.length}</span>
-                </h2>
-                <div className="bookings-list">
-                  {confirmedBookings.length > 0 ? (
-                    confirmedBookings.map((booking) => {
-                      const badge = getBookingStatusBadge(booking.status);
-                      return (
-                        <div key={booking.bookingId} className="booking-item">
-                          <div className="booking-header">
-                            <span className="booking-id">
-                              #--{booking.connector}
-                            </span>
-                            <span
-                              className="booking-status"
-                              style={{ backgroundColor: badge.color }}
-                            >
-                              {badge.text}
-                            </span>
-                          </div>
-                          <div className="booking-info">
-                            <p>👤 {booking.driverName || "N/A"}</p>
-                            <p>🚗 {booking.vehiclePlate || "N/A"}</p>
-                            <p>📍 Trạm #{myStation.stationId}</p>
-                            <p>
-                              🕐 {formatDateTime(booking.startTime)} --{" "}
-                              {formatDateTime(booking.endTime)}
-                            </p>
-                          </div>
-                        </div>
-                      );
-                    })
-                  ) : (
-                    <div className="no-data">Chưa có booking</div>
-                  )}
-                </div>
-              </div>
-
-              <div className="dashboard-card">
-                <h2 className="card-title" style={{ marginBottom: "10px" }}>
-                  Hoạt Động Gần Đây
-                </h2>
-                <div className="activities-list">
-                  {recentActivities.length > 0 ? (
-                    recentActivities.map((activity, i) => (
-                      <div
-                        key={`${activity.type}-${activity.id}-${i}`}
-                        className="activity-item"
-                      >
-                        <div className="activity-icon">
-                          {getActivityIcon(activity.type)}
-                        </div>
-                        <div className="activity-content">
-                          <p className="activity-description">
-                            {activity.description}
-                          </p>
-                          <span className="activity-time">
-                            {formatDateTime(activity.timestamp)}
+          {/* RIGHT COLUMN */}
+          <div className="dashboard-right">
+            {/* Booking xác nhận */}
+            <div className="dashboard-card">
+              <h2 className="card-title">
+                Booking Đã Xác Nhận
+                <span className="badge">{confirmedBookings.length}</span>
+              </h2>
+              <div className="bookings-list">
+                {confirmedBookings.length > 0 ? (
+                  confirmedBookings.map((booking) => {
+                    const badge = getBookingStatusBadge(booking.status);
+                    return (
+                      <div key={booking.bookingId} className="booking-item">
+                        <div className="booking-header">
+                          <span className="booking-id">
+                            Cổng {booking.connector || "N/A"}
+                          </span>
+                          <span
+                            className="booking-status"
+                            style={{ backgroundColor: badge.color }}
+                          >
+                            {badge.text}
                           </span>
                         </div>
+                        <div className="booking-info">
+                          <p>👤 {booking.driverName || "N/A"}</p>
+                          <p>🚗 {booking.vehiclePlate || "N/A"}</p>
+                          <p>📍 Trạm #{myStation.stationId}</p>
+                          <p>
+                            🕐 {formatDateTime(booking.startTime)} —{" "}
+                            {formatDateTime(booking.endTime)}
+                          </p>
+                        </div>
                       </div>
-                    ))
-                  ) : (
-                    <div className="no-data">Chưa có hoạt động nào</div>
-                  )}
+                    );
+                  })
+                ) : (
+                  <div className="no-data">Chưa có booking</div>
+                )}
+              </div>
+            </div>
+
+            {/* Hoạt động gần đây */}
+            <div className="dashboard-card">
+              <h2 className="card-title">Hoạt Động Gần Đây</h2>
+              <div className="activities-list">
+                {recentActivities.length > 0 ? (
+                  recentActivities.map((activity, i) => (
+                    <div
+                      key={`${activity.type}-${activity.id}-${i}`}
+                      className="activity-item"
+                    >
+                      <div className="activity-icon">
+                        {getActivityIcon(activity.type)}
+                      </div>
+                      <div className="activity-content">
+                        <p className="activity-description">
+                          {activity.description}
+                        </p>
+                        <span className="activity-time">
+                          {formatDateTime(activity.timestamp)}
+                        </span>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="no-data">Chưa có hoạt động nào</div>
+                )}
+              </div>
+            </div>
+
+            {/* Thống kê hệ thống */}
+            {generalStats && (
+              <div className="dashboard-card">
+                <h2 className="card-title">Thống Kê Hệ Thống</h2>
+                <div className="system-stats">
+                  {[
+                    {
+                      label: "Phiên Sạc Đang Hoạt Động:",
+                      value: generalStats.activeSessions,
+                    },
+                    {
+                      label: "Booking Hôm Nay:",
+                      value: generalStats.todayBookings,
+                    },
+                    {
+                      label: "Doanh Thu:",
+                      value: formatCurrency(generalStats.todayRevenue),
+                    },
+                  ].map((stat, i) => (
+                    <div key={i} className="system-stat-item">
+                      <span className="stat-label">{stat.label}</span>
+                      <span className="stat-value">{stat.value}</span>
+                    </div>
+                  ))}
                 </div>
               </div>
-
-              {generalStats && (
-                <div className="dashboard-card">
-                  <h2 className="card-title">Thống Kê Hệ Thống</h2>
-                  <div className="system-stats">
-                    {[
-                      {
-                        label: "Phiên Sạc Đang Hoạt Động:",
-                        value: generalStats.activeSessions,
-                      },
-                      {
-                        label: "Booking Hôm Nay:",
-                        value: generalStats.todayBookings,
-                      },
-                      {
-                        label: "Doanh Thu:",
-                        value: formatCurrency(generalStats.todayRevenue),
-                      },
-                    ].map((stat, i) => (
-                      <div key={i} className="system-stat-item">
-                        <span className="stat-label">{stat.label}</span>
-                        <span className="stat-value">{stat.value}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
+            )}
           </div>
         </div>
       </div>

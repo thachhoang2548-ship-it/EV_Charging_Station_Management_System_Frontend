@@ -175,8 +175,7 @@ export default function ManagementModel() {
                   <th>CỔNG SẠC</th>
                   <th>DUNG TÍCH</th>
                   <th>TRẠNG THÁI</th>
-                  <th style={{ width: '220px' }}>HÀNH ĐỘNG</th>
-                  <th>SỬA THÔNG TIN XE</th>
+                  <th style={{ width: '160px' }}>HÀNH ĐỘNG</th>
                 </tr>
               </thead>
               <tbody>
@@ -197,44 +196,34 @@ export default function ManagementModel() {
                       <td>{model.batteryCapacityKWh} kWh</td>
                       <td>{model.status === 'ACTIVE' ? 'ĐANG HOẠT ĐỘNG' : 'NGƯNG PHỤC VỤ'}</td>
                       <td>
-                        {/* TRƯỜNG HỢP 1: Đang hoạt động (Bình thường) */}
-                        {(model.status === 'ACTIVE') && (
-                          <>
-                            <div className="action-buttons">
-                              <button 
-                          
-                                className="btn-delete" 
-                                onClick={() => handleStatusModel(model.modelId, 'INACTIVE')}>
-                                NGƯNG PHỤC VỤ
-                              </button>
-                            </div>
-                          </>
-                        )}
-
-                        {model.status === 'INACTIVE' && (
-                          <div className="action-buttons">
-                            <button 
-                              className="btn-unblock" 
-                              onClick={() => handleStatusModel(model.modelId, 'ACTIVE')}>
-                              KÍCH HOẠT
+                        <div className="action-buttons">
+                          {(model.status === 'ACTIVE') && (
+                            <button
+                              className="btn-delete"
+                              onClick={() => handleStatusModel(model.modelId, 'INACTIVE')}>
+                              Ngưng phục vụ
                             </button>
-                          </div>
-                        )}
-                        </td>
-
-                        <td>
-                          <button 
-                            className="btn-edit" 
+                          )}
+                          {model.status === 'INACTIVE' && (
+                            <button
+                              className="btn-unblock"
+                              onClick={() => handleStatusModel(model.modelId, 'ACTIVE')}>
+                              Kích hoạt
+                            </button>
+                          )}
+                          <button
+                            className="btn-edit"
                             onClick={() => handleEditModel(model)}>
-                            SỬA THÔNG TIN
+                            Sửa thông tin
                           </button>
-                        </td>
+                        </div>
+                      </td>
                       
                     </tr>
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="9" style={{ textAlign: 'center', padding: '30px' }}>
+                    <td colSpan="8" style={{ textAlign: 'center', padding: '30px' }}>
                       Không tìm thấy trụ sạc phù hợp với yêu cầu.
                     </td>
                   </tr>
