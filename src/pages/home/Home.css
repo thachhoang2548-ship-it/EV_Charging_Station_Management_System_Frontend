@@ -719,6 +719,150 @@
 .tev-btn-lg { padding: 14px 32px; font-size: 1rem; border-radius: 10px; }
 
 /* ============================================================
+   ABOUT SECTION
+   ============================================================ */
+.tev-about-section {
+  background: linear-gradient(180deg, #f0fdf4 0%, #fff 100%);
+  padding: 88px 0 72px;
+  text-align: center;
+}
+
+.tev-about-title {
+  font-size: 2.6rem;
+  font-weight: 900;
+  color: #0f172a;
+  line-height: 1.2;
+  letter-spacing: -1px;
+  margin-bottom: 32px;
+}
+
+.tev-about-body {
+  max-width: 720px;
+  margin: 0 auto 44px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.tev-about-body p {
+  font-size: 1rem;
+  color: #475569;
+  line-height: 1.75;
+}
+.tev-about-body strong {
+  color: #1e293b;
+  font-weight: 700;
+}
+
+.tev-quote {
+  max-width: 720px;
+  margin: 0 auto;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 36px 44px;
+  position: relative;
+  text-align: left;
+}
+.tev-quote::before {
+  content: '\201C';
+  position: absolute;
+  top: 12px;
+  left: 28px;
+  font-size: 4rem;
+  color: #cbd5e1;
+  line-height: 1;
+  font-family: Georgia, serif;
+}
+.tev-quote p {
+  font-size: 0.97rem;
+  color: #475569;
+  line-height: 1.8;
+  font-style: italic;
+  margin-bottom: 16px;
+  padding-top: 16px;
+}
+.tev-quote cite {
+  font-size: 0.88rem;
+  color: #64748b;
+  font-style: normal;
+  font-weight: 600;
+}
+
+/* ============================================================
+   FEATURES (4-CARD GRID)
+   ============================================================ */
+.tev-feat-new-section {
+  background: #fff;
+  padding: 80px 0;
+}
+
+.tev-section-hd {
+  text-align: center;
+  margin-bottom: 52px;
+}
+.tev-section-hd h2 {
+  font-size: 2.5rem;
+  font-weight: 900;
+  color: #0f172a;
+  letter-spacing: -1px;
+  margin-bottom: 12px;
+}
+.tev-section-hd p {
+  max-width: 560px;
+  margin: 0 auto;
+  color: #64748b;
+  font-size: 1rem;
+  line-height: 1.65;
+}
+
+.tev-feat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+}
+
+.tev-feat-card {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+  padding: 28px 24px 32px;
+  transition: all 0.25s ease;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+.tev-feat-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 16px 40px rgba(0,0,0,0.09);
+  border-color: #bbf7d0;
+}
+.tev-feat-card h3 {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 16px 0 10px;
+}
+.tev-feat-card p {
+  font-size: 0.9rem;
+  color: #64748b;
+  line-height: 1.65;
+}
+
+.tev-feat-ic {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.tev-feat-ic svg { color: #fff; }
+.tev-feat-ic--orange { background: linear-gradient(135deg, #f97316, #fb923c); }
+.tev-feat-ic--green  { background: linear-gradient(135deg, #16a34a, #4ade80); }
+.tev-feat-ic--blue   { background: linear-gradient(135deg, #3b82f6, #60a5fa); }
+.tev-feat-ic--purple { background: linear-gradient(135deg, #8b5cf6, #a78bfa); }
+
+/* ============================================================
    CTA BANNER
    ============================================================ */
 .tev-cta-section {
@@ -788,24 +932,42 @@
 /* ============================================================
    RESPONSIVE
    ============================================================ */
+@media (max-width: 1200px) {
+  .tev-feat-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
 @media (max-width: 1024px) {
   .tev-station-grid { grid-template-columns: repeat(2, 1fr); }
   .tev-features-layout { grid-template-columns: 1fr; gap: 40px; }
   .tev-features-img img { height: 320px; }
+  .tev-about-title { font-size: 2.1rem; }
+  .tev-section-hd h2 { font-size: 2rem; }
 }
 
 @media (max-width: 768px) {
   .tev-hero-title { font-size: 2.4rem; }
   .tev-hero-sub { font-size: 0.95rem; }
 
+  /* Stats bar — stack cleanly on mobile */
   .tev-stats-bar {
+    position: static;
+    transform: none;
+    margin: 0 16px;
+    border-radius: 16px;
     min-width: unset;
-    width: calc(100% - 32px);
-    gap: 20px;
-    padding: 18px 24px;
-    flex-wrap: wrap;
-    justify-content: center;
+    width: auto;
+    gap: 0;
+    padding: 16px 0;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    box-shadow: 0 4px 24px rgba(0,0,0,0.10);
   }
+  .tev-stat-item { padding: 8px 12px; }
+  .tev-stat-n { font-size: 1.4rem; }
+  .tev-stat-div { display: none; }
+  /* Adjust hero padding so stats bar doesn't overlap content */
+  .tev-hero { padding-bottom: 0; }
+  .tev-hero-body { padding-bottom: 48px; }
 
   .tev-station-grid { grid-template-columns: 1fr; }
   .tev-review-grid { grid-template-columns: 1fr; }
@@ -813,6 +975,14 @@
   .tev-step-conn { display: none; }
 
   .tev-section-title { font-size: 2rem; }
+
+  .tev-about-section { padding: 60px 0 48px; }
+  .tev-about-title { font-size: 1.85rem; }
+  .tev-quote { padding: 28px 24px; }
+
+  .tev-feat-new-section { padding: 56px 0; }
+  .tev-feat-grid { grid-template-columns: 1fr 1fr; gap: 16px; }
+  .tev-section-hd h2 { font-size: 1.8rem; }
 
   .tev-cta-content { flex-direction: column; align-items: flex-start; gap: 24px; }
   .tev-cta-text h2 { font-size: 1.8rem; }
@@ -822,7 +992,12 @@
   .tev-hero-title { font-size: 1.9rem; }
   .tev-search-bar { flex-direction: column; padding: 10px; }
   .tev-search-btn { width: 100%; }
-  .tev-stats-bar { justify-content: space-around; }
-  .tev-stat-div { display: none; }
   .tev-section { padding: 56px 0; }
+
+  .tev-stats-bar { grid-template-columns: repeat(3, 1fr); padding: 12px 0; }
+  .tev-stat-n { font-size: 1.2rem; }
+
+  .tev-about-title { font-size: 1.5rem; }
+  .tev-feat-grid { grid-template-columns: 1fr; }
+  .tev-section-hd h2 { font-size: 1.5rem; }
 }

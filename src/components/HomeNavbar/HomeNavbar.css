@@ -115,8 +115,134 @@
   box-shadow: 0 4px 14px rgba(22, 163, 74, 0.35);
 }
 
-/* Responsive */
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+/* Hamburger button — hidden on desktop */
+.tev-hamburger {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  width: 36px;
+  height: 36px;
+  background: transparent;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  cursor: pointer;
+  padding: 7px 8px;
+  transition: border-color 0.2s;
+  flex-shrink: 0;
+}
+.tev-hamburger:hover { border-color: #16a34a; }
+.tev-hamburger span {
+  display: block;
+  width: 100%;
+  height: 2px;
+  background: #374151;
+  border-radius: 2px;
+  transition: transform 0.25s ease, opacity 0.25s ease;
+  transform-origin: center;
+}
+/* X animation when open */
+.tev-hamburger.active span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.tev-hamburger.active span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+.tev-hamburger.active span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+/* Mobile action buttons inside dropdown — hidden on desktop */
+.tev-nav-mobile-actions { display: none; }
+
+@media (max-width: 900px) {
+  .tev-nav-links { gap: 0; }
+  .tev-nav-link { padding: 7px 10px; font-size: 0.85rem; }
+}
+
 @media (max-width: 768px) {
-  .tev-nav-links { display: none; }
-  .tev-nav-actions .tev-btn-ghost { display: none; }
+  /* Show hamburger, hide desktop action buttons */
+  .tev-hamburger { display: flex; }
+  .tev-nav-actions .tev-btn-ghost,
+  .tev-nav-actions .tev-btn-primary { display: none; }
+
+  /* Dropdown nav */
+  .tev-nav-links {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    position: absolute;
+    top: 64px;
+    left: 0;
+    right: 0;
+    background: #fff;
+    border-top: 1px solid #e2e8f0;
+    border-bottom: 2px solid #bbf7d0;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    padding: 12px 16px 16px;
+    transform: translateY(-8px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.22s ease, transform 0.22s ease;
+    z-index: 998;
+  }
+  .tev-nav-links.open {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+
+  .tev-nav-link {
+    padding: 12px 14px;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    border-bottom: 1px solid #f1f5f9;
+  }
+  .tev-nav-link:last-of-type { border-bottom: none; }
+
+  /* Action buttons inside dropdown */
+  .tev-nav-mobile-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid #e2e8f0;
+  }
+  .tev-nav-mobile-actions .tev-btn-ghost,
+  .tev-nav-mobile-actions .tev-btn-primary {
+    width: 100%;
+    text-align: center;
+    padding: 11px 20px;
+    font-size: 0.95rem;
+    border-radius: 10px;
+    cursor: pointer;
+    border: none;
+    font-weight: 600;
+  }
+  .tev-nav-mobile-actions .tev-btn-ghost {
+    background: #f1f5f9;
+    color: #475569;
+  }
+  .tev-nav-mobile-actions .tev-btn-ghost:hover { background: #e2e8f0; }
+  .tev-nav-mobile-actions .tev-btn-primary {
+    background: #16a34a;
+    color: #fff;
+  }
+  .tev-nav-mobile-actions .tev-btn-primary:hover { background: #15803d; }
+}
+
+/* Backdrop overlay when menu is open */
+.tev-nav-backdrop {
+  display: none;
+}
+@media (max-width: 768px) {
+  .tev-nav-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    top: 64px;
+    z-index: 997;
+    background: rgba(0, 0, 0, 0.25);
+  }
 }
