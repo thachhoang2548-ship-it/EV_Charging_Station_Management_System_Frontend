@@ -81,10 +81,22 @@ const extractPowerKW = (session, bookingId) => {
     );
 };
 
+// ✅ FIX: map invoiceId đúng cách (không dùng biến invoiceId "trôi nổi")
 const syncSessionFromBackend = (backendData, currentState = {}) => {
+    const resolvedInvoiceId =
+        backendData?.invoiceId ??
+        backendData?.invoice?.invoiceId ??
+        currentState?.invoiceId ??
+        currentState?.invoice?.invoiceId ??
+        null;
+
     return {
         ...currentState,
         ...backendData,
+
+        // ✅ keep invoiceId
+        invoiceId: resolvedInvoiceId,
+
         status: backendData.status ?? currentState.status,
         endTime: backendData.endTime ?? currentState.endTime,
         finalSoc: backendData.finalSoc ?? currentState.finalSoc,
@@ -95,7 +107,6 @@ const syncSessionFromBackend = (backendData, currentState = {}) => {
         pointNumber: backendData.pointNumber ?? currentState.pointNumber,
         stationName: backendData.stationName ?? currentState.stationName,
         vehiclePlate: backendData.vehiclePlate ?? currentState.vehiclePlate,
-        // NOTE: do NOT compute pricePerKWh from cost/energy anymore (cost includes time fee)
         pricePerKWh: backendData.pricePerKWh ?? currentState.pricePerKWh,
         currency: backendData.currency ?? currentState.currency,
     };
@@ -143,7 +154,10 @@ const BatteryProgressCircle = memo(function BatteryProgressCircle({
         const interval = setInterval(() => {
             setAnimatedSoc((prev) => {
                 const next = prev + step;
-                if ((diff > 0 && next >= currentSoc) || (diff < 0 && next <= currentSoc)) {
+                if (
+                    (diff > 0 && next >= currentSoc) ||
+                    (diff < 0 && next <= currentSoc)
+                ) {
                     clearInterval(interval);
                     return currentSoc;
                 }
@@ -181,7 +195,8 @@ const BatteryProgressCircle = memo(function BatteryProgressCircle({
                 style={{
                     fontSize: "48px",
                     marginBottom: "15px",
-                    animation: isCharging && !isComplete ? "pulse 2s ease-in-out infinite" : "none",
+                    animation:
+                        isCharging && !isComplete ? "pulse 2s ease-in-out infinite" : "none",
                 }}
             >
                 🔋
@@ -196,7 +211,14 @@ const BatteryProgressCircle = memo(function BatteryProgressCircle({
                         filter: "drop-shadow(0 2px 8px rgba(0,191,166,0.3))",
                     }}
                 >
-                    <circle cx={size / 2} cy={size / 2} r={radius} stroke={trackColor} strokeWidth={strokeWidth} fill="none" />
+                    <circle
+                        cx={size / 2}
+                        cy={size / 2}
+                        r={radius}
+                        stroke={trackColor}
+                        strokeWidth={strokeWidth}
+                        fill="none"
+                    />
                     <circle
                         cx={size / 2}
                         cy={size / 2}
@@ -208,7 +230,8 @@ const BatteryProgressCircle = memo(function BatteryProgressCircle({
                         strokeDashoffset={offset}
                         strokeLinecap="round"
                         style={{
-                            transition: "stroke-dashoffset 0.8s cubic-bezier(0.4, 0, 0.2, 1), stroke 0.3s ease",
+                            transition:
+                                "stroke-dashoffset 0.8s cubic-bezier(0.4, 0, 0.2, 1), stroke 0.3s ease",
                         }}
                     />
                 </svg>
@@ -222,10 +245,26 @@ const BatteryProgressCircle = memo(function BatteryProgressCircle({
                         textAlign: "center",
                     }}
                 >
-                    <div style={{ fontSize: "48px", fontWeight: "800", color: progressColor, lineHeight: "1", marginBottom: "5px" }}>
+                    <div
+                        style={{
+                            fontSize: "48px",
+                            fontWeight: "800",
+                            color: progressColor,
+                            lineHeight: "1",
+                            marginBottom: "5px",
+                        }}
+                    >
                         {animatedSoc.toFixed(0)}%
                     </div>
-                    <div style={{ fontSize: "13px", color: "#666", fontWeight: "500", textTransform: "uppercase", letterSpacing: "0.5px" }}>
+                    <div
+                        style={{
+                            fontSize: "13px",
+                            color: "#666",
+                            fontWeight: "500",
+                            textTransform: "uppercase",
+                            letterSpacing: "0.5px",
+                        }}
+                    >
                         Pin hiện tại
                     </div>
                 </div>
@@ -238,11 +277,19 @@ const BatteryProgressCircle = memo(function BatteryProgressCircle({
                     color: isComplete ? "#2196f3" : isCharging ? "#00BFA6" : "#666",
                     fontWeight: "600",
                     padding: "10px 20px",
-                    background: isComplete ? "rgba(33, 150, 243, 0.1)" : isCharging ? "rgba(0, 191, 166, 0.1)" : "rgba(0, 0, 0, 0.05)",
+                    background: isComplete
+                        ? "rgba(33, 150, 243, 0.1)"
+                        : isCharging
+                            ? "rgba(0, 191, 166, 0.1)"
+                            : "rgba(0, 0, 0, 0.05)",
                     borderRadius: "20px",
                 }}
             >
-                {isComplete ? "✅ Pin đã đầy 100%" : isCharging ? "⚡ Đang sạc..." : "Dung lượng pin (ước tính)"}
+                {isComplete
+                    ? "✅ Pin đã đầy 100%"
+                    : isCharging
+                        ? "⚡ Đang sạc..."
+                        : "Dung lượng pin (ước tính)"}
             </div>
 
             <style>{`
@@ -255,7 +302,13 @@ const BatteryProgressCircle = memo(function BatteryProgressCircle({
     );
 });
 
-const InfoCard = memo(function InfoCard({ icon, label, value, color = "#00BFA6", unit = "" }) {
+const InfoCard = memo(function InfoCard({
+                                            icon,
+                                            label,
+                                            value,
+                                            color = "#00BFA6",
+                                            unit = "",
+                                        }) {
     return (
         <div
             style={{
@@ -277,10 +330,23 @@ const InfoCard = memo(function InfoCard({ icon, label, value, color = "#00BFA6",
             }}
         >
             <div style={{ fontSize: "32px", marginBottom: "8px" }}>{icon}</div>
-            <div style={{ fontSize: "13px", color: "#666", marginBottom: "8px", fontWeight: "500" }}>{label}</div>
+            <div
+                style={{
+                    fontSize: "13px",
+                    color: "#666",
+                    marginBottom: "8px",
+                    fontWeight: "500",
+                }}
+            >
+                {label}
+            </div>
             <div style={{ fontSize: "24px", fontWeight: "700", color }}>
                 {value}
-                {unit && <span style={{ fontSize: "16px", fontWeight: "500", marginLeft: "4px" }}>{unit}</span>}
+                {unit && (
+                    <span style={{ fontSize: "16px", fontWeight: "500", marginLeft: "4px" }}>
+            {unit}
+          </span>
+                )}
             </div>
         </div>
     );
@@ -325,7 +391,8 @@ export default function ChargingSession() {
         setBatteryCapacity(capacity);
     }, []);
 
-    const getSimulationKey = (sessionId) => (sessionId ? `chargingSession_simulation_${sessionId}` : null);
+    const getSimulationKey = (sessionId) =>
+        sessionId ? `chargingSession_simulation_${sessionId}` : null;
 
     const saveSimState = useCallback((session) => {
         if (!session || !session.sessionId) return;
@@ -370,7 +437,11 @@ export default function ChargingSession() {
         if (qrUrl) return;
 
         const attemptRestore = () => {
-            const idCandidates = [bookingIdFromParams, booking?.bookingId ?? booking?.id, currentSession?.bookingId];
+            const idCandidates = [
+                bookingIdFromParams,
+                booking?.bookingId ?? booking?.id,
+                currentSession?.bookingId,
+            ];
 
             for (const id of idCandidates) {
                 if (!id) continue;
@@ -387,7 +458,9 @@ export default function ChargingSession() {
             }
 
             try {
-                const keys = Object.keys(sessionStorage).filter((k) => k && k.startsWith("qr_booking_"));
+                const keys = Object.keys(sessionStorage).filter(
+                    (k) => k && k.startsWith("qr_booking_")
+                );
                 if (keys.length === 1) {
                     const s = sessionStorage.getItem(keys[0]);
                     if (s) setQrUrl(s);
@@ -411,6 +484,7 @@ export default function ChargingSession() {
         }
 
         fetchCurrentSession();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [navigate]);
 
     const fetchCurrentSession = async () => {
@@ -424,6 +498,10 @@ export default function ChargingSession() {
             }
             const session = response.data ?? response;
 
+            // ✅ FIX: lấy invoiceId và nhét vào state
+            const resolvedInvoiceId =
+                session?.invoiceId ?? session?.invoice?.invoiceId ?? null;
+
             const power = extractPowerKW(session, session.bookingId);
             const pointNumber =
                 session.pointNumber ??
@@ -432,10 +510,16 @@ export default function ChargingSession() {
                 null;
 
             setCurrentPower(power);
-            setCurrentSession({ ...session, pointNumber });
+            setCurrentSession({
+                ...session,
+                pointNumber,
+                invoiceId: resolvedInvoiceId,
+            });
         } catch (error) {
             console.error("Lỗi khi lấy phiên sạc hiện tại:", error);
-            toast.error("Không thể lấy thông tin phiên sạc", { position: "top-center" });
+            toast.error("Không thể lấy thông tin phiên sạc", {
+                position: "top-center",
+            });
         } finally {
             setLoading(false);
         }
@@ -518,11 +602,20 @@ export default function ChargingSession() {
 
                 setCurrentSession((prev) => {
                     if (!prev || prev.status !== "IN_PROGRESS") return prev;
+
+                    // ✅ keep invoiceId khi poll energy
+                    const inv =
+                        prev.invoiceId ??
+                        backendSession?.invoiceId ??
+                        backendSession?.invoice?.invoiceId ??
+                        null;
+
                     return {
                         ...prev,
                         energyKWh: backendEnergy,
                         virtualSoc: finalSOC,
                         durationMinutes,
+                        invoiceId: inv,
                     };
                 });
 
@@ -549,7 +642,9 @@ export default function ChargingSession() {
                 const sessions = response.data ?? response;
                 if (!Array.isArray(sessions) || sessions.length === 0) return;
 
-                const inProgressSession = sessions.find((s) => String(s.status || "").toUpperCase() === "IN_PROGRESS");
+                const inProgressSession = sessions.find(
+                    (s) => String(s.status || "").toUpperCase() === "IN_PROGRESS"
+                );
 
                 if (inProgressSession) {
                     const bookingId = inProgressSession.bookingId;
@@ -567,8 +662,16 @@ export default function ChargingSession() {
                     }
 
                     setCurrentSession((prev) => {
-                        if (!prev) return inProgressSession;
-                        if (prev.sessionId !== inProgressSession.sessionId) return inProgressSession;
+                        // ✅ keep invoiceId when replacing session
+                        const inv =
+                            inProgressSession?.invoiceId ??
+                            inProgressSession?.invoice?.invoiceId ??
+                            prev?.invoiceId ??
+                            null;
+
+                        if (!prev) return { ...inProgressSession, invoiceId: inv };
+                        if (prev.sessionId !== inProgressSession.sessionId)
+                            return { ...inProgressSession, invoiceId: inv };
                         return prev;
                     });
                     return;
@@ -583,10 +686,17 @@ export default function ChargingSession() {
 
                     const status = String(found.status || "").toUpperCase();
                     if (status === "COMPLETED" || status === "FINISHED" || status === "STOPPED") {
+                        const inv =
+                            found?.invoiceId ??
+                            found?.invoice?.invoiceId ??
+                            prev?.invoiceId ??
+                            null;
+
                         return {
                             ...found,
                             virtualSoc: found.finalSoc ?? prev.virtualSoc,
                             pointNumber: prev.pointNumber || found.pointNumber,
+                            invoiceId: inv, // ✅ keep invoiceId
                         };
                     }
 
@@ -671,7 +781,10 @@ export default function ChargingSession() {
         if (!currentSession) return;
 
         const normalizedStatus = String(currentSession.status || "").toUpperCase();
-        const isSessionEnded = normalizedStatus === "COMPLETED" || normalizedStatus === "STOPPED" || normalizedStatus === "FINISHED";
+        const isSessionEnded =
+            normalizedStatus === "COMPLETED" ||
+            normalizedStatus === "STOPPED" ||
+            normalizedStatus === "FINISHED";
 
         if (isSessionEnded && !autoRedirected) {
             const hasRequiredData =
@@ -699,6 +812,7 @@ export default function ChargingSession() {
             }
 
             setTimeout(() => {
+                // ✅ invoiceId đã được giữ trong currentSession rồi
                 navigate(paths.payment, { state: { sessionResult: currentSession } });
             }, 1500);
         }
@@ -714,7 +828,9 @@ export default function ChargingSession() {
             const endTime = new Date(currentSession.windowEnd);
 
             if (now >= endTime) {
-                const currentFinalSoc = Math.round(currentSession.virtualSoc || currentSession.initialSoc || 20);
+                const currentFinalSoc = Math.round(
+                    currentSession.virtualSoc || currentSession.initialSoc || 20
+                );
 
                 stationAPI
                     .stopChargingSession(currentSession.sessionId, currentFinalSoc)
@@ -742,9 +858,14 @@ export default function ChargingSession() {
             setStopping(true);
             setCurrentSession((prev) => (prev ? { ...prev, status: "STOPPING" } : prev));
 
-            const finalSocToSend = Math.round(currentSession.virtualSoc || currentSession.initialSoc || 20);
+            const finalSocToSend = Math.round(
+                currentSession.virtualSoc || currentSession.initialSoc || 20
+            );
 
-            const response = await stationAPI.stopChargingSession(currentSession.sessionId, finalSocToSend);
+            const response = await stationAPI.stopChargingSession(
+                currentSession.sessionId,
+                finalSocToSend
+            );
             if (!response || response.success === false) {
                 setCurrentSession((prev) => (prev ? { ...prev, status: "IN_PROGRESS" } : prev));
                 toast.error(response?.message || "Dừng phiên sạc thất bại", { position: "top-center" });
@@ -759,7 +880,12 @@ export default function ChargingSession() {
             clearSimState(currentSession.sessionId);
 
             try {
-                const key = qrStorageKey(booking?.bookingId ?? bookingIdFromParams ?? sessionResult?.bookingId ?? currentSession?.bookingId);
+                const key = qrStorageKey(
+                    booking?.bookingId ??
+                    bookingIdFromParams ??
+                    sessionResult?.bookingId ??
+                    currentSession?.bookingId
+                );
                 if (key) sessionStorage.removeItem(key);
             } catch (e) {
                 // ignore
@@ -912,6 +1038,14 @@ export default function ChargingSession() {
                         <p style={{ marginBottom: "10px" }}>
                             <strong>Booking ID:</strong> {currentSession.bookingId ?? "-"}
                         </p>
+
+                        {/* Optional debug invoiceId */}
+                        {currentSession.invoiceId != null && (
+                            <p style={{ marginBottom: "10px" }}>
+                                <strong>Invoice ID:</strong> {currentSession.invoiceId}
+                            </p>
+                        )}
+
                         <p style={{ marginBottom: "10px" }}>
                             <strong>Trạng thái:</strong>{" "}
                             <span
@@ -980,14 +1114,18 @@ export default function ChargingSession() {
                             <div style={{ fontSize: "14px", color: "#666", marginBottom: "8px", display: "flex", alignItems: "center", gap: "6px" }}>
                                 🚗 Thông tin xe
                             </div>
-                            <div style={{ fontSize: "18px", fontWeight: "600", color: "#333" }}>{currentSession.vehiclePlate ?? "-"}</div>
+                            <div style={{ fontSize: "18px", fontWeight: "600", color: "#333" }}>
+                                {currentSession.vehiclePlate ?? "-"}
+                            </div>
                         </div>
 
                         <div style={{ background: "#f8f9fa", padding: "15px", borderRadius: "10px", border: "1px solid #e0e0e0" }}>
                             <div style={{ fontSize: "14px", color: "#666", marginBottom: "8px", display: "flex", alignItems: "center", gap: "6px" }}>
                                 🏢 Thông tin trạm
                             </div>
-                            <div style={{ fontSize: "18px", fontWeight: "600", color: "#333" }}>{currentSession.stationName ?? "-"}</div>
+                            <div style={{ fontSize: "18px", fontWeight: "600", color: "#333" }}>
+                                {currentSession.stationName ?? "-"}
+                            </div>
                         </div>
 
                         <div style={{ background: "#f8f9fa", padding: "15px", borderRadius: "10px", border: "1px solid #e0e0e0" }}>
@@ -996,7 +1134,12 @@ export default function ChargingSession() {
                             </div>
                             <div style={{ fontSize: "16px", fontWeight: "600", color: "#333" }}>
                                 {currentSession.startTime
-                                    ? new Date(currentSession.startTime).toLocaleString("vi-VN", { hour: "2-digit", minute: "2-digit", day: "2-digit", month: "2-digit" })
+                                    ? new Date(currentSession.startTime).toLocaleString("vi-VN", {
+                                        hour: "2-digit",
+                                        minute: "2-digit",
+                                        day: "2-digit",
+                                        month: "2-digit",
+                                    })
                                     : "-"}
                             </div>
                         </div>
@@ -1021,9 +1164,7 @@ export default function ChargingSession() {
                             marginBottom: "30px",
                         }}
                     >
-                        {/* ✅ thêm card Pin đầu vào */}
                         <InfoCard icon="🔰" label="Pin đầu vào" value={currentSession.initialSoc ?? 0} unit="%" color="#00BFA6" />
-
                         <InfoCard icon="⚡" label="Năng lượng đã sạc" value={(currentSession.energyKWh ?? 0).toFixed(2)} unit="kWh" color="#4caf50" />
                         <InfoCard icon="⏱️" label="Thời lượng" value={(currentSession.durationMinutes ?? 0).toFixed(0)} unit="phút" color="#2196f3" />
                         <InfoCard icon="⚡" label="Công suất sạc" value={currentPower.toFixed(1)} unit="kW" color="#9c27b0" />
