@@ -78,9 +78,7 @@ const AppRouter = () => {
           <Route path={paths.paymentSuccess} element={<PaymentSuccess />} />
           <Route path={paths.paymentFailed} element={<PaymentFailed />} />
 
-          <Route path={paths.stations} element={<Stations />} />
           <Route path={paths.rules} element={<Rules />} />
-          <Route path={paths.stationDetail} element={<StationDetail />} />
         </Route>
 
         {/* ======================= PROTECTED ROUTES (Cần đăng nhập) ======================= */}
@@ -91,6 +89,8 @@ const AppRouter = () => {
             <Route index element={<Home />} />
             <Route path={paths.driverDashboard} element={<DriverDashboard />} />
             <Route path={paths.guide} element={<Guide />} />
+            <Route path={paths.stations} element={<Stations />} />
+            <Route path={paths.stationDetail} element={<StationDetail />} />
             <Route path={paths.booking} element={<Booking />} />
             <Route path={paths.bookingDetail} element={<BookingDetail />} />
             <Route path={paths.bookingQr} element={<BookingQRCode />} />
