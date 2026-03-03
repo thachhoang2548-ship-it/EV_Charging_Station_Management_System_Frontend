@@ -96,7 +96,7 @@ export const useLogin = () => {
             } else if (roleName === "STAFF") {
               navigate("/staff", { replace: true });
             } else if (roleName === "DRIVER") {
-              navigate("/", { replace: true });
+              navigate("/driver", { replace: true });
             }
           }, 2000);
         }

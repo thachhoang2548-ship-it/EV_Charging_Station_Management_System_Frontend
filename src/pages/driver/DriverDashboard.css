@@ -1,0 +1,224 @@
+﻿/* ============================================================
+   DRIVER DASHBOARD â€” EV Green theme (#16a34a)
+   Supplements Dashboard.css (admin patterns reused).
+   Only driver-specific classes live here.
+   ============================================================ */
+
+/* KPI loading skeleton */
+.dd-loading-bar {
+  display: block;
+  height: 28px;
+  width: 60%;
+  background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+  background-size: 200% 100%;
+  animation: ddShimmer 1.4s infinite;
+  border-radius: 6px;
+  margin: 4px 0;
+}
+
+@keyframes ddShimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* â”€â”€ SECTION HEADERS â”€â”€ */
+.dd-section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.dd-section-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0;
+}
+
+.dd-section-badge {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #16a34a;
+  background: #dcfce7;
+  border: 1px solid #bbf7d0;
+  padding: 3px 10px;
+  border-radius: 50px;
+  letter-spacing: 0.4px;
+}
+
+.dd-view-all {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #16a34a;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.2s;
+}
+
+.dd-view-all:hover { color: #15803d; }
+
+/* â”€â”€ FEATURE GRID â”€â”€ */
+.dd-feature-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.dd-feature-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 20px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+}
+
+.dd-feature-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 18px rgba(22, 163, 74, 0.12);
+  border-color: #86efac;
+}
+
+.dd-feat-icon-wrap {
+  font-size: 1.75rem;
+  line-height: 1;
+}
+
+.dd-feat-title {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.dd-feat-desc {
+  font-size: 0.78rem;
+  color: #64748b;
+  line-height: 1.5;
+}
+
+.dd-feat-arrow {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #16a34a;
+}
+
+/* â”€â”€ ACTIVITY LIST â”€â”€ */
+.dd-activity-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.dd-activity-item {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  cursor: pointer;
+  transition: all 0.18s;
+}
+
+.dd-activity-item:hover {
+  border-color: #86efac;
+  box-shadow: 0 2px 10px rgba(22, 163, 74, 0.08);
+}
+
+.dd-act-icon {
+  width: 40px;
+  height: 40px;
+  background: #f0fdf4;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.15rem;
+  flex-shrink: 0;
+}
+
+.dd-act-body { flex: 1; min-width: 0; }
+
+.dd-act-title {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #1e293b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dd-act-sub {
+  font-size: 0.76rem;
+  color: #94a3b8;
+  margin-top: 2px;
+}
+
+.dd-act-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.dd-act-amount {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+/* â”€â”€ STATUS PILLS â”€â”€ */
+.dd-pill {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 50px;
+  white-space: nowrap;
+}
+
+.dd-pill.success  { background: #dcfce7; color: #16a34a; }
+.dd-pill.pending  { background: #fef3c7; color: #d97706; }
+.dd-pill.error    { background: #fee2e2; color: #dc2626; }
+.dd-pill.info     { background: #e0f2fe; color: #0284c7; }
+
+/* â”€â”€ EMPTY STATE â”€â”€ */
+.dd-empty {
+  text-align: center;
+  padding: 36px 24px;
+  color: #94a3b8;
+  background: #fff;
+  border: 1px dashed #e2e8f0;
+  border-radius: 12px;
+  margin-bottom: 24px;
+}
+
+.dd-empty-icon {
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+}
+
+.dd-empty p {
+  font-size: 0.88rem;
+  margin: 0;
+}
+
+/* â”€â”€ RESPONSIVE â”€â”€ */
+@media (max-width: 768px) {
+  .dd-feature-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 480px) {
+  .dd-feature-grid { grid-template-columns: 1fr 1fr; }
+}

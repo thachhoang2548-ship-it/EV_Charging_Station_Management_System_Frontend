@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Stations.css";
+import "../admin/Dashboard.css";
+import Header from "../../components/admin/Header.jsx";
 import { stationAPI } from "../../api/stationApi.js";
-import stationsHeroMobile from "../../assets/img/home/home.jpg"; 
-import stationsHeroDesktop from "../../assets/img/home/background3.avif";
-
-// Chỉ cần import icon Search
-import { Search } from "lucide-react";
+import { Search, MapPin, Zap, Navigation, Info, CheckCircle2, Clock, Wrench, PlugZap } from "lucide-react";
 
 export default function Stations() {
   const navigate = useNavigate();
@@ -78,124 +76,215 @@ export default function Stations() {
     window.open(url, "_blank");
   };
 
-  const getStatusColor = (status) => {
-    if (status === "AVAILABLE" || status === "ACTIVE") return "#4ade80";
-    if (status === "BUSY") return "#facc15";
-    return "#f87171";
+  const getStatusInfo = (status) => {
+    if (status === "AVAILABLE" || status === "ACTIVE")
+      return { label: "Khả dụng", color: "#16a34a", bg: "#f0fdf4", border: "#bbf7d0" };
+    if (status === "BUSY")
+      return { label: "Đang bận", color: "#d97706", bg: "#fffbeb", border: "#fde68a" };
+    return { label: "Bảo trì", color: "#dc2626", bg: "#fef2f2", border: "#fecaca" };
   };
 
-  if (loading) return <div className="stations-loading">Đang tải dữ liệu...</div>;
-
-  return (
-    <div className="home-page">
-      <div className="hero-wrapper-station">
-        <img className="hero-img mobile-only" src={stationsHeroMobile} alt="Trạm sạc" />
-        <img className="hero-img desktop-only" src={stationsHeroDesktop} alt="Trạm sạc" />
-        <div className="hero-text">
-          <h1 className="hero-title">MẠNG LƯỚI TRẠM SẠC</h1>
-          <p className="hero-subtitle">KẾT NỐI KHÔNG GIỚI HẠN</p>
+  if (loading)
+    return (
+      <div className="dashboard-container">
+        <Header />
+        <div className="stations-loading-state">
+          <div className="stations-spinner" />
+          <p>Đang tải danh sách trạm sạc...</p>
         </div>
       </div>
+    );
 
-      <div className="welcome-card">
-        {/* --- THANH TÌM KIẾM ĐƠN GIẢN (NO FILTER) --- */}
-        <div className="cyber-search-container">
-          <div className="cyber-search-bar">
-            <div className="search-icon-box">
-              <Search size={20} color="#0ea5e9" />
-            </div>
+  const availableCount = stations.filter((s) => s.status === "AVAILABLE" || s.status === "ACTIVE").length;
+  const busyCount = stations.filter((s) => s.status === "BUSY").length;
+  const maintenanceCount = stations.filter((s) => s.status !== "AVAILABLE" && s.status !== "ACTIVE" && s.status !== "BUSY").length;
+
+  return (
+    <div className="dashboard-container">
+      <Header />
+
+      {/* ── HERO BANNER ── */}
+      <div className="stations-hero">
+        {/* decorative blobs */}
+        <div className="stations-hero-blob blob-1" />
+        <div className="stations-hero-blob blob-2" />
+
+        <div className="stations-hero-content">
+          <div className="stations-hero-eyebrow">
+            <PlugZap size={14} />
+            Mạng lưới trạm sạc EV
+          </div>
+          <h1 className="stations-hero-title">Tìm trạm sạc gần bạn</h1>
+          <p className="stations-hero-sub">
+            {stations.length} trạm trên toàn hệ thống &mdash; cập nhật theo thời gian thực
+          </p>
+
+          {/* Search bar inside hero */}
+          <div className="stations-hero-search">
+            <Search size={18} className="stations-hero-search-icon" />
             <input
               type="text"
-              className="cyber-input"
+              className="stations-hero-search-input"
               placeholder="Nhập tên trạm, địa chỉ, khu vực..."
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }}
             />
-            {/* Đã xóa nút bộ lọc và đường kẻ ở đây */}
+            {searchQuery && (
+              <button className="stations-hero-search-clear" onClick={() => { setSearchQuery(""); setCurrentPage(1); }}>✕</button>
+            )}
           </div>
         </div>
 
-        {/* --- DANH SÁCH TRẠM --- */}
-        <h2 className="stations-header">
-          {processedStations.length} Trạm khả dụng
-        </h2>
-
-        <div className="station-list">
-          {currentStations.length === 0 ? (
-            <div className="no-stations">
-              <p>Không tìm thấy trạm nào phù hợp.</p>
+        {/* Stats strip */}
+        <div className="stations-stats">
+          <div className="station-stat-item">
+            <div className="station-stat-icon" style={{ background: "rgba(255,255,255,0.15)" }}>
+              <MapPin size={16} color="#fff" />
             </div>
-          ) : (
-            currentStations.map((station) => (
+            <div>
+              <div className="station-stat-value">{stations.length}</div>
+              <div className="station-stat-label">Tổng trạm</div>
+            </div>
+          </div>
+          <div className="station-stat-divider" />
+          <div className="station-stat-item">
+            <div className="station-stat-icon" style={{ background: "rgba(74,222,128,0.25)" }}>
+              <CheckCircle2 size={16} color="#4ade80" />
+            </div>
+            <div>
+              <div className="station-stat-value">{availableCount}</div>
+              <div className="station-stat-label">Khả dụng</div>
+            </div>
+          </div>
+          <div className="station-stat-divider" />
+          <div className="station-stat-item">
+            <div className="station-stat-icon" style={{ background: "rgba(251,191,36,0.25)" }}>
+              <Clock size={16} color="#fbbf24" />
+            </div>
+            <div>
+              <div className="station-stat-value">{busyCount}</div>
+              <div className="station-stat-label">Đang bận</div>
+            </div>
+          </div>
+          <div className="station-stat-divider" />
+          <div className="station-stat-item">
+            <div className="station-stat-icon" style={{ background: "rgba(248,113,113,0.25)" }}>
+              <Wrench size={16} color="#f87171" />
+            </div>
+            <div>
+              <div className="station-stat-value">{maintenanceCount}</div>
+              <div className="station-stat-label">Bảo trì</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ── RESULTS SECTION HEADER ── */}
+      <div className="stations-results-bar">
+        <span className="stations-results-count">
+          {searchQuery
+            ? <>{processedStations.length} kết quả cho <strong>&ldquo;{searchQuery}&rdquo;</strong></>
+            : <>{processedStations.length} trạm sạc</>}
+        </span>
+      </div>
+
+      {/* ── STATION GRID ── */}
+      {currentStations.length === 0 ? (
+        <div className="stations-empty">
+          <MapPin size={40} color="#cbd5e1" />
+          <p>Không tìm thấy trạm nào phù hợp.</p>
+        </div>
+      ) : (
+        <div className="stations-grid">
+          {currentStations.map((station) => {
+            const statusInfo = getStatusInfo(station.status);
+            return (
               <div key={station.id} className="station-card">
-                <div className="station-header">
-                  <h3 className="station-name">{station.name}</h3>
+                {/* Card top: status badge + distance */}
+                <div className="station-card-top">
                   <span
-                    className="status-dot"
-                    style={{ background: getStatusColor(station.status) }}
-                  ></span>
+                    className="station-status-badge"
+                    style={{
+                      color: statusInfo.color,
+                      background: statusInfo.bg,
+                      border: `1px solid ${statusInfo.border}`,
+                    }}
+                  >
+                    <span className="station-status-dot" style={{ background: statusInfo.color }} />
+                    {statusInfo.label}
+                  </span>
+                  {station.distance != null && (
+                    <span className="station-distance-chip">
+                      <MapPin size={12} />
+                      {parseFloat(station.distance).toFixed(1)} km
+                    </span>
+                  )}
                 </div>
-                
+
+                {/* Title */}
+                <h3 className="station-name">{station.name}</h3>
                 <p className="station-address">{station.address}</p>
-                
-                <div className="station-tags">
-                   {station.ports.map((p, i) => (
-                     <span key={i} className="port-tag">{p}</span>
-                   ))}
+
+                {/* Port tags */}
+                <div className="station-ports">
+                  {station.ports.map((p, i) => (
+                    <span key={i} className="port-tag">
+                      <Zap size={10} /> {p}
+                    </span>
+                  ))}
                 </div>
 
-                <div className="station-footer-info">
-                  <div className="station-distance">
-                    ⚡ {station.distance !== null && station.distance !== undefined
-                      ? `${parseFloat(station.distance).toFixed(2)} km` 
-                      : "Chưa xác định"}
-                  </div>
-                </div>
-
+                {/* Actions */}
                 <div className="station-actions">
                   <button
                     className="btn-navigate"
                     onClick={() => handleNavigate(station.lat, station.lng)}
                   >
-                    Chỉ đường
+                    <Navigation size={14} /> Chỉ đường
                   </button>
                   <button
                     className="btn-detail"
                     onClick={() => navigate(`/stations/${station.id}`)}
                   >
-                    Chi tiết
+                    <Info size={14} /> Chi tiết
                   </button>
                 </div>
               </div>
-            ))
-          )}
+            );
+          })}
         </div>
+      )}
 
-        {/* --- PHÂN TRANG --- */}
-        {processedStations.length > itemsPerPage && (
-          <div className="pagination-container">
-            <button 
-              className="page-btn" 
-              onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-              disabled={currentPage === 1}
-            >❮</button>
-            <div className="page-dots">
-              {Array.from({ length: totalPages }, (_, i) => (
-                <span
-                  key={i}
-                  className={`dot ${currentPage === i + 1 ? "active" : ""}`}
-                  onClick={() => setCurrentPage(i + 1)}
-                ></span>
-              ))}
-            </div>
-            <button 
-              className="page-btn" 
-              onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-              disabled={currentPage === totalPages}
-            >❯</button>
+      {/* ── PAGINATION ── */}
+      {totalPages > 1 && (
+        <div className="stations-pagination">
+          <button
+            className="page-btn"
+            onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+            disabled={currentPage === 1}
+          >
+            &#10094;
+          </button>
+          <div className="page-numbers">
+            {Array.from({ length: totalPages }, (_, i) => (
+              <button
+                key={i}
+                className={`page-number ${currentPage === i + 1 ? "active" : ""}`}
+                onClick={() => setCurrentPage(i + 1)}
+              >
+                {i + 1}
+              </button>
+            ))}
           </div>
-        )}
-      </div>
+          <button
+            className="page-btn"
+            onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+            disabled={currentPage === totalPages}
+          >
+            &#10095;
+          </button>
+        </div>
+      )}
     </div>
   );
 }

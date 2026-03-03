@@ -6,6 +6,7 @@ import OAuthHandler from "../components/OAuthHandler.jsx";
 // Import Layouts
 import AdminLayout from "../layouts/AdminLayout";
 import DriverLayout from "../layouts/DriverLayout";
+import DriverSidebarLayout from "../layouts/DriverSidebarLayout.jsx";
 
 // Public Pages =====================================
 import Error404 from "../pages/auth/Error404.jsx";
@@ -17,6 +18,8 @@ import ResetPassword from "../pages/auth/ResetPassword.jsx";
 
 // Driver Pages =====================================
 import Home from "../pages/home/Home.jsx";
+import DriverDashboard from "../pages/driver/DriverDashboard.jsx";
+import Guide from "../pages/driver/Guide.jsx";
 import Rules from "../pages/inNavigateDriver/Rules.jsx";
 import Stations from "../pages/inNavigateDriver/Stations.jsx";
 import StationDetail from "../pages/inNavigateDriver/StationDetail.jsx";
@@ -75,17 +78,19 @@ const AppRouter = () => {
           <Route path={paths.paymentSuccess} element={<PaymentSuccess />} />
           <Route path={paths.paymentFailed} element={<PaymentFailed />} />
 
-          <Route path={paths.stations} element={<Stations />} />
           <Route path={paths.rules} element={<Rules />} />
-          <Route path={paths.stationDetail} element={<StationDetail />} />
         </Route>
 
         {/* ======================= PROTECTED ROUTES (Cần đăng nhập) ======================= */}
 
         {/* 1. DRIVER Routes - Chỉ DRIVER mới truy cập được */}
         <Route element={<ProtectedRoute allowedRoles={["DRIVER"]} />}>
-          <Route path="/" element={<DriverLayout />}>
+          <Route path="/" element={<DriverSidebarLayout />}>
             <Route index element={<Home />} />
+            <Route path={paths.driverDashboard} element={<DriverDashboard />} />
+            <Route path={paths.guide} element={<Guide />} />
+            <Route path={paths.stations} element={<Stations />} />
+            <Route path={paths.stationDetail} element={<StationDetail />} />
             <Route path={paths.booking} element={<Booking />} />
             <Route path={paths.bookingDetail} element={<BookingDetail />} />
             <Route path={paths.bookingQr} element={<BookingQRCode />} />

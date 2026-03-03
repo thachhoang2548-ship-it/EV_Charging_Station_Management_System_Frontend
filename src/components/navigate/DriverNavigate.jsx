@@ -53,8 +53,12 @@ export default function AppNavigation() {
     }
   }, []);
 
+  // Khi đã đăng nhập: home icon trỏ vào /driver dashboard
+  // Khi chưa đăng nhập: home icon trỏ vào / (trang chủ công khai)
+  const homeNavPath = isLoggedIn ? paths.driverDashboard : paths.home;
+
   const navItems = [
-    { path: paths.home, icon: homeIcon, label: "Trang chủ" },
+    { path: homeNavPath, icon: homeIcon, label: isLoggedIn ? "Dashboard" : "Trang chủ" },
     { path: paths.stations, icon: stationsIcon, label: "Trạm sạc" },
     { path: paths.chargingSession, icon: bookingIcon, label: "Phiên sạc" },
     { path: paths.rules, icon: ruleIcon, label: "Điều khoản" },
@@ -65,7 +69,7 @@ export default function AppNavigation() {
     <header className={`modern-header ${isScrolled ? "scrolled" : ""}`}>
       <div className="header-container">
         {/* 1. LOGO AREA (Chỉ hiện trên Desktop) */}
-        <div className="brand-logo" onClick={() => navigate(paths.home)}>
+        <div className="brand-logo" onClick={() => navigate(homeNavPath)}>
           <span className="logo-icon">⚡</span>
           <span className="logo-text">EV<span className="highlight">CHARGE</span></span>
         </div>
