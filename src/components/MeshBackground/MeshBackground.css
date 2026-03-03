@@ -1,0 +1,109 @@
+/* ================================================================
+   MeshBackground.css
+   Gradient Circle Orb background — kiểu Stripe / Linear
+   ================================================================ */
+
+/* --- Wrapper --- */
+.mesh-root {
+  position: relative;
+  overflow: hidden;
+  background-color: var(--mesh-base, #f6fef9);
+  width: 100%;
+}
+
+/* --- Orb container (fills parent, pointer-events off) --- */
+.mesh-orbs {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* ----------------------------------------------------------------
+   Core orb — hình tròn gradient loang mờ
+   Mỗi orb là 1 vòng tròn với radial-gradient từ màu về transparent
+---------------------------------------------------------------- */
+.mesh-orb {
+  position: absolute;
+  /* aspect-ratio 1:1 → hình vuông → bo tròn = circle */
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
+
+  /* Gradient từ tâm: màu đặc → transparent ở rìa ngoài */
+  background: radial-gradient(
+    circle at center,
+    var(--orb-color) 0%,
+    transparent 70%
+  );
+
+  /* Canh chỉnh từ trung tâm của orb */
+  transform: translate(-50%, -50%);
+
+  /* Không cần transition — animation lo */
+  will-change: transform;
+}
+
+/* --- Animated class: bật khi prop animated=true --- */
+.mesh-orb.mesh-orb--animated {
+  animation-name:            var(--orb-animation, orb-drift-a);
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  animation-direction:       alternate;
+}
+
+/* Stagger timing cho 4 orbs */
+.mesh-orbs .mesh-orb:nth-child(1) { animation-duration: 18s; animation-delay:  0s; }
+.mesh-orbs .mesh-orb:nth-child(2) { animation-duration: 24s; animation-delay: -7s; }
+.mesh-orbs .mesh-orb:nth-child(3) { animation-duration: 21s; animation-delay: -4s; }
+.mesh-orbs .mesh-orb:nth-child(4) { animation-duration: 28s; animation-delay: -2s; }
+
+/* --- Content layer ngồi trên orbs --- */
+.mesh-content {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+}
+
+/* ================================================================
+   KEYFRAMES — 4 quỹ đạo drift độc lập
+   Dùng translate3d để GPU accelerate (không làm reflow)
+   Mỗi orb drifts theo 1 hình elip nhỏ khác nhau
+================================================================ */
+
+/* Drift A: trôi phải - xuống */
+@keyframes orb-drift-a {
+  0%   { transform: translate(-50%, -50%) scale(1);    }
+  33%  { transform: translate(-38%, -58%) scale(1.08); }
+  66%  { transform: translate(-55%, -42%) scale(0.94); }
+  100% { transform: translate(-44%, -54%) scale(1.04); }
+}
+
+/* Drift B: trôi trái - xuống */
+@keyframes orb-drift-b {
+  0%   { transform: translate(-50%, -50%) scale(1);    }
+  33%  { transform: translate(-62%, -44%) scale(1.10); }
+  66%  { transform: translate(-44%, -58%) scale(0.92); }
+  100% { transform: translate(-56%, -46%) scale(1.05); }
+}
+
+/* Drift C: trôi phải - lên */
+@keyframes orb-drift-c {
+  0%   { transform: translate(-50%, -50%) scale(1);    }
+  40%  { transform: translate(-40%, -62%) scale(1.06); }
+  70%  { transform: translate(-58%, -40%) scale(0.96); }
+  100% { transform: translate(-46%, -56%) scale(1.03); }
+}
+
+/* Drift D: co giãn tại chỗ, xoay nhẹ */
+@keyframes orb-drift-d {
+  0%   { transform: translate(-50%, -50%) scale(1);    }
+  50%  { transform: translate(-50%, -50%) scale(1.18); }
+  100% { transform: translate(-50%, -50%) scale(1);    }
+}
+
+/* ================================================================
+   PREFERS REDUCED MOTION — tắt animation cho người dùng cần
+================================================================ */
+@media (prefers-reduced-motion: reduce) {
+  .mesh-orb { animation: none !important; }
+}
