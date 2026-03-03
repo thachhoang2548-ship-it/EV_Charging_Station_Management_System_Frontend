@@ -20,9 +20,9 @@ import './ManagementUser.css';
 
 // --- Màu sắc cho biểu đồ Donut ---
 const COLORS = {
-  high: '#00C49F', // Xanh lá
-  medium: '#FFBB28', // Vàng
-  low: '#FF8042', // Cam
+  high: '#16a34a',   // Xanh lá (primary)
+  medium: '#f59e0b', // Vàng amber
+  low: '#ef4444',    // Đỏ
 };
 // Định dạng cho Tooltip (khi di chuột)
 const formatCurrency = (value) => `${value.toLocaleString()} VND`;
@@ -135,10 +135,10 @@ export default function AdminDashboard() {
                 <YAxis tickFormatter={formatCurrency} fontSize={12} />
                 <Tooltip formatter={formatCurrency} />
                 <Legend />
-                <Bar 
+                <Bar
                   dataKey="monthRevenue.amount"
                   name="Doanh thu (VND)"
-                  fill="#20b2aa"
+                  fill="#16a34a"
                 />
               </BarChart>
             </ResponsiveContainer>
@@ -157,7 +157,7 @@ export default function AdminDashboard() {
                   cy="50%"
                   innerRadius={60}
                   outerRadius={80}
-                  fill="#20b2aa"
+                  fill="#16a34a"
                   paddingAngle={5}
                   labelLine={true}
                   label={({
@@ -179,7 +179,7 @@ export default function AdminDashboard() {
                       <text
                         x={x}
                         y={y}
-                        fill="#333"
+                        fill="#1e293b"
                         textAnchor={textAnchor}
                         dominantBaseline="central"
                         style={{ fontSize: '12px', fontWeight: 500 }}

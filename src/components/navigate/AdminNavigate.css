@@ -1,149 +1,233 @@
-/* Container cho tất cả nav items */
+/* ============================================================
+   ADMIN / STAFF NAVIGATE — Sidebar navigation
+   Green theme matching homepage
+   ============================================================ */
+
+/* === WRAPPER TOÀN BỘ SIDEBAR === */
 .navContainer {
-  margin-top: 20px !important;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  background-color: aliceblue;
-  padding: 12px;
+  height: 100%;
+  background: #ffffff;
+  padding: 0;
 }
 
-/* Mỗi mục navigation */
+/* === BRAND HEADER === */
+.navBrand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 18px 16px;
+  background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+  flex-shrink: 0;
+}
+
+.navBrandIcon {
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.navBrandText {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  overflow: hidden;
+}
+
+.navBrandName {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: -0.3px;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.navBrandName span { color: #bbf7d0; }
+
+.navBrandRole {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.75);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  white-space: nowrap;
+}
+
+/* === DIVIDER === */
+.navDivider {
+  height: 1px;
+  background: #e2e8f0;
+  flex-shrink: 0;
+}
+
+/* === NAV ITEMS WRAPPER === */
+.navItems {
+  flex: 1;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  overflow-y: auto;
+}
+
+.navItems::-webkit-scrollbar { width: 3px; }
+.navItems::-webkit-scrollbar-track { background: transparent; }
+.navItems::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 2px; }
+
+/* === MỖI NAV ITEM === */
 .navItem {
   width: 100%;
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: flex-start;
-  gap: 16px;
-  padding: 7px 10px;
-  background-color: white;
-  border: 2px solid #20b2aa;
-  border-radius: 8px !important;
+  gap: 10px;
+  padding: 9px 10px;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
   text-decoration: none;
-  color: #333;
-  transition: all 0.3s ease;
+  color: #64748b;
+  transition: all 0.18s ease;
   cursor: pointer;
-  min-height: 58px;
+  min-height: 44px;
+  animation: navSlideIn 0.3s ease-out forwards;
+  opacity: 0;
 }
 
-/* Hover effect - phóng to cả button */
+.navItem:nth-child(1)  { animation-delay: 0.04s; }
+.navItem:nth-child(2)  { animation-delay: 0.08s; }
+.navItem:nth-child(3)  { animation-delay: 0.12s; }
+.navItem:nth-child(4)  { animation-delay: 0.16s; }
+.navItem:nth-child(5)  { animation-delay: 0.20s; }
+.navItem:nth-child(6)  { animation-delay: 0.24s; }
+.navItem:nth-child(7)  { animation-delay: 0.28s; }
+.navItem:nth-child(8)  { animation-delay: 0.32s; }
+.navItem:nth-child(9)  { animation-delay: 0.36s; }
+
 .navItem:hover {
-  background-color: #f0fffe;
-  transform: scale(1.05);
-  box-shadow: 0 4px 12px rgba(32, 178, 170, 0.25);
+  background: #f0fdf4;
+  color: #16a34a;
 }
 
-/* Active state - khi được chọn */
+.navItem:hover .navIcon {
+  background: #16a34a;
+  box-shadow: 0 4px 10px rgba(22, 163, 74, 0.3);
+}
+
+.navItem:hover .navIcon img {
+  filter: brightness(0) invert(1);
+}
+
 .navItemActive {
-  background-color: #e6f9f8;
-  border-color: #20b2aa;
-  box-shadow: 0 2px 8px rgba(32, 178, 170, 0.2);
+  background: #f0fdf4;
+  color: #16a34a;
 }
 
-.navItemActive:hover {
-  background-color: #d9f5f3;
+.navItemActive .navIcon {
+  background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+  box-shadow: 0 4px 12px rgba(22, 163, 74, 0.35);
 }
 
-/* Active state click effect */
-.navItem:active {
-  transform: scale(1.02);
-  background-color: #d9f5f3;
+.navItemActive .navIcon img {
+  filter: brightness(0) invert(1);
 }
 
-/* Icon container - nền tròn màu xanh */
+.navItem:active { transform: scale(0.98); }
+
+/* === ICON === */
 .navIcon {
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  width: 35px;
-  height: 35px;
-  background-color: #20b2aa;
-  border-radius: 50%;
-  transition: all 0.3s ease;
+  width: 34px;
+  height: 34px;
+  background: #f1f5f9;
+  border-radius: 8px;
+  transition: all 0.18s ease;
 }
 
 .navIcon img {
-  width: 25px;
-  height: 25px;
+  width: 18px;
+  height: 18px;
   object-fit: contain;
-  filter: brightness(0) invert(1);
-  /* Filter này giữ icon màu trắng */
+  filter: brightness(0) saturate(100%) invert(45%) sepia(10%) saturate(400%) hue-rotate(190deg);
+  transition: filter 0.18s ease;
 }
 
-/* Label text */
+/* === LABEL === */
 .navLabel {
   flex: 1;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 500;
-  color: #2c3e50;
+  color: inherit;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  transition: all 0.3s ease;
+  transition: font-weight 0.15s ease;
 }
 
-/* Hover effect cho label - đậm hơn */
-.navItem:hover .navLabel {
+.navItemActive .navLabel { font-weight: 600; color: #16a34a; }
+.navItem:hover .navLabel  { font-weight: 600; }
+
+/* === FOOTER / LOGOUT === */
+.navFooter {
+  padding: 12px 10px;
+  border-top: 1px solid #e2e8f0;
+  flex-shrink: 0;
+}
+
+.navLogoutBtn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 12px;
+  background: transparent;
+  color: #ef4444;
+  border: 1.5px solid #fecaca;
+  border-radius: 8px;
+  font-size: 13px;
   font-weight: 600;
-  color: #20b2aa;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  font-family: inherit;
 }
 
-/* Active label */
-.navItemActive .navLabel {
-  color: #20b2aa;
-  font-weight: 600;
+.navLogoutBtn:hover:not(:disabled) {
+  background: #fef2f2;
+  border-color: #ef4444;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(239, 68, 68, 0.15);
 }
 
-/* Responsive cho màn hình nhỏ */
+.navLogoutBtn:active { transform: translateY(0); }
+
+.navLogoutBtn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* === ANIMATIONS === */
+@keyframes navSlideIn {
+  from { opacity: 0; transform: translateX(-10px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+/* === RESPONSIVE === */
 @media (max-width: 768px) {
-  .navContainer {
-    padding: 12px 8px;
-  }
-  
-  .navItem {
-    padding: 12px 16px;
-    min-height: 56px;
-    gap: 12px;
-  }
-  
-  .navLabel {
-    font-size: 14px;
-  }
-  
-  .navIcon {
-    width: 40px;
-    height: 40px;
-  }
-  
-  .navIcon img {
-    width: 24px;
-    height: 24px;
-  }
+  .navItems { padding: 8px; }
+  .navItem  { padding: 10px 8px; min-height: 48px; }
+  .navLabel { font-size: 14px; }
+  .navIcon  { width: 38px; height: 38px; }
+  .navIcon img { width: 20px; height: 20px; }
 }
-
-/* Animation cho khi load trang */
-@keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateX(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-.navItem {
-  animation: slideIn 0.3s ease-out forwards;
-  opacity: 0;
-}
-
-.navItem:nth-child(1) { animation-delay: 0.05s; }
-.navItem:nth-child(2) { animation-delay: 0.1s; }
-.navItem:nth-child(3) { animation-delay: 0.15s; }
-.navItem:nth-child(4) { animation-delay: 0.2s; }
-.navItem:nth-child(5) { animation-delay: 0.25s; }
-.navItem:nth-child(6) { animation-delay: 0.3s; }
-.navItem:nth-child(7) { animation-delay: 0.35s; }
