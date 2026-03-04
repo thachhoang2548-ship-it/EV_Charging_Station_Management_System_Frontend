@@ -13,6 +13,7 @@ import profileIcon from "../../assets/logo/user.png";
 import paths from "../../path/paths.jsx";
 import { isAuthenticated } from "../../utils/authUtils.js";
 import NotificationBell from "../NotificationBell/NotificationBell";
+import EVLogoIcon from "../logo/EVLogoIcon.jsx";
 
 export default function AppNavigation() {
   const location = useLocation();
@@ -57,7 +58,12 @@ export default function AppNavigation() {
   // Khi chưa đăng nhập: home icon trỏ vào / (trang chủ công khai)
   const homeNavPath = isLoggedIn ? paths.driverDashboard : paths.home;
 
+  // Khi đã đăng nhập: home icon trỏ vào /driver dashboard
+  // Khi chưa đăng nhập: home icon trỏ vào / (trang chủ công khai)
+  const homeNavPath = isLoggedIn ? paths.driverDashboard : paths.home;
+
   const navItems = [
+    { path: homeNavPath, icon: homeIcon, label: isLoggedIn ? "Dashboard" : "Trang chủ" },
     { path: homeNavPath, icon: homeIcon, label: isLoggedIn ? "Dashboard" : "Trang chủ" },
     { path: paths.stations, icon: stationsIcon, label: "Trạm sạc" },
     { path: paths.chargingSession, icon: bookingIcon, label: "Phiên sạc" },
@@ -70,7 +76,7 @@ export default function AppNavigation() {
       <div className="header-container">
         {/* 1. LOGO AREA (Chỉ hiện trên Desktop) */}
         <div className="brand-logo" onClick={() => navigate(homeNavPath)}>
-          <span className="logo-icon">⚡</span>
+          <span className="logo-icon"><EVLogoIcon className="logo-icon-svg" strokeWidth={2.5} /></span>
           <span className="logo-text">EV<span className="highlight">CHARGE</span></span>
         </div>
 

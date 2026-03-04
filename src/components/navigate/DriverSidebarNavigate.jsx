@@ -12,6 +12,7 @@ import transactionIcon from "../../assets/icon/staff/payment-method.png";
 import notifIcon     from "../../assets/icon/admin/statistic.png";
 import profileIcon   from "../../assets/icon/admin/manage_user.png";
 import bookingIcon   from "../../assets/icon/admin/charging-building.png";
+import EVLogoIcon from "../logo/EVLogoIcon.jsx";
 
 const NAV_ITEMS = [
   { path: paths.guide,           icon: dashboardIcon,   label: "Hướng dẫn sử dụng" },
@@ -38,7 +39,7 @@ export default function DriverSidebarNavigate() {
     <div className="navContainer">
       {/* ── Brand Header ── */}
       <div className="navBrand">
-        <div className="navBrandIcon">⚡</div>
+        <div className="navBrandIcon"><EVLogoIcon className="navBrandIconSvg" strokeWidth={2.5} /></div>
         <div className="navBrandText">
           <span className="navBrandName">EV<span>Charge</span></span>
           <span className="navBrandRole">Driver Portal</span>

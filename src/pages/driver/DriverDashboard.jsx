@@ -75,6 +75,14 @@ const txStatusLabel = (status) => {
   return map[status] || { label: status, cls: "info" };
 };
 
+const toArray = (value) => {
+  if (Array.isArray(value)) return value;
+  if (Array.isArray(value?.content)) return value.content;
+  if (Array.isArray(value?.items)) return value.items;
+  if (Array.isArray(value?.data)) return value.data;
+  return [];
+};
+
 // ─────────────────────────────────────────────────────────────────
 export default function DriverDashboard() {
   const navigate = useNavigate();
@@ -113,19 +121,19 @@ export default function DriverDashboard() {
           setProfile(profileRes.value.data);
         }
         if (vehiclesRes.status === "fulfilled" && vehiclesRes.value?.success) {
-          setVehicles(vehiclesRes.value.data || []);
+          setVehicles(toArray(vehiclesRes.value.data));
         }
         if (notiRes.status === "fulfilled" && notiRes.value?.success) {
-          setNotifications(notiRes.value.data || []);
+          setNotifications(toArray(notiRes.value.data));
         }
         if (txRes.status === "fulfilled") {
-          const sorted = (txRes.value?.data || [])
+          const sorted = toArray(txRes.value?.data)
             .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
             .slice(0, 5);
           setTransactions(sorted);
         }
         if (unpaidRes.status === "fulfilled") {
-          setUnpaidCount((unpaidRes.value?.data || []).length);
+          setUnpaidCount(toArray(unpaidRes.value?.data).length);
         }
       } catch {
         // Silent — individual states remain empty

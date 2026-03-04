@@ -34,6 +34,12 @@
   flex-shrink: 0;
 }
 
+.navBrandIconSvg {
+  width: 22px;
+  height: 22px;
+  color: #ffffff;
+}
+
 .navBrandText {
   display: flex;
   flex-direction: column;
