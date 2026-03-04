@@ -7,19 +7,19 @@
   max-width: 600px;
   margin: 40px auto;
   padding: 40px;
-  background-color: #FFFFFF;
+  background-color: #ffffff;
   border-radius: 12px;
   box-shadow: 0 4px 20px rgba(32, 178, 170, 0.15);
 }
 
 /* Tiêu đề */
 .edit-profile-container h2 {
-  color: #20B2AA;
+  color: #20b2aa;
   font-size: 28px;
   font-weight: 600;
   margin-bottom: 30px;
   text-align: center;
-  border-bottom: 3px solid #20B2AA;
+  border-bottom: 3px solid #20b2aa;
   padding-bottom: 15px;
 }
 
@@ -30,7 +30,7 @@
 
 /* Form Labels */
 .form-label {
-  color: #20B2AA;
+  color: #16a34a;
   font-weight: 600;
   font-size: 14px;
   margin-bottom: 8px;
@@ -47,7 +47,7 @@
   border-radius: 8px;
   font-size: 15px;
   transition: all 0.3s ease;
-  background-color: #FFFFFF;
+  background-color: #ffffff;
 }
 
 /* Loại bỏ màu xám autocomplete của trình duyệt */
@@ -55,15 +55,15 @@
 .form-control:-webkit-autofill:hover,
 .form-control:-webkit-autofill:focus,
 .form-control:-webkit-autofill:active {
-  -webkit-box-shadow: 0 0 0 1000px #FFFFFF inset !important;
-  box-shadow: 0 0 0 1000px #FFFFFF inset !important;
+  -webkit-box-shadow: 0 0 0 1000px #ffffff inset !important;
+  box-shadow: 0 0 0 1000px #ffffff inset !important;
   -webkit-text-fill-color: #333 !important;
   transition: background-color 5000s ease-in-out 0s;
 }
 
 .form-control:focus {
   outline: none;
-  border-color: #20B2AA;
+  border-color: #20b2aa;
   box-shadow: 0 0 0 3px rgba(32, 178, 170, 0.1);
 }
 
@@ -77,7 +77,7 @@
   display: block;
   padding: 12px 16px;
   background-color: rgba(32, 178, 170, 0.08);
-  border-left: 4px solid #20B2AA;
+  border-left: 4px solid #20b2aa;
   border-radius: 6px;
   color: #333;
   font-size: 14px;
@@ -88,10 +88,10 @@
 .btn-primary {
   width: 100%;
   padding: 14px 24px;
-  background-color: #20B2AA;
+  background-color: #20b2aa;
   border: none;
   border-radius: 8px;
-  color: #FFFFFF;
+  color: #ffffff;
   font-size: 16px;
   font-weight: 600;
   text-transform: uppercase;
