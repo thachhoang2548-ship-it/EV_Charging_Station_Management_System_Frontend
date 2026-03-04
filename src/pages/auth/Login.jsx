@@ -110,7 +110,7 @@ const Login = () => {
           } else if (role?.toUpperCase().includes("STAFF")) {
             window.location.href = "/staff";
           } else if (role?.toUpperCase().includes("DRIVER")) {
-            window.location.href = "/";
+            window.location.href = "/guide";
           } else {
             window.location.href = "/";
           }
