@@ -1,16 +1,23 @@
 /* ===== VERIFY OTP PAGE STYLES ===== */
 
 .verify-page {
-  min-height: 100vh;
+  position: fixed;
+  inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #f0fdfa 0%, #e0f2fe 100%);
+  padding: 24px 16px;
+  background: #f0f4f8; /* ✅ đồng bộ với login */
+  overflow-y: auto;
 }
 
 .verify-container {
   max-width: 440px;
-  padding: 40px 30px;
+  width: 100%;
+  padding: 40px 32px;
+  background: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
   position: relative;
   z-index: 10;
 }
@@ -27,7 +34,7 @@
   background: none;
   border: none;
   font-size: 28px;
-  color: #20b2aa;
+  color: #16a34a; /* ✅ xanh lá */
   cursor: pointer;
   padding: 5px;
 }
@@ -43,15 +50,20 @@
 }
 
 .verify-logo-circle {
-  width: 90px;
-  height: 90px;
-  background: #20b2aa;
+  width: 72px;
+  height: 72px;
+  background: linear-gradient(
+    135deg,
+    #16a34a 0%,
+    #166534 100%
+  ); /* ✅ gradient giống login */
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   margin: 0 auto 16px;
-  box-shadow: 0 4px 12px rgba(32, 178, 170, 0.25);
+  box-shadow: 0 4px 16px rgba(22, 163, 74, 0.25); /* ✅ xanh lá */
+  animation: pulse 2s ease-in-out infinite; /* ✅ giống logo login */
 }
 
 .verify-logo-icon {
@@ -60,9 +72,9 @@
 }
 
 .verify-title {
-  font-size: 28px;
+  font-size: clamp(22px, 5vw, 28px);
   font-weight: 700;
-  color: #20b2aa;
+  color: #16a34a; /* ✅ xanh lá */
   margin: 0;
 }
 
@@ -82,7 +94,7 @@
 }
 
 .verify-step-dot.active {
-  background: #20b2aa;
+  background: #16a34a; /* ✅ xanh lá */
 }
 
 /* ===== OTP SECTION ===== */
@@ -93,7 +105,7 @@
 .verify-otp-title {
   font-size: 18px;
   font-weight: 600;
-  color: #20b2aa;
+  color: #16a34a; /* ✅ xanh lá */
   text-align: center;
   margin: 0 0 16px 0;
 }
@@ -118,20 +130,20 @@
 .verify-otp-input {
   width: 50px;
   height: 50px;
-  border: 2px solid #a7f3d0;
+  border: 2px solid #16a34a; /* ✅ xanh lá */
   border-radius: 14px;
   text-align: center;
   font-size: 22px;
   font-weight: 600;
-  color: #20b2aa;
+  color: #16a34a; /* ✅ xanh lá */
   outline: none;
   transition: all 0.2s ease;
   background: white;
 }
 
 .verify-otp-input:focus {
-  border-color: #20b2aa;
-  box-shadow: 0 0 0 3px rgba(32, 178, 170, 0.1);
+  border-color: #16a34a; /* ✅ xanh lá */
+  box-shadow: 0 0 0 4px rgba(22, 163, 74, 0.18); /* ✅ giống --login-glow-focus */
 }
 
 /* ===== RESEND SECTION ===== */
@@ -142,7 +154,7 @@
 .verify-resend-btn {
   background: none;
   border: none;
-  color: #20b2aa;
+  color: #16a34a; /* ✅ xanh lá */
   font-size: 14px;
   cursor: pointer;
   text-decoration: underline;
@@ -150,7 +162,7 @@
 }
 
 .verify-resend-btn:hover {
-  opacity: 0.8;
+  color: #166534;
 }
 
 .verify-timer-text {
@@ -170,27 +182,38 @@
 /* ===== SUBMIT BUTTON ===== */
 .verify-submit-btn {
   width: 100%;
-  height: 54px;
-  background: #20b2aa;
+  max-width: 200px;
+  height: 48px;
+  background: linear-gradient(
+    135deg,
+    #16a34a 0%,
+    #166534 100%
+  ); /* ✅ giống auth-button */
   border: none;
-  border-radius: 27px;
+  border-radius: 9999px;
   color: white;
-  font-size: 18px;
-  font-weight: 600;
+  font-size: 14px;
+  font-weight: 700;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  margin-bottom: 24px;
-  box-shadow: 0 4px 14px rgba(32, 178, 170, 0.3);
-  transition: all 0.3s ease;
+  margin: 0 auto 24px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 8px rgba(22, 163, 74, 0.2); /* ✅ giống --login-shadow-button */
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .verify-submit-btn:hover {
-  background: #1a8f89;
+  background: linear-gradient(
+    135deg,
+    #166534 0%,
+    #14532d 100%
+  ); /* ✅ giống auth-button hover */
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(32, 178, 170, 0.4);
+  box-shadow: 0 4px 16px rgba(22, 101, 52, 0.3);
 }
 
 .verify-submit-btn:active {
@@ -216,22 +239,23 @@
 .verify-login-btn {
   background: none;
   border: none;
-  color: #20b2aa;
+  color: #16a34a; /* ✅ xanh lá */
   font-size: 15px;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
   text-decoration: none;
   padding: 0;
 }
 
 .verify-login-btn:hover {
+  color: #166534;
   text-decoration: underline;
 }
 
 /* ===== RESPONSIVE ===== */
 @media (max-width: 480px) {
   .verify-container {
-    padding: 30px 20px;
+    padding: 28px 20px 24px;
   }
 
   .verify-otp-input {
@@ -241,11 +265,21 @@
   }
 
   .verify-logo-circle {
-    width: 80px;
-    height: 80px;
+    width: 60px;
+    height: 60px;
   }
 
   .verify-title {
-    font-size: 24px;
+    font-size: 22px;
+  }
+}
+
+/* ===== REDUCED MOTION ===== */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
   }
 }

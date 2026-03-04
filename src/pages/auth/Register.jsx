@@ -76,11 +76,14 @@ const Register = () => {
         const today = new Date();
         let age = today.getFullYear() - birthDate.getFullYear();
         const monthDiff = today.getMonth() - birthDate.getMonth();
-        
-        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+
+        if (
+          monthDiff < 0 ||
+          (monthDiff === 0 && today.getDate() < birthDate.getDate())
+        ) {
           age--;
         }
-        
+
         if (age < 18) {
           newErrors.dateOfBirth = "Bạn phải từ 18 tuổi trở lên";
         }
@@ -136,8 +139,8 @@ const Register = () => {
       if (!date) return "";
       const d = new Date(date);
       const year = d.getFullYear();
-      const month = String(d.getMonth() + 1).padStart(2, '0');
-      const day = String(d.getDate()).padStart(2, '0');
+      const month = String(d.getMonth() + 1).padStart(2, "0");
+      const day = String(d.getDate()).padStart(2, "0");
       return `${year}-${month}-${day}`;
     };
 
@@ -147,7 +150,7 @@ const Register = () => {
       passwordHash: form.password,
       name: form.name,
       dateOfBirth: formatDate(form.dateOfBirth),
-      gender: genderMap[form.gender] || form.gender, 
+      gender: genderMap[form.gender] || form.gender,
       address: form.address,
     };
 
@@ -161,16 +164,18 @@ const Register = () => {
       // Kiểm tra success flag
       if (response.success) {
         const message = response.data?.message || response.message || "";
-        
+
         // Trường hợp 1: Backend gửi OTP về email (cần xác thực)
         if (message.toLowerCase().includes("otp")) {
           toast.success("OTP đã được gửi về email của bạn!");
-          toast.info("Vui lòng kiểm tra email để lấy mã OTP", { autoClose: 5000 });
+          toast.info("Vui lòng kiểm tra email để lấy mã OTP", {
+            autoClose: 5000,
+          });
           setTimeout(() => {
             navigate("/verify-otp", {
               state: {
-                registerData: registerData
-              }
+                registerData: registerData,
+              },
             });
           }, 2000);
         }
@@ -186,9 +191,9 @@ const Register = () => {
         }
       } else {
         const errorMessage = response.message || "Đăng ký thất bại!";
-        
+
         // Kiểm tra lỗi email hoặc phone đã tồn tại
-        if (errorMessage.toLowerCase().includes("phone") ) {
+        if (errorMessage.toLowerCase().includes("phone")) {
           toast.error("Số điện thoại đã được sử dụng. Vui lòng nhập số khác!");
           setStep(1); // Tự động nhảy về step 1, dữ liệu vẫn giữ nguyên
         } else if (errorMessage.toLowerCase().includes("email")) {
@@ -200,8 +205,9 @@ const Register = () => {
       }
     } catch (error) {
       console.error("❌ Register error:", error);
-      const errorMessage = error.response?.data?.message || "Có lỗi xảy ra khi đăng ký!";
-      
+      const errorMessage =
+        error.response?.data?.message || "Có lỗi xảy ra khi đăng ký!";
+
       // Kiểm tra lỗi trong catch block
       if (errorMessage.toLowerCase().includes("phone")) {
         toast.error("Số điện thoại đã được sử dụng. Vui lòng nhập số khác!");
@@ -234,7 +240,7 @@ const Register = () => {
           }}
           style={{
             cursor: n <= step ? "pointer" : "not-allowed",
-            opacity: n > step ? 0.5 : 1
+            opacity: n > step ? 0.5 : 1,
           }}
         >
           {n}
@@ -393,7 +399,7 @@ const Register = () => {
                   className={`auth-input-wrapper date-picker-wrapper ${
                     errors.dateOfBirth ? "error" : ""
                   }`}
-                  style={{ overflow: 'visible', zIndex: 1 }}
+                  style={{ overflow: "visible", zIndex: 1 }}
                 >
                   <span className="auth-input-icon">📅</span>
                   <DatePicker
@@ -410,7 +416,13 @@ const Register = () => {
                     showYearDropdown
                     showMonthDropdown
                     dropdownMode="select"
-                    maxDate={new Date(new Date().getFullYear() - 18, new Date().getMonth(), new Date().getDate())}
+                    maxDate={
+                      new Date(
+                        new Date().getFullYear() - 18,
+                        new Date().getMonth(),
+                        new Date().getDate(),
+                      )
+                    }
                     yearDropdownItemNumber={100}
                     scrollableYearDropdown
                     portalId="root"
