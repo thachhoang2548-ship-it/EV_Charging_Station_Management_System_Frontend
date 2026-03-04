@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import Nav from "react-bootstrap/Nav";
+import ActionMenu from "../../components/ActionMenu/ActionMenu.jsx";
 import Table from "react-bootstrap/Table";
 import "../admin/ManagementUser.css";
 import Header from "../../components/admin/Header.jsx";
@@ -402,17 +403,11 @@ export default function SessionCharging() {
                         <td>{statusKey}</td>
                         <td>{bookingId}</td>
                         <td>
-                          <button
-                            className="btn btn-danger btn-sm"
-                            onClick={(e) => handleStopSession(sessionId, e)}
-                            style={{
-                              padding: "4px 12px",
-                              fontSize: "13px",
-                              fontWeight: "500",
-                            }}
-                          >
-                            ⏹ Stop
-                          </button>
+                          <ActionMenu
+                            actions={[
+                              { label: "⏹ Dừng phiên", type: "danger", onClick: (e) => handleStopSession(sessionId, e) },
+                            ]}
+                          />
                         </td>
                       </tr>
                     );

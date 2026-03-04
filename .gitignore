@@ -22,3 +22,9 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Windows reserved name accidentally created
+nul
+
+# Claude Code temp files
+tmpclaude-*

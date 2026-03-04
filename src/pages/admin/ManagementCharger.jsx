@@ -1,30 +1,30 @@
-import Nav from 'react-bootstrap/Nav';
-import { useEffect, useState, useMemo } from 'react';
-import Table from 'react-bootstrap/Table';
-import { useNavigate } from 'react-router-dom';
-import paths from '../../path/paths.jsx';
-import './ManagementUser.css';
-import Header from '../../components/admin/Header.jsx';
-import {getConnectorTypes} from '../../api/stationApi.js';
-import AddChargerForm from '../../components/admin/AddChargerForm.jsx';
+import Nav from "react-bootstrap/Nav";
+import { useEffect, useState, useMemo } from "react";
+import Table from "react-bootstrap/Table";
+import { useNavigate } from "react-router-dom";
+import paths from "../../path/paths.jsx";
+import "./ManagementUser.css";
+import Header from "../../components/admin/Header.jsx";
+import { getConnectorTypes } from "../../api/stationApi.js";
+import AddChargerForm from "../../components/admin/AddChargerForm.jsx";
 
 export default function ManagementCharger() {
   const navigator = useNavigate();
-  const user = JSON.parse(localStorage.getItem('userDetails'));
+  const user = JSON.parse(localStorage.getItem("userDetails"));
   if (!user) {
     navigator(paths.login);
   }
 
-  const [activeTab, setActiveTab] = useState('allChargers');
+  const [activeTab, setActiveTab] = useState("allChargers");
   const [chargers, setChargers] = useState([]);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
   const [showAddChargerForm, setShowAddChargerForm] = useState(false);
   const [loading, setLoading] = useState(false);
   const [currentCharger, setCurrentCharger] = useState(null);
-  
+
   // ❌ Đã xóa state phân trang
   // const [currentPage, setCurrentPage] = useState(1);
-  // const [itemsPerPage] = useState(3); 
+  // const [itemsPerPage] = useState(3);
 
   useEffect(() => {
     const fetchChargers = async () => {
@@ -35,7 +35,7 @@ export default function ManagementCharger() {
           setChargers(response.data);
         }
       } catch (error) {
-        console.error('Error fetching chargers:', error);
+        console.error("Error fetching chargers:", error);
       }
     };
     fetchChargers();
@@ -43,19 +43,18 @@ export default function ManagementCharger() {
 
   const handleSelect = (selectedKey) => {
     setActiveTab(selectedKey);
-    // ❌ Đã xóa setCurrentPage(1); 
+    // ❌ Đã xóa setCurrentPage(1);
   };
-
 
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value.toLowerCase());
-    // ❌ Đã xóa setCurrentPage(1); 
+    // ❌ Đã xóa setCurrentPage(1);
   };
 
   const handleEditCharger = (charger) => {
     setCurrentCharger(charger);
     setShowAddChargerForm(true);
-    console.log('Editing charger with ID:', charger.connectorTypeId);
+    console.log("Editing charger with ID:", charger.connectorTypeId);
   };
 
   const handleAddCharger = () => {
@@ -64,43 +63,46 @@ export default function ManagementCharger() {
 
   const handleCloseForm = () => {
     setShowAddChargerForm(false);
-    setLoading(pre => !pre);
+    setLoading((pre) => !pre);
   };
 
-  // Tính toán thống kê 
+  // Tính toán thống kê
   const totalChargers = chargers.length;
-  const totalDeprecated = chargers.filter(u => u.isDeprecated).length;
-  const totalModern = chargers.filter(u => !u.isDeprecated).length;
-
+  const totalDeprecated = chargers.filter((u) => u.isDeprecated).length;
+  const totalModern = chargers.filter((u) => !u.isDeprecated).length;
 
   // Tính toán danh sách hiển thị
   const displayedChargers = useMemo(() => {
     let filtered = chargers;
 
     // Lọc theo Tab
-    if (activeTab !== 'allChargers') {
+    if (activeTab !== "allChargers") {
       let valueDeprecated = null;
-      if (activeTab === 'true') valueDeprecated = false;
-      else if (activeTab === 'false') valueDeprecated = true; 
-      filtered = filtered.filter(charger => charger.isDeprecated === valueDeprecated);
+      if (activeTab === "true") valueDeprecated = false;
+      else if (activeTab === "false") valueDeprecated = true;
+      filtered = filtered.filter(
+        (charger) => charger.isDeprecated === valueDeprecated,
+      );
     }
 
     // Lọc theo Search
     if (searchTerm) {
-      filtered = filtered.filter(charger => 
-        charger.code?.toLowerCase().includes(searchTerm) ||
-        charger.mode?.toLowerCase().includes(searchTerm) ||
-        charger.displayName?.toLowerCase().includes(searchTerm)
+      filtered = filtered.filter(
+        (charger) =>
+          charger.code?.toLowerCase().includes(searchTerm) ||
+          charger.mode?.toLowerCase().includes(searchTerm) ||
+          charger.displayName?.toLowerCase().includes(searchTerm),
       );
     }
 
     return filtered;
   }, [chargers, activeTab, searchTerm]);
 
- 
   return (
     <>
-      {showAddChargerForm && <AddChargerForm onClose={handleCloseForm} charger={currentCharger} />}
+      {showAddChargerForm && (
+        <AddChargerForm onClose={handleCloseForm} charger={currentCharger} />
+      )}
       {!showAddChargerForm && (
         <div className="management-user-container">
           {/* Header Section */}
@@ -133,10 +135,14 @@ export default function ManagementCharger() {
           {/* Table Section */}
           <div className="table-section">
             <div className="table-scroll-container">
-              
               {/* Filter Section */}
               <div className="filter-section">
-                <Nav justify variant="tabs" activeKey={activeTab} onSelect={handleSelect}>
+                <Nav
+                  justify
+                  variant="tabs"
+                  activeKey={activeTab}
+                  onSelect={handleSelect}
+                >
                   <Nav.Item>
                     <Nav.Link eventKey="allChargers">Tất cả cổng sạc</Nav.Link>
                   </Nav.Item>
@@ -144,15 +150,17 @@ export default function ManagementCharger() {
                     <Nav.Link eventKey="true">Cổng sạc đang hoạt động</Nav.Link>
                   </Nav.Item>
                   <Nav.Item>
-                    <Nav.Link eventKey="false">Cổng sạc không còn phục vụ</Nav.Link>
+                    <Nav.Link eventKey="false">
+                      Cổng sạc không còn phục vụ
+                    </Nav.Link>
                   </Nav.Item>
                 </Nav>
-                
-                <div style={{ marginTop: '15px' }}>
-                  <input 
+
+                <div style={{ marginTop: "15px" }}>
+                  <input
                     type="text"
                     className="search-input"
-                    placeholder="🔍 Tìm kiếm theo tên, email, số điện thoại..." 
+                    placeholder="🔍 Tìm kiếm theo tên, email, số điện thoại..."
                     value={searchTerm}
                     onChange={handleSearchChange}
                   />
@@ -177,9 +185,24 @@ export default function ManagementCharger() {
                         <td>{charger.code}</td>
                         <td>{charger.mode}</td>
                         <td>{charger.defaultMaxPowerKW} kW</td>
-                        <td>{charger.isDeprecated ? 'Không còn phục vụ' : 'Đang hoạt động'}</td>
                         <td>
-                          <button className="btn-edit" onClick={() => handleEditCharger(charger)}>
+                          {charger.isDeprecated ? (
+                            <span className="status-badge inactive">
+                              <span className="status-dot" />
+                              Không còn phục vụ
+                            </span>
+                          ) : (
+                            <span className="status-badge active">
+                              <span className="status-dot" />
+                              Đang hoạt động
+                            </span>
+                          )}
+                        </td>
+                        <td>
+                          <button
+                            className="btn-edit"
+                            onClick={() => handleEditCharger(charger)}
+                          >
                             Chỉnh sửa
                           </button>
                         </td>
@@ -187,19 +210,19 @@ export default function ManagementCharger() {
                     ))
                   ) : (
                     <tr>
-                      <td colSpan="5" style={{ textAlign: 'center', padding: '30px' }}>
+                      <td
+                        colSpan="5"
+                        style={{ textAlign: "center", padding: "30px" }}
+                      >
                         Không tìm thấy cổng sạc phù hợp với yêu cầu.
                       </td>
                     </tr>
                   )}
                 </tbody>
               </Table>
-              
             </div>
           </div>
         </div>
-        
-
       )}
     </>
   );

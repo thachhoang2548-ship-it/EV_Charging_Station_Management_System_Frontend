@@ -91,7 +91,7 @@ const OAuthHandler = ({ children }) => {
           } else if (role?.toUpperCase().includes('STAFF')) {
             window.location.href = '/staff';
           } else {
-            window.location.href = '/';
+            window.location.href = '/driver';
           }
         
       } catch (error) {

@@ -140,13 +140,10 @@
   position: sticky;
   top: -20px;
   z-index: 200;
-  height: 111px;
   background: #ffffff;
-  padding: 0;
-  border-radius: 0;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-  margin: 0 0 2px 0;
+  padding: 0 0 14px 0;
   border-bottom: 2px solid #e2e8f0;
+  margin: 0 0 2px 0;
 }
 
 .nav-tabs {
@@ -176,14 +173,15 @@
 }
 
 .search-input {
-  width: 50%;
-  height: 60%;
+  width: 100%;
+  height: 36px;
   padding: 5px 20px;
-  border: 1.5px solid #e2e8f0;
+  border: 1.5px solid #94a3b8;
   border-radius: 8px;
   font-size: 14px;
   transition: all 0.2s ease;
   font-family: inherit;
+  box-sizing: border-box;
 }
 
 .search-input:focus {
@@ -236,7 +234,7 @@
   border-left: none;
   border-right: 1px solid #cbd5e1;
   padding: 10px 12px;
-  text-align: left;
+  text-align: center;
   font-weight: 600;
   font-size: 13px;
   text-transform: uppercase;
@@ -258,7 +256,7 @@
   border-left: none;
   border-right: 1px solid #cbd5e1;
   padding: 10px 12px;
-  text-align: left;
+  text-align: center;
   font-weight: 600;
   font-size: 13px;
   text-transform: uppercase;
@@ -275,7 +273,7 @@
   border-bottom: 2px solid #16a34a;
   border-right: 1px solid #cbd5e1;
   padding: 10px 12px;
-  text-align: left;
+  text-align: center;
   font-weight: 600;
   font-size: 13px;
   text-transform: uppercase;
@@ -317,9 +315,10 @@
   font-weight: 400;
   border-right: 1px solid #cbd5e1;
   vertical-align: middle;
+  text-align: center;
 }
 
-.custom-table tbody td:last-child { border-right: none; }
+.custom-table tbody td:last-child { border-right: none; text-align: center; }
 
 /* Action Buttons */
 .action-buttons {
@@ -448,6 +447,20 @@
   50%       { opacity: 0.4; transform: scale(0.8); }
 }
 
+/* Address as map link (hover to reveal clickable) */
+.address-map-link {
+  color: #334155;
+  text-decoration: none;
+  cursor: pointer;
+  transition: color 0.15s;
+  display: inline-block;
+}
+
+.address-map-link:hover {
+  color: #2563eb;
+  text-decoration: underline;
+}
+
 /* Map link */
 .map-link {
   display: inline-flex;
@@ -466,6 +479,132 @@
 .map-link:hover {
   background: #dbeafe;
   color: #1d4ed8;
+}
+
+/* User cell (merged name + role column) */
+.user-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.user-cell-name {
+  font-weight: 600;
+  color: #1e293b;
+  font-size: 14px;
+}
+
+.role-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  width: fit-content;
+  white-space: nowrap;
+}
+
+.role-badge.staff   { background: #dbeafe; color: #1d4ed8; }
+.role-badge.admin   { background: #fae8ff; color: #9333ea; }
+.role-badge.driver  { background: #dcfce7; color: #16a34a; }
+
+.role-station {
+  font-weight: 400;
+  opacity: 0.8;
+}
+
+/* User detail modal */
+.user-detail-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.user-detail-modal {
+  background: #ffffff;
+  border-radius: 16px;
+  width: 460px;
+  max-width: 95vw;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+  animation: modal-in 0.18s ease;
+}
+
+@keyframes modal-in {
+  from { opacity: 0; transform: scale(0.95); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+.user-detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.user-detail-header h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.user-detail-header button {
+  border: none;
+  background: none;
+  font-size: 18px;
+  color: #94a3b8;
+  cursor: pointer;
+  line-height: 1;
+  padding: 0;
+  transition: color 0.15s;
+}
+
+.user-detail-header button:hover {
+  color: #334155;
+}
+
+.user-detail-body {
+  padding: 20px 24px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.user-detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  border-bottom: 1px solid #f1f5f9;
+  padding-bottom: 12px;
+}
+
+.user-detail-row:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.user-detail-row span {
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 500;
+  min-width: 120px;
+  flex-shrink: 0;
+}
+
+.user-detail-row strong {
+  color: #1e293b;
+  font-size: 14px;
+  font-weight: 600;
+  text-align: right;
+  word-break: break-word;
 }
 
 /* Responsive */

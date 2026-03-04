@@ -1,4 +1,5 @@
 import Nav from "react-bootstrap/Nav";
+import ActionMenu from "../../components/ActionMenu/ActionMenu.jsx";
 import { useEffect, useState, useMemo } from "react";
 import {
   getAllStations,
@@ -242,12 +243,11 @@ export default function ManagementStation() {
                   <tr>
                     <th>TÊN</th>
                     <th>ĐỊA CHỈ</th>
-                    <th>CHỈ ĐƯỜNG</th>
                     <th>GIỜ HOẠT ĐỘNG</th>
                     <th>TRẠNG THÁI</th>
                     <th>THỜI LƯỢNG MỖI SLOT</th>
                     <th>NGÀY THÀNH LẬP</th>
-                    <th style={{ width: "160px" }}>THAO TÁC</th>
+                    <th style={{ width: "80px" }}>THAO TÁC</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -255,15 +255,15 @@ export default function ManagementStation() {
                     displayedStations.map((station) => (
                       <tr key={station.stationId}>
                         <td>{station.stationName}</td>
-                        <td>{station.address}</td>
                         <td>
                           <a
-                            className="map-link"
+                            className="address-map-link"
                             href={`https://www.google.com/maps?q=${station.latitude},${station.longitude}`}
                             target="_blank"
                             rel="noopener noreferrer"
+                            title="Xem chỉ đường trên bản đồ"
                           >
-                            🗺 Xem bản đồ
+                            {station.address}
                           </a>
                         </td>
                         <td>{station.operatingHours}</td>
@@ -278,68 +278,31 @@ export default function ManagementStation() {
                           </span>
                         </td>
                         <td>
-                          {slotConfigs.find(
-                            (config) =>
-                              config.stationId === station.stationId &&
-                              config.isActive === "ACTIVE",
-                          )?.slotDurationMin + " phút" || "Chưa cấu hình"}
+                          {(() => {
+                            const min = slotConfigs.find(
+                              (c) => c.stationId === station.stationId && c.isActive === "ACTIVE"
+                            )?.slotDurationMin;
+                            return min != null ? `${min} phút` : "Không xác định";
+                          })()}
                         </td>
                         <td>{station.createdAt.split("T")[0]}</td>
                         <td>
-                          <div className="action-buttons">
-                            {status.map(
-                              (s) =>
-                                s !== station.status && (
-                                  <button
-                                    key={s}
-                                    className={
-                                      s === "INACTIVE"
-                                        ? "btn-delete"
-                                        : s === "ACTIVE"
-                                          ? "btn-unblock"
-                                          : "btn-transfer"
-                                    }
-                                    onClick={() =>
-                                      handleStatusStation(station.stationId, s)
-                                    }
-                                  >
-                                    {s === "MAINTENANCE"
-                                      ? "Bảo trì"
-                                      : s === "ACTIVE"
-                                        ? "Kích hoạt"
-                                        : "Ngưng hoạt động"}
-                                  </button>
-                                ),
-                            )}
-                            <button
-                              className="btn-edit"
-                              onClick={() => handleUpdateStation(station)}
-                            >
-                              Sửa thông tin
-                            </button>
-                            <button
-                              className="btn-edit"
-                              onClick={() =>
-                                handleConfigSlotTime(
-                                  station.stationId,
-                                  slotConfigs.find(
-                                    (config) =>
-                                      config.stationId === station.stationId &&
-                                      config.isActive === "ACTIVE",
-                                  ),
-                                )
-                              }
-                            >
-                              Cấu hình slot
-                            </button>
-                          </div>
+                          <ActionMenu
+                            actions={[
+                              station.status !== "ACTIVE" && { label: "Kích hoạt", type: "success", onClick: () => handleStatusStation(station.stationId, "ACTIVE") },
+                              station.status !== "MAINTENANCE" && { label: "Bảo trì", type: "warning", onClick: () => handleStatusStation(station.stationId, "MAINTENANCE") },
+                              station.status !== "INACTIVE" && { label: "Ngưng hoạt động", type: "danger", onClick: () => handleStatusStation(station.stationId, "INACTIVE") },
+                              { label: "Sửa thông tin", type: "default", onClick: () => handleUpdateStation(station) },
+                              { label: "Cấu hình slot", type: "default", onClick: () => handleConfigSlotTime(station.stationId, slotConfigs.find((config) => config.stationId === station.stationId && config.isActive === "ACTIVE")) },
+                            ].filter(Boolean)}
+                          />
                         </td>
                       </tr>
                     ))
                   ) : (
                     <tr>
                       <td
-                        colSpan="8"
+                        colSpan="7"
                         style={{ textAlign: "center", padding: "30px" }}
                       >
                         Không tìm thấy trạm sạc phù hợp với yêu cầu.
