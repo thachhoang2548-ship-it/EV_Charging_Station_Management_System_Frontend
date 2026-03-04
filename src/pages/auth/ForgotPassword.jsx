@@ -35,7 +35,7 @@ const ForgotPassword = () => {
         navigate("/reset-password", { state: { email } });
       } else {
         toast.error(
-          response.message || "Không thể gửi mã OTP. Vui lòng thử lại!"
+          response.message || "Không thể gửi mã OTP. Vui lòng thử lại!",
         );
       }
     } catch (error) {
@@ -47,49 +47,6 @@ const ForgotPassword = () => {
 
   return (
     <div className="auth-page">
-      <div className="auth-welcome-section">
-        <div className="auth-welcome-content">
-          <h1 className="auth-welcome-title">
-            Quên
-            <br />
-            mật khẩu?
-          </h1>
-          <div className="auth-welcome-divider"></div>
-          <p className="auth-welcome-text">
-            Đừng lo lắng! Nhập email của bạn và chúng tôi sẽ gửi mã OTP để đặt
-            lại mật khẩu.
-          </p>
-          <div className="auth-welcome-icon">
-            <svg
-              viewBox="0 0 100 100"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <circle
-                cx="50"
-                cy="50"
-                r="40"
-                stroke="white"
-                strokeWidth="3"
-                fill="rgba(255,255,255,0.1)"
-              />
-              <path
-                d="M30 45 L50 30 L70 45 L70 65 L30 65 Z"
-                stroke="white"
-                strokeWidth="3"
-                fill="rgba(255,255,255,0.2)"
-              />
-              <path
-                d="M30 45 L50 55 L70 45"
-                stroke="white"
-                strokeWidth="3"
-                strokeLinecap="round"
-              />
-            </svg>
-          </div>
-        </div>
-      </div>
-
       <div className="auth-container">
         <div className="auth-logo">
           <div className="auth-logo-icon auth-logo-car">

@@ -22,18 +22,21 @@ const Login = () => {
   // Xử lý token từ Google OAuth redirect
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
-    const token = urlParams.get('token');
-    const needPhone = urlParams.get('needPhone');
-    
+    const token = urlParams.get("token");
+    const needPhone = urlParams.get("needPhone");
+
     if (token) {
-      console.log('🔑 Token received from Google OAuth:', token.substring(0, 20) + '...');
-      console.log('📱 Need phone:', needPhone);
-      
+      console.log(
+        "🔑 Token received from Google OAuth:",
+        token.substring(0, 20) + "...",
+      );
+      console.log("📱 Need phone:", needPhone);
+
       try {
         // Decode JWT để lấy thông tin user
-        const payload = JSON.parse(atob(token.split('.')[1]));
-        console.log('📦 Token payload:', payload);
-        
+        const payload = JSON.parse(atob(token.split(".")[1]));
+        console.log("📦 Token payload:", payload);
+
         // Lấy role từ token (thử nhiều field có thể)
         // Backend JWT có claim "role" chứ không phải "scope"
         let role = null;
@@ -46,75 +49,80 @@ const Login = () => {
           role = payload.authorities[0].authority || payload.authorities[0];
         } else {
           // Fallback: nếu không có role, mặc định là DRIVER
-          console.warn('⚠️ No role found in token, defaulting to DRIVER');
-          role = 'DRIVER';
+          console.warn("⚠️ No role found in token, defaulting to DRIVER");
+          role = "DRIVER";
         }
-        
+
         // Remove ROLE_ prefix nếu có
-        if (role && typeof role === 'string') {
-          role = role.replace('ROLE_', '');
+        if (role && typeof role === "string") {
+          role = role.replace("ROLE_", "");
         }
-        
-        console.log('👤 User role:', role);
-        
+
+        console.log("👤 User role:", role);
+
         // Lưu token và role vào localStorage
-        localStorage.setItem('accessToken', token);
+        localStorage.setItem("accessToken", token);
         if (role) {
-          localStorage.setItem('role', role);
+          localStorage.setItem("role", role);
         }
-        
+
         // Lấy thông tin user từ token
         const userDetails = {
-          name: payload.name || payload.sub || 'User',
+          name: payload.name || payload.sub || "User",
           email: payload.email || payload.sub,
           phone: null, // Google không trả về phone
-          gender: null
+          gender: null,
         };
-        
+
         // Lưu user details
-        localStorage.setItem('userDetails', JSON.stringify(userDetails));
-        
+        localStorage.setItem("userDetails", JSON.stringify(userDetails));
+
         // 🔥 QUAN TRỌNG: Dispatch Redux action để update store
-        dispatch(loginSuccess({
-          accessToken: token,
-          role: role,
-          userDetails: userDetails
-        }));
-        
-        console.log('✅ Redux state updated');
-        console.log('🔍 Redux state check:', { isLoggedIn: true, role, accessToken: token.substring(0, 20) });
-        
+        dispatch(
+          loginSuccess({
+            accessToken: token,
+            role: role,
+            userDetails: userDetails,
+          }),
+        );
+
+        console.log("✅ Redux state updated");
+        console.log("🔍 Redux state check:", {
+          isLoggedIn: true,
+          role,
+          accessToken: token.substring(0, 20),
+        });
+
         // Show success message
         toast.dismiss(); // Xóa toast cũ
-        toast.success('Đăng nhập Google thành công!', {
-          toastId: 'oauth-success',
+        toast.success("Đăng nhập Google thành công!", {
+          toastId: "oauth-success",
         });
-        
+
         // Xóa token khỏi URL SAU KHI đã lưu và dispatch
-        window.history.replaceState({}, document.title, '/');
-        
+        window.history.replaceState({}, document.title, "/");
+
         // Redirect dựa vào role sau khi Redux đã update (tăng delay)
         setTimeout(() => {
-          console.log('🚀 Navigating to role-based page:', role);
-          if (role?.toUpperCase().includes('ADMIN')) {
-            window.location.href = '/admin'; // Force reload để Redux được pick up
-          } else if (role?.toUpperCase().includes('STAFF')) {
-            window.location.href = '/staff';
-          } else if (role?.toUpperCase().includes('DRIVER')) {
-            window.location.href = '/';
+          console.log("🚀 Navigating to role-based page:", role);
+          if (role?.toUpperCase().includes("ADMIN")) {
+            window.location.href = "/admin"; // Force reload để Redux được pick up
+          } else if (role?.toUpperCase().includes("STAFF")) {
+            window.location.href = "/staff";
+          } else if (role?.toUpperCase().includes("DRIVER")) {
+            window.location.href = "/";
           } else {
-            window.location.href = '/';
+            window.location.href = "/";
           }
         }, 1000); // Tăng từ 500ms lên 1000ms
-        
       } catch (error) {
-        console.error('❌ Error parsing token:', error);
+        console.error("❌ Error parsing token:", error);
         toast.dismiss(); // Xóa toast cũ
-        toast.error('Lỗi xử lý token đăng nhập', {
-          toastId: 'oauth-error',
+        toast.error("Lỗi xử lý token đăng nhập", {
+          toastId: "oauth-error",
         });
         // Xóa token lỗi khỏi URL
-        window.history.replaceState({}, document.title, '/');
+        window.history.replaceState({}, document.title, "/");
       }
     }
   }, [dispatch, navigate]);
@@ -142,51 +150,13 @@ const Login = () => {
       toast.dismiss();
       // Hiển thị toast mới với toastId để tránh duplicate
       toast.error(message, {
-        toastId: 'login-error',
+        toastId: "login-error",
       });
     }
   };
 
   return (
     <div className="auth-page">
-      <div className="auth-welcome-section">
-        <div className="auth-welcome-content">
-          <h1 className="auth-welcome-title">
-            Chào mừng
-            <br />
-            trở lại
-          </h1>
-          <div className="auth-welcome-divider"></div>
-          <p className="auth-welcome-text">
-            Để giữ liên lạc với chúng tôi, vui lòng đăng nhập vào hệ thống.
-          </p>
-          <div className="auth-welcome-icon">
-            <svg
-              viewBox="0 0 100 100"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <circle
-                cx="50"
-                cy="50"
-                r="40"
-                stroke="white"
-                strokeWidth="3"
-                fill="rgba(255,255,255,0.1)"
-              />
-              <path
-                d="M35 45 L50 60 L65 45"
-                stroke="white"
-                strokeWidth="4"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                transform="rotate(-90 50 50)"
-              />
-            </svg>
-          </div>
-        </div>
-      </div>
-
       <div className="auth-container">
         <div className="auth-logo">
           <div className="auth-logo-icon auth-logo-car">
@@ -231,10 +201,6 @@ const Login = () => {
             </svg>
           </div>
           <h1 className="auth-title">Đăng Nhập</h1>
-          <p className="auth-subtitle">
-            Không chỉ đơn giản là <span className="highlight">làm việc</span>,
-            mà còn là kiến tạo nên <span className="highlight">giá trị</span>
-          </p>
         </div>
 
         <form onSubmit={handleSubmit} className="auth-form">
@@ -287,11 +253,7 @@ const Login = () => {
             </span>
           </div>
 
-          <button
-            type="submit"
-            className="auth-button"
-            disabled={loading}
-          >
+          <button type="submit" className="auth-button" disabled={loading}>
             {loading ? "Đang đăng nhập..." : "Đăng nhập"}
           </button>
 
