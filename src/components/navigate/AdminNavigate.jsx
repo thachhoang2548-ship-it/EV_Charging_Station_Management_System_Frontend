@@ -12,6 +12,7 @@ import "./AdminNavigate.css";
 import { useNavigate } from "react-router-dom";
 import paths from "../../path/paths.jsx";
 import { useLogout } from '../../hooks/useAuth.js';
+import EVLogoIcon from "../logo/EVLogoIcon.jsx";
 
 
 export default function AdminNavigate() {
@@ -78,7 +79,7 @@ export default function AdminNavigate() {
       <div className="navContainer">
         {/* Brand Header */}
         <div className="navBrand">
-          <div className="navBrandIcon">⚡</div>
+          <div className="navBrandIcon"><EVLogoIcon className="navBrandIconSvg" strokeWidth={2.5} /></div>
           <div className="navBrandText">
             <span className="navBrandName">EV<span>Charge</span></span>
             <span className="navBrandRole">Admin Portal</span>

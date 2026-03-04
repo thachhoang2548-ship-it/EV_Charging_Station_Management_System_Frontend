@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import paths from "../../path/paths";
+import EVLogoIcon from "../logo/EVLogoIcon.jsx";
 import "./HomeNavbar.css";
 
 const HomeNavbar = () => {
@@ -14,9 +15,7 @@ const HomeNavbar = () => {
       <div className="tev-nav-inner">
         <div className="tev-logo" onClick={() => { window.scrollTo({ top: 0, behavior: "smooth" }); closeMenu(); }}>
           <div className="tev-logo-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-              <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
+            <EVLogoIcon />
           </div>
           <span className="tev-logo-text"><span>EV</span>Charge</span>
         </div>

@@ -13,6 +13,7 @@ import profileIcon from "../../assets/logo/user.png";
 import paths from "../../path/paths.jsx";
 import { isAuthenticated } from "../../utils/authUtils.js";
 import NotificationBell from "../NotificationBell/NotificationBell";
+import EVLogoIcon from "../logo/EVLogoIcon.jsx";
 
 export default function AppNavigation() {
   const location = useLocation();
@@ -70,7 +71,7 @@ export default function AppNavigation() {
       <div className="header-container">
         {/* 1. LOGO AREA (Chỉ hiện trên Desktop) */}
         <div className="brand-logo" onClick={() => navigate(homeNavPath)}>
-          <span className="logo-icon">⚡</span>
+          <span className="logo-icon"><EVLogoIcon className="logo-icon-svg" strokeWidth={2.5} /></span>
           <span className="logo-text">EV<span className="highlight">CHARGE</span></span>
         </div>
 
