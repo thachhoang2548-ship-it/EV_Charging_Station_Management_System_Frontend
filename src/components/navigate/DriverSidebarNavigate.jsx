@@ -70,6 +70,15 @@ export default function DriverSidebarNavigate() {
 
       {/* ── Footer / Logout ── */}
       <div className="navFooter">
+        <NavLink
+          to={paths.home}
+          className="navItem navHomeBtn"
+          title="Về trang chủ"
+          end
+        >
+          <span className="navIcon">🏠</span>
+          <span className="navLabel">Trang chủ</span>
+        </NavLink>
         <button
           className="navLogoutBtn"
           onClick={handleLogout}

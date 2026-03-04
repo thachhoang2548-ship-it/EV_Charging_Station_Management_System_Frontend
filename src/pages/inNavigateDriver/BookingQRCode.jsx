@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
+import Header from "../../components/admin/Header.jsx";
+import "../admin/Dashboard.css";
 import "./BookingDetail.css";
 import { stationAPI } from "../../api/stationApi.js";
 import { toast } from "react-toastify";
+import { ArrowLeft, Download, QrCode, Loader } from "lucide-react";
 
 export default function BookingQRCode() {
   const location = useLocation();
@@ -21,7 +24,6 @@ export default function BookingQRCode() {
   useEffect(() => {
     if (qrUrl) return;
 
-    // try bookingId from params or booking object
     const attemptRestore = async () => {
       try {
         const id = booking?.bookingId ?? booking?.id ?? bookingIdParam;
@@ -75,7 +77,7 @@ export default function BookingQRCode() {
 
   useEffect(() => {
     return () => {
-      // Revoke object URL if we created one to avoid memory leaks
+      // Revoke object URL to avoid memory leaks
       if (qrUrl && typeof qrUrl === "string" && qrUrl.startsWith("blob:")) {
         try {
           URL.revokeObjectURL(qrUrl);
@@ -97,37 +99,38 @@ export default function BookingQRCode() {
   };
 
   return (
-    <div className="booking-container">
-      <button className="btn-back" onClick={() => navigate(-1)}>
-        ← Quay lại
-      </button>
+    <div className="dashboard-container">
+      <Header />
 
-      <h1 className="booking-header">Mã QR đặt chỗ</h1>
+      {/* ── Hero ──────────────────────────────────────── */}
+      <section className="bd-hero">
+        <button className="bd-hero-back" onClick={() => navigate(-1)}>
+          <ArrowLeft size={16} /> Quay lại
+        </button>
+        <h1>Mã QR đặt chỗ</h1>
+        <p>Quét mã QR tại trạm sạc để bắt đầu phiên sạc</p>
+      </section>
 
-      <div className="booking-card">
+      <div className="bd-card">
         {loading ? (
-          <p>Đang tải...</p>
+          <div className="bd-loading">
+            <Loader size={28} style={{ marginBottom: 8, opacity: .5 }} />
+            <p>Đang tải...</p>
+          </div>
+        ) : qrUrl ? (
+          <div className="bd-qr-wrap">
+            <img src={qrUrl} alt="QR Code" className="bd-qr-img" />
+            <div>
+              <button className="bd-qr-download" onClick={handleDownload}>
+                <Download size={16} /> Tải mã QR
+              </button>
+            </div>
+          </div>
         ) : (
-          <>
-            {qrUrl ? (
-              <div style={{ textAlign: "center", marginTop: 12 }}>
-                <img
-                  src={qrUrl}
-                  alt="QR Code"
-                  style={{ maxWidth: "320px", width: "100%", height: "auto" }}
-                />
-                <div style={{ marginTop: 12 }}>
-                  <button className="btn-primary" onClick={handleDownload}>
-                    Tải mã QR
-                  </button>
-                </div>
-              </div>
-            ) : (
-              <p className="booking-field">
-                QR chưa có. Vui lòng xác nhận booking trước.
-              </p>
-            )}
-          </>
+          <div className="bd-qr-wrap">
+            <QrCode size={48} style={{ opacity: .3, marginBottom: 12 }} />
+            <p className="bd-qr-empty">QR chưa có. Vui lòng xác nhận booking trước.</p>
+          </div>
         )}
       </div>
     </div>

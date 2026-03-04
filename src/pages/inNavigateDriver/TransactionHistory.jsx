@@ -4,8 +4,31 @@ import { toast } from "react-toastify";
 import apiClient from "../../api/apiUrls.js";
 import { isAuthenticated } from "../../utils/authUtils.js";
 import paths from "../../path/paths.jsx";
-import "../admin/ManagementUser.css";
-import "./TransactionHistory.css"; // Đảm bảo file CSS nằm cùng thư mục
+import Header from "../../components/admin/Header.jsx";
+import "../admin/Dashboard.css";
+import "./TransactionHistory.css";
+import {
+  Wallet,
+  Search,
+  RefreshCw,
+  MapPin,
+  Car,
+  CircleCheck,
+  CircleX,
+  Clock,
+  AlertTriangle,
+  CreditCard,
+  Inbox,
+  Zap,
+} from "lucide-react";
+
+const TAB_CONFIG = [
+  { key: "ALL", label: "Tất cả" },
+  { key: "COMPLETED", label: "Thành công" },
+  { key: "PENDING", label: "Chờ duyệt" },
+  { key: "UNPAID", label: "Chưa thanh toán" },
+  { key: "FAILED", label: "Thất bại" },
+];
 
 export default function TransactionHistory() {
   const navigate = useNavigate();
@@ -16,9 +39,6 @@ export default function TransactionHistory() {
   const [searchTerm, setSearchTerm] = useState("");
   const [dateFilter, setDateFilter] = useState("ALL");
   const [sortBy, setSortBy] = useState("DATE_DESC");
-
-  // --- MÀU CHỦ ĐẠO ---
-  const THEME_COLOR = "#20b2aa";
 
   useEffect(() => {
     if (!isAuthenticated()) {
@@ -40,7 +60,6 @@ export default function TransactionHistory() {
     try {
       setLoading(true);
       const response = await apiClient.get("/api/driver/transactions");
-      // Sắp xếp mặc định
       const sortedData = (response.data || []).sort(
         (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
       );
@@ -62,15 +81,8 @@ export default function TransactionHistory() {
     }
   };
 
-  // --- HELPER FUNCTIONS ---
-  const getStatusColor = (status) => {
-    switch (status) {
-      case "COMPLETED": return THEME_COLOR;
-      case "FAILED": return "#ff6b6b";
-      case "PENDING": return "#feca57";
-      default: return "#a4b0be";
-    }
-  };
+  /* ── Helpers ── */
+  const getStatusKey = (status) => (status || "").toLowerCase();
 
   const getStatusText = (status) => {
     switch (status) {
@@ -85,302 +97,287 @@ export default function TransactionHistory() {
   const formatDateTime = (dateTime) => {
     if (!dateTime) return "-";
     return new Date(dateTime).toLocaleString("vi-VN", {
-      year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit",
+      year: "numeric", month: "2-digit", day: "2-digit",
+      hour: "2-digit", minute: "2-digit",
     });
   };
 
-  const formatCurrency = (amount, currency = "VND") => {
-    return `${amount?.toLocaleString("vi-VN") || 0} ${currency}`;
-  };
+  const formatCurrency = (amount, currency = "VND") =>
+    `${amount?.toLocaleString("vi-VN") || 0} ${currency}`;
 
   const filterByDate = (item) => {
     if (dateFilter === "ALL") return true;
     const itemDate = new Date(item.createdAt);
     const now = new Date();
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-
     switch (dateFilter) {
       case "TODAY": return itemDate >= today;
       case "WEEK": {
-        const weekAgo = new Date(today);
-        weekAgo.setDate(weekAgo.getDate() - 7);
-        return itemDate >= weekAgo;
+        const d = new Date(today); d.setDate(d.getDate() - 7); return itemDate >= d;
       }
       case "MONTH": {
-        const monthAgo = new Date(today);
-        monthAgo.setMonth(monthAgo.getMonth() - 1);
-        return itemDate >= monthAgo;
+        const d = new Date(today); d.setMonth(d.getMonth() - 1); return itemDate >= d;
       }
       default: return true;
     }
   };
 
-  // --- LOGIC XỬ LÝ SỰ KIỆN ---
+  /* ── Event Handlers ── */
   const handleItemClick = async (item) => {
-    // Nếu là hóa đơn nợ (INVOICE) hoặc GD đang chờ (PENDING) -> Đi đến trang thanh toán
     if (item.type === "INVOICE" || (item.status === "PENDING" && item.invoiceId)) {
-        handlePaymentNavigation(item);
+      handlePaymentNavigation(item);
     } else {
-        // Nếu là GD đã xong -> Xem chi tiết
-        if (paths.transactionDetail) {
-            navigate(paths.transactionDetail.replace(":transactionId", item.id), {
-                state: { transaction: item },
-            });
-        } else {
-            toast.info(`Chi tiết giao dịch #${item.id}`);
-        }
+      if (paths.transactionDetail) {
+        navigate(paths.transactionDetail.replace(":transactionId", item.id), {
+          state: { transaction: item },
+        });
+      } else {
+        toast.info(`Chi tiết giao dịch #${item.id}`);
+      }
     }
   };
 
   const handlePaymentNavigation = async (item) => {
     try {
-        const invoiceId = item.invoiceId || item.id; // Nếu item là invoice thì id chính là invoiceId
-        const response = await apiClient.get(`/api/driver/invoices/${invoiceId}`);
-        const invoiceData = response.data;
-
-        if (invoiceData.status === "PAID") {
-            toast.info("Hóa đơn này đã được thanh toán!");
-            fetchData();
-            return;
-        }
-
-        navigate(paths.payment, {
-            state: {
-                sessionResult: {
-                    sessionId: item.sessionId || invoiceData.sessionId,
-                    invoiceId: invoiceId,
-                    stationName: item.stationName || invoiceData.stationName,
-                    pointNumber: invoiceData.pointNumber || "-",
-                    vehiclePlate: item.vehiclePlate || invoiceData.vehiclePlate,
-                    startTime: invoiceData.startTime || item.createdAt,
-                    endTime: invoiceData.endTime || item.createdAt,
-                    energyKWh: invoiceData.energyKWh || 0,
-                    cost: item.amount || invoiceData.amount,
-                    durationMinutes: invoiceData.durationMinutes || 0,
-                    initialSoc: invoiceData.initialSoc || 0,
-                    finalSoc: invoiceData.finalSoc || 0,
-                    pricePerKWh: invoiceData.pricePerKWh || 0,
-                    currency: item.currency || "VND",
-                    status: "COMPLETED", // Trạng thái session đã xong, chờ thanh toán
-                },
-            },
-        });
+      const invoiceId = item.invoiceId || item.id;
+      const response = await apiClient.get(`/api/driver/invoices/${invoiceId}`);
+      const invoiceData = response.data;
+      if (invoiceData.status === "PAID") {
+        toast.info("Hóa đơn này đã được thanh toán!");
+        fetchData();
+        return;
+      }
+      navigate(paths.payment, {
+        state: {
+          sessionResult: {
+            sessionId: item.sessionId || invoiceData.sessionId,
+            invoiceId,
+            stationName: item.stationName || invoiceData.stationName,
+            pointNumber: invoiceData.pointNumber || "-",
+            vehiclePlate: item.vehiclePlate || invoiceData.vehiclePlate,
+            startTime: invoiceData.startTime || item.createdAt,
+            endTime: invoiceData.endTime || item.createdAt,
+            energyKWh: invoiceData.energyKWh || 0,
+            cost: item.amount || invoiceData.amount,
+            durationMinutes: invoiceData.durationMinutes || 0,
+            initialSoc: invoiceData.initialSoc || 0,
+            finalSoc: invoiceData.finalSoc || 0,
+            pricePerKWh: invoiceData.pricePerKWh || 0,
+            currency: item.currency || "VND",
+            status: "COMPLETED",
+          },
+        },
+      });
     } catch (error) {
-        console.error("Lỗi lấy thông tin hóa đơn:", error);
-        toast.error("Không thể tải thông tin thanh toán");
+      console.error("Lỗi lấy thông tin hóa đơn:", error);
+      toast.error("Không thể tải thông tin thanh toán");
     }
   };
 
-  // --- LOGIC GỘP & LỌC DỮ LIỆU (FIXED) ---
-  
-  // 1. Chuẩn hóa unpaidInvoices
+  /* ── Data Merge & Filter ── */
   const formattedUnpaid = unpaidInvoices.map((inv) => ({
-    ...inv,
-    type: "INVOICE",
-    id: inv.invoiceId,
-    createdAt: inv.issuedAt,
-    status: "UNPAID",
-    description: "Thanh toán hóa đơn sạc"
+    ...inv, type: "INVOICE", id: inv.invoiceId,
+    createdAt: inv.issuedAt, status: "UNPAID",
+    description: "Thanh toán hóa đơn sạc",
   }));
 
-  // 2. Chuẩn hóa transactions
   const formattedTransactions = transactions.map((t) => ({
-    ...t,
-    type: "TRANSACTION",
-    id: t.transactionId,
+    ...t, type: "TRANSACTION", id: t.transactionId,
   }));
 
   let displayItems = [];
+  if (filter === "ALL") displayItems = [...formattedUnpaid, ...formattedTransactions];
+  else if (filter === "UNPAID") displayItems = formattedUnpaid;
+  else displayItems = formattedTransactions.filter((t) => t.status === filter);
 
-  // 3. Logic Filter
-  if (filter === "ALL") {
-    // Gộp cả hai
-    displayItems = [...formattedUnpaid, ...formattedTransactions];
-  } else if (filter === "UNPAID") {
-    displayItems = formattedUnpaid;
-  } else {
-    // Các tab còn lại chỉ lọc trong transactions
-    displayItems = formattedTransactions.filter((t) => t.status === filter);
-  }
-
-  // 4. Apply Common Filters (Date & Search) & Sort
   displayItems = displayItems
     .filter(filterByDate)
     .filter((item) => {
-        const s = searchTerm.toLowerCase();
-        return (
-            searchTerm === "" ||
-            item.id.toString().includes(s) ||
-            item.stationName?.toLowerCase().includes(s) ||
-            item.vehiclePlate?.toLowerCase().includes(s) ||
-            (item.description && item.description.toLowerCase().includes(s))
-        );
+      const s = searchTerm.toLowerCase();
+      return (
+        searchTerm === "" ||
+        item.id?.toString().includes(s) ||
+        item.stationName?.toLowerCase().includes(s) ||
+        item.vehiclePlate?.toLowerCase().includes(s) ||
+        (item.description && item.description.toLowerCase().includes(s))
+      );
     })
     .sort((a, b) => {
-        switch (sortBy) {
-            case "DATE_DESC": return new Date(b.createdAt) - new Date(a.createdAt);
-            case "DATE_ASC": return new Date(a.createdAt) - new Date(b.createdAt);
-            case "AMOUNT_DESC": return b.amount - a.amount;
-            case "AMOUNT_ASC": return a.amount - b.amount;
-            default: return 0;
-        }
+      switch (sortBy) {
+        case "DATE_DESC": return new Date(b.createdAt) - new Date(a.createdAt);
+        case "DATE_ASC": return new Date(a.createdAt) - new Date(b.createdAt);
+        case "AMOUNT_DESC": return b.amount - a.amount;
+        case "AMOUNT_ASC": return a.amount - b.amount;
+        default: return 0;
+      }
     });
 
-  // --- THỐNG KÊ ---
   const stats = {
-    total: transactions.length + unpaidInvoices.length, // Tổng bao gồm cả nợ
+    total: transactions.length + unpaidInvoices.length,
     completed: transactions.filter((t) => t.status === "COMPLETED").length,
     unpaid: unpaidInvoices.length,
     failed: transactions.filter((t) => t.status === "FAILED").length,
   };
 
+  const getTabCount = (key) => {
+    if (key === "ALL") return stats.total;
+    if (key === "UNPAID") return stats.unpaid;
+    return transactions.filter((t) => t.status === key).length;
+  };
+
+  /* ── Render ── */
   return (
-    <div className="transaction-history-container">
-      {/* Header */}
-      <div className="transaction-header">
-        <h1 className="page-title2" style={{ color: THEME_COLOR }}>Lịch sử giao dịch</h1>
-        <button className="btn-refresh" onClick={fetchData}>
-          🔄 Làm mới
-        </button>
+    <div className="dashboard-container">
+      <Header />
+
+      {/* Hero */}
+      <div className="tx-hero">
+        <div className="tx-hero-chip"><Wallet size={14} /> Ví giao dịch</div>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+          <div>
+            <h1 className="tx-hero-title">Lịch sử giao dịch</h1>
+            <p className="tx-hero-sub">Theo dõi tất cả giao dịch sạc điện và hóa đơn của bạn</p>
+          </div>
+          <button className="tx-refresh" onClick={fetchData}>
+            <RefreshCw className="tx-refresh-icon" /> Làm mới
+          </button>
+        </div>
+
+        <div className="tx-counters">
+          <div className="tx-counter">
+            <div className="tx-counter-num">{stats.total}</div>
+            <div className="tx-counter-label">Tổng cộng</div>
+          </div>
+          <div className="tx-counter">
+            <div className="tx-counter-num">{stats.completed}</div>
+            <div className="tx-counter-label">Hoàn tất</div>
+          </div>
+          <div className="tx-counter">
+            <div className="tx-counter-num">{stats.unpaid}</div>
+            <div className="tx-counter-label">Chưa trả</div>
+          </div>
+          <div className="tx-counter">
+            <div className="tx-counter-num">{stats.failed}</div>
+            <div className="tx-counter-label">Thất bại</div>
+          </div>
+        </div>
       </div>
 
-      {/* Stats Cards */}
-      <div className="stats-grid">
-        <div className="stat-card">
-          <div className="stat-label">Tổng hoạt động</div>
-          <div className="stat-value">{stats.total}</div>
+      {/* Alert */}
+      {stats.unpaid > 0 && filter === "ALL" && (
+        <div className="tx-alert">
+          <AlertTriangle className="tx-alert-icon" />
+          Bạn có <strong style={{ margin: "0 4px" }}>{stats.unpaid}</strong> hóa đơn cần thanh toán.
         </div>
-        <div className="stat-card">
-          <div className="stat-label">Hoàn tất</div>
-          <div className="stat-value" style={{ color: THEME_COLOR }}>{stats.completed}</div>
-        </div>
-        <div className="stat-card">
-          <div className="stat-label">Cần thanh toán</div>
-          <div className="stat-value" style={{ color: "#feca57" }}>{stats.unpaid}</div>
-        </div>
-        <div className="stat-card">
-          <div className="stat-label">Thất bại</div>
-          <div className="stat-value" style={{ color: "#ff6b6b" }}>{stats.failed}</div>
-        </div>
-      </div>
+      )}
 
       {/* Controls */}
-      <div className="control-bar">
-        <div className="search-wrapper">
+      <div className="tx-controls">
+        <div className="tx-search">
+          <Search className="tx-search-icon" />
           <input
+            className="tx-search-input"
             type="text"
-            className="search-input"
             placeholder="Tìm kiếm mã, biển số, trạm..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
-        <div className="filters-wrapper">
-          <select className="filter-select" value={dateFilter} onChange={(e) => setDateFilter(e.target.value)}>
-            <option value="ALL">Tất cả thời gian</option>
-            <option value="TODAY">Hôm nay</option>
-            <option value="WEEK">7 ngày qua</option>
-            <option value="MONTH">30 ngày qua</option>
-          </select>
-          <select className="filter-select" value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
-            <option value="DATE_DESC">Mới nhất</option>
-            <option value="DATE_ASC">Cũ nhất</option>
-            <option value="AMOUNT_DESC">Giá trị cao</option>
-            <option value="AMOUNT_ASC">Giá trị thấp</option>
-          </select>
-        </div>
+        <select className="tx-select" value={dateFilter} onChange={(e) => setDateFilter(e.target.value)}>
+          <option value="ALL">Tất cả thời gian</option>
+          <option value="TODAY">Hôm nay</option>
+          <option value="WEEK">7 ngày qua</option>
+          <option value="MONTH">30 ngày qua</option>
+        </select>
+        <select className="tx-select" value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
+          <option value="DATE_DESC">Mới nhất</option>
+          <option value="DATE_ASC">Cũ nhất</option>
+          <option value="AMOUNT_DESC">Giá trị cao</option>
+          <option value="AMOUNT_ASC">Giá trị thấp</option>
+        </select>
       </div>
 
       {/* Tabs */}
-      <div className="filter-tabs">
-        {["ALL", "COMPLETED", "PENDING", "UNPAID", "FAILED"].map((status) => (
+      <div className="tx-tabs">
+        {TAB_CONFIG.map(({ key, label }) => (
           <button
-            key={status}
-            className={`filter-tab ${filter === status ? "active" : ""}`}
-            onClick={() => setFilter(status)}
+            key={key}
+            className={`tx-tab ${filter === key ? "tx-tab--active" : ""}`}
+            onClick={() => setFilter(key)}
           >
-            {status === "ALL" ? "Tất cả" :
-             status === "COMPLETED" ? "Thành công" :
-             status === "PENDING" ? "Chờ duyệt" :
-             status === "UNPAID" ? "Chưa thanh toán" : "Thất bại"}
-             
-            <span className="tab-count">
-              {status === "ALL" ? stats.total :
-               status === "UNPAID" ? stats.unpaid :
-               transactions.filter(t => t.status === status).length}
-            </span>
+            {label}
+            <span className="tx-tab-count">{getTabCount(key)}</span>
           </button>
         ))}
       </div>
 
-      {/* Alert Notice */}
-      {stats.unpaid > 0 && filter === "ALL" && (
-        <div className="notice-alert">
-            ⚡ Bạn có <strong>{stats.unpaid}</strong> hóa đơn cần thanh toán.
-        </div>
-      )}
-
-      {/* List Content */}
-      <div className="transaction-list">
+      {/* List */}
+      <div className="tx-list">
         {loading ? (
-            <div className="text-center py-5">Đang tải dữ liệu...</div>
+          <div className="tx-loading">
+            <div className="tx-spinner" />
+            <p>Đang tải dữ liệu...</p>
+          </div>
         ) : displayItems.length === 0 ? (
-          <div className="empty-state">
-            <div className="empty-icon">📭</div>
-            <p>Không tìm thấy giao dịch nào</p>
+          <div className="tx-empty">
+            <Inbox className="tx-empty-icon" />
+            <p className="tx-empty-text">Không tìm thấy giao dịch nào</p>
           </div>
         ) : (
           displayItems.map((item) => {
             const isUnpaid = item.status === "UNPAID";
-            const color = isUnpaid ? "#feca57" : getStatusColor(item.status);
+            const statusKey = getStatusKey(item.status);
 
             return (
               <div
                 key={`${item.type}-${item.id}`}
-                className="transaction-card"
+                className="tx-card"
                 onClick={() => handleItemClick(item)}
-                style={{ borderLeft: `4px solid ${color}` }}
               >
-                <div className="card-main">
-                    <div className="card-top">
-                        <span className="card-id">#{item.id}</span>
-                        <span className="card-date">{formatDateTime(item.createdAt)}</span>
-                    </div>
+                <div className={`tx-card-accent tx-card-accent--${statusKey}`} />
 
-                    <div className="card-body-info">
-                        <div className="info-row">
-                             <strong style={{ fontSize: '1.05rem', color: '#333' }}>
-                                {isUnpaid ? "Thanh toán hóa đơn sạc" : (item.description || "Giao dịch trạm sạc")}
-                             </strong>
-                        </div>
-                        <div className="info-row details">
-                             <span>📍 {item.stationName || "N/A"}</span>
-                             {item.vehiclePlate && (
-                                <>
-                                    <span className="dot-separator">•</span>
-                                    <span>🚗 {item.vehiclePlate}</span>
-                                </>
-                             )}
-                        </div>
+                <div className="tx-card-body">
+                  <div className="tx-card-main">
+                    <div className="tx-card-top">
+                      <span className="tx-card-id">#{item.id}</span>
+                      <span className="tx-card-date">{formatDateTime(item.createdAt)}</span>
                     </div>
-                </div>
+                    <div className="tx-card-desc">
+                      {isUnpaid ? "Thanh toán hóa đơn sạc" : (item.description || "Giao dịch trạm sạc")}
+                    </div>
+                    <div className="tx-card-details">
+                      {item.stationName && (
+                        <span className="tx-chip">
+                          <MapPin className="tx-chip-icon" />
+                          {item.stationName}
+                        </span>
+                      )}
+                      {item.stationName && item.vehiclePlate && (
+                        <span className="tx-chip-dot" />
+                      )}
+                      {item.vehiclePlate && (
+                        <span className="tx-chip">
+                          <Car className="tx-chip-icon" />
+                          {item.vehiclePlate}
+                        </span>
+                      )}
+                    </div>
+                  </div>
 
-                <div className="card-side">
-                    <div className="price-tag" style={{ color: color }}>
-                        {formatCurrency(item.amount, item.currency)}
+                  <div className="tx-card-side">
+                    <div className="tx-card-price">
+                      {formatCurrency(item.amount, item.currency)}
                     </div>
-                    
-                    <div className="status-badge-clean" 
-                         style={{ 
-                            color: color, 
-                            backgroundColor: isUnpaid ? "#fff8e1" : `${color}15` 
-                         }}>
-                        {getStatusText(item.status)}
-                    </div>
-                    
+                    <span className={`tx-badge tx-badge--${statusKey}`}>
+                      <span className="tx-badge-dot" />
+                      {getStatusText(item.status)}
+                    </span>
                     {(isUnpaid || item.status === "PENDING") && (
-                        <button className="btn-action-small">Thanh toán</button>
+                      <button className="tx-btn-pay" onClick={(e) => { e.stopPropagation(); handleItemClick(item); }}>
+                        <CreditCard size={13} /> Thanh toán
+                      </button>
                     )}
+                  </div>
                 </div>
               </div>
             );

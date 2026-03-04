@@ -1,9 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation, useParams } from "react-router-dom";
 import paths from "../../path/paths.jsx";
+import Header from "../../components/admin/Header.jsx";
+import "../admin/Dashboard.css";
 import "./BookingDetail.css";
 import { toast } from "react-toastify";
 import { stationAPI } from "../../api/stationApi.js";
+import {
+  ArrowLeft, CheckCircle2, XCircle, Clock, Loader,
+  CalendarCheck, Car, MapPin, Zap, PlugZap, Hash, Tag
+} from "lucide-react";
 
 export default function BookingDetail() {
   const navigate = useNavigate();
@@ -53,15 +59,7 @@ export default function BookingDetail() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [bookingId]);
 
-  if (!booking && !bookingId) {
-    return (
-      <div style={{ padding: 20 }}>
-        <p>Không có thông tin booking. Vui lòng quay lại.</p>
-        <button onClick={() => navigate(-1)}>← Quay lại</button>
-      </div>
-    );
-  }
-
+  /* ── Confirm handler ──────────────────────────────── */
   const handleConfirm = async () => {
     if (!bookingId) {
       toast.error("Không có bookingId để xác nhận", { position: "top-center" });
@@ -80,12 +78,11 @@ export default function BookingDetail() {
         return;
       }
 
-      // res.data is binary ArrayBuffer (PNG). Create blob URL and a data URL (base64)
+      // res.data is binary ArrayBuffer (PNG). Create blob URL and data URL
       const arrayBuffer = res.data;
       const blob = new Blob([arrayBuffer], { type: "image/png" });
       const blobUrl = URL.createObjectURL(blob);
 
-      // Convert blob to data URL so we can persist it across refreshes (sessionStorage)
       const toDataURL = (blob) =>
         new Promise((resolve, reject) => {
           try {
@@ -105,7 +102,6 @@ export default function BookingDetail() {
           try {
             sessionStorage.setItem(`qr_booking_${bookingId}`, dataUrl);
           } catch (e) {
-            // ignore storage errors
             console.warn("Could not persist QR to sessionStorage", e);
           }
         }
@@ -113,11 +109,8 @@ export default function BookingDetail() {
         console.warn("Could not convert QR blob to data URL:", err);
       }
 
-      // update booking local state to mark as confirmed
       setBooking((prev) => ({ ...(prev || {}), status: "confirmed" }));
 
-      // Navigate to charging session page and pass booking + qr url in state
-      // We also persisted the data URL to sessionStorage above so ChargingSession can restore it after a refresh.
       navigate(paths.chargingSession, {
         state: { booking: booking || {}, qrBlobUrl: blobUrl },
       });
@@ -129,13 +122,13 @@ export default function BookingDetail() {
     }
   };
 
+  /* ── Cancel handler ───────────────────────────────── */
   const handleCancel = async () => {
     if (!bookingId) {
       toast.error("Không có bookingId để hủy", { position: "top-center" });
       return;
     }
 
-    // Confirm with user
     if (!window.confirm("Bạn có chắc chắn muốn hủy booking này không?")) {
       return;
     }
@@ -152,12 +145,9 @@ export default function BookingDetail() {
         return;
       }
 
-      // update booking local state to mark as cancelled
       setBooking((prev) => ({ ...(prev || {}), status: "cancelled" }));
-
       toast.success("Hủy booking thành công!", { position: "top-center" });
 
-      // Navigate back to previous page after a short delay
       setTimeout(() => {
         navigate(-1);
       }, 1500);
@@ -169,93 +159,134 @@ export default function BookingDetail() {
     }
   };
 
-  // Render booking fields (safe access)
+  /* ── Helper: status badge ─────────────────────────── */
+  const statusBadge = (status) => {
+    const s = (status || "").toLowerCase();
+    let cls = "bd-status--default";
+    let icon = <Clock size={14} />;
+    let text = status || "Không rõ";
+
+    if (s === "pending" || s === "created") {
+      cls = "bd-status--pending";
+      icon = <Clock size={14} />;
+      text = "Chờ xác nhận";
+    } else if (s === "confirmed") {
+      cls = "bd-status--confirmed";
+      icon = <CheckCircle2 size={14} />;
+      text = "Đã xác nhận";
+    } else if (s === "cancelled" || s === "canceled") {
+      cls = "bd-status--cancelled";
+      icon = <XCircle size={14} />;
+      text = "Đã hủy";
+    }
+
+    return <span className={`bd-status ${cls}`}>{icon} {text}</span>;
+  };
+
+  /* ── Fallback: no booking ─────────────────────────── */
+  if (!booking && !bookingId) {
+    return (
+      <div className="dashboard-container">
+        <Header />
+        <div className="bd-empty">
+          <p>Không có thông tin booking. Vui lòng quay lại.</p>
+          <button className="bd-empty-back" onClick={() => navigate(-1)}>
+            <ArrowLeft size={14} /> Quay lại
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   const b = booking || {};
 
   return (
-    <div className="booking-container">
-      <button className="btn-back" onClick={() => navigate(-1)}>
-        ← Quay lại
-      </button>
+    <div className="dashboard-container">
+      <Header />
 
-      <h1 className="booking-header">Chi tiết đặt chỗ</h1>
+      {/* ── Hero ──────────────────────────────────────── */}
+      <section className="bd-hero">
+        <button className="bd-hero-back" onClick={() => navigate(-1)}>
+          <ArrowLeft size={16} /> Quay lại
+        </button>
+        <h1>Chi tiết đặt chỗ</h1>
+        <p>Xem và quản lý thông tin đặt chỗ sạc của bạn</p>
+      </section>
 
       {loading ? (
-        <p>Đang tải...</p>
+        <div className="bd-loading">
+          <Loader size={28} style={{ marginBottom: 8, opacity: .5 }} />
+          <p>Đang tải thông tin booking...</p>
+        </div>
       ) : (
-        <div className="booking-card">
-          <p className="booking-field">
-            <strong>Booking ID:</strong>{" "}
-            {b.bookingId ?? b.bookingID ?? b.id ?? "-"}
-          </p>
-          <p className="booking-field">
-            <strong>Vehicle:</strong> {b.vehicleName ?? b.vehicleName ?? "-"}
-          </p>
-          <p className="booking-field">
-            <strong>Thời gian:</strong>{" "}
-            {b.timeRange ?? b.timeRangeString ?? b.bookingDate ?? "-"}
-          </p>
-          <p className="booking-field">
-            <strong>Slot:</strong> {b.slotName ?? b.slotName ?? "-"}
-          </p>
-          <p className="booking-field">
-            <strong>Connector:</strong>{" "}
-            {b.connectorType ?? b.connectorType ?? "-"}
-          </p>
-          <p className="booking-field">
-            <strong>Giá:</strong> {b.price ?? "-"}
-          </p>
-          <p className="booking-field">
-            <strong>Trạm:</strong> {b.stationName ?? "-"}
-          </p>
-          <p className="booking-field">
-            <strong>Ngày đặt:</strong> {b.bookingDate ?? b.bookingTime ?? "-"}
-          </p>
-          <p className="booking-field">
-            <strong>Trạng thái:</strong> {b.status ?? "-"}
-          </p>
+        <div className="bd-card">
+          {/* Status badge */}
+          {statusBadge(b.status)}
 
-          <div className="booking-actions">
+          {/* Fields grid */}
+          <div className="bd-fields">
+            <div className="bd-field">
+              <span className="bd-field-label"><Hash size={12} /> Booking ID</span>
+              <span className="bd-field-value">{b.bookingId ?? b.bookingID ?? b.id ?? "–"}</span>
+            </div>
+            <div className="bd-field">
+              <span className="bd-field-label"><Car size={12} /> Xe</span>
+              <span className="bd-field-value">{b.vehicleName ?? "–"}</span>
+            </div>
+            <div className="bd-field">
+              <span className="bd-field-label"><Clock size={12} /> Thời gian</span>
+              <span className="bd-field-value">{b.timeRange ?? b.timeRangeString ?? b.bookingDate ?? "–"}</span>
+            </div>
+            <div className="bd-field">
+              <span className="bd-field-label"><Tag size={12} /> Slot</span>
+              <span className="bd-field-value">{b.slotName ?? "–"}</span>
+            </div>
+            <div className="bd-field">
+              <span className="bd-field-label"><PlugZap size={12} /> Connector</span>
+              <span className="bd-field-value">{b.connectorType ?? "–"}</span>
+            </div>
+            <div className="bd-field">
+              <span className="bd-field-label"><Zap size={12} /> Giá</span>
+              <span className="bd-field-value">{b.price ?? "–"}</span>
+            </div>
+            <div className="bd-field">
+              <span className="bd-field-label"><MapPin size={12} /> Trạm</span>
+              <span className="bd-field-value">{b.stationName ?? "–"}</span>
+            </div>
+            <div className="bd-field">
+              <span className="bd-field-label"><CalendarCheck size={12} /> Ngày đặt</span>
+              <span className="bd-field-value">{b.bookingDate ?? b.bookingTime ?? "–"}</span>
+            </div>
+          </div>
+
+          {/* Actions */}
+          <div className="bd-actions">
             <button
+              className="bd-btn bd-btn--confirm"
               onClick={handleConfirm}
-              disabled={
-                confirming ||
-                b.status === "confirmed" ||
-                b.status === "cancelled"
-              }
-              className="btn-primary"
+              disabled={confirming || b.status === "confirmed" || b.status === "cancelled"}
             >
-              {b.status === "confirmed"
-                ? "Đã xác nhận"
-                : confirming
-                ? "Đang xác nhận..."
-                : "Xác nhận"}
+              {b.status === "confirmed" ? (
+                <><CheckCircle2 size={16} /> Đã xác nhận</>
+              ) : confirming ? (
+                <><Loader size={16} /> Đang xác nhận...</>
+              ) : (
+                <><CheckCircle2 size={16} /> Xác nhận</>
+              )}
             </button>
 
             <button
+              className="bd-btn bd-btn--cancel"
               onClick={handleCancel}
               disabled={cancelling || b.status === "cancelled"}
-              className="btn-danger"
-              style={{
-                background:
-                  cancelling || b.status === "cancelled" ? "#ccc" : "#f44336",
-                color: "white",
-                border: "none",
-                padding: "12px 24px",
-                borderRadius: "8px",
-                fontSize: "16px",
-                fontWeight: "600",
-                cursor:
-                  cancelling || b.status === "cancelled"
-                    ? "not-allowed"
-                    : "pointer",
-              }}
             >
-              {b.status === "cancelled"
-                ? "Đã hủy"
-                : cancelling
-                ? "Đang hủy..."
-                : "Hủy booking"}
+              {b.status === "cancelled" ? (
+                <><XCircle size={16} /> Đã hủy</>
+              ) : cancelling ? (
+                <><Loader size={16} /> Đang hủy...</>
+              ) : (
+                <><XCircle size={16} /> Hủy booking</>
+              )}
             </button>
           </div>
         </div>
