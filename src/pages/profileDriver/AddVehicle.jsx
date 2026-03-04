@@ -1,142 +1,195 @@
-import { getAllVehicleBrandsApi, getModelsByBrandApi } from '../../api/driverApi.js';
-import { useEffect, useState } from 'react';
-import { addVehicleApi } from '../../api/driverApi.js';
-// import {toast} from 'react-toastify';
-import ModelVehicle from '../../components/driver/ModelVehicle.jsx';
-import './AddVehicle.css';
-// 🚗 Import các icons
-import { FaCar, FaChevronLeft, FaPlus, FaTachometerAlt, FaWarehouse, FaCheckCircle, FaExclamationTriangle } from 'react-icons/fa';
+import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
+import {
+  getAllVehicleBrandsApi,
+  getModelsByBrandApi,
+  addVehicleApi,
+} from "../../api/driverApi.js";
+import ModelVehicle from "../../components/driver/ModelVehicle.jsx";
+import {
+  Car,
+  X,
+  ChevronLeft,
+  Plus,
+  Hash,
+  Check,
+} from "lucide-react";
+import "./AddVehicle.css";
 
 export default function AddVehicle({ onClose, onSuccess }) {
-    const [step, setStep] = useState(1);
-    const [brands, setBrands] = useState([]);
-    const [models, setModels] = useState([]);
-    const [brand, setBrand] = useState('');
+  const [step, setStep] = useState(1);
+  const [brands, setBrands] = useState([]);
+  const [models, setModels] = useState([]);
+  const [brand, setBrand] = useState("");
+  const [selectedModel, setSelectedModel] = useState(null);
+  const [vehicle, setVehicle] = useState({ modelId: "", licensePlate: "" });
 
-    const [vehicle, setVehicle] = useState({
-        modelId: '',
-        licensePlate: '',
-    });
-
-
-    const handleAddVehicle = async () => {
-        if (!vehicle.licensePlate || !vehicle.modelId) {
-            // ⚠️ Icon cho cảnh báo
-            alert(`⚠️ Vui lòng nhập đầy đủ thông tin xe!`);
-            return;
-        } else {
-            try {
-                console.log('Adding vehicle:', vehicle);
-                const response = await addVehicleApi(vehicle);
-                if (response.success) {
-                    // ✅ Icon cho thành công
-                    alert(`✅ Thêm xe thành công!`);
-                    setVehicle({ modelId: '', licensePlate: '' });
-                    setBrand('');
-                    setStep(1);
-                    if (onSuccess) {
-                        onSuccess();
-                    }
-                    if (onClose) {
-                        onClose();
-                    }
-                } else {
-                    alert(`❌ ${response.message || 'Thêm xe thất bại!'}`);
-                }
-            } catch (error) {
-                console.error('Failed to add vehicle:', error);
-                alert(`🛑 Lỗi hệ thống: ${error.response?.data || error.message}`);
-            }
-        }
+  /* ── Fetch brands on mount ── */
+  useEffect(() => {
+    const fetchBrands = async () => {
+      const res = await getAllVehicleBrandsApi();
+      if (res.success) setBrands(res.data);
     };
-    useEffect(() => {
-        const fetchBrands = async () => {
-            const response = await getAllVehicleBrandsApi();
-            if (response.success) {
-                setBrands(response.data);
-            } else {
-                console.error('Failed to fetch vehicle brands:', response.message);
-            }
-        };
+    fetchBrands();
+  }, []);
 
-        fetchBrands();
-    }, []);
+  /* ── Fetch models when brand changes ── */
+  useEffect(() => {
+    if (!brand) return;
+    const fetchModels = async () => {
+      const res = await getModelsByBrandApi(brand);
+      if (res.success) setModels(res.data);
+    };
+    fetchModels();
+  }, [brand]);
 
-    
-    useEffect(() => {
-        if (!brand) return;
-        const fetchModelsByBrand = async (brand) => {
-            const response = await getModelsByBrandApi(brand);
-            if (response.success) {
-                console.log('Models for brand', brand, ':', response.data);
-                setModels(response.data);
-            } else {
+  /* ── Select a model → go to step 2 ── */
+  const handleSelectModel = (model) => {
+    setSelectedModel(model);
+    setVehicle((v) => ({ ...v, modelId: model.modelId }));
+    setStep(2);
+  };
 
-                console.error('Failed to fetch vehicle models:', response.message);
-            } 
-        };
+  /* ── Submit ── */
+  const handleAddVehicle = async () => {
+    if (!vehicle.licensePlate || !vehicle.modelId) {
+      toast.warn("Vui lòng nhập đầy đủ thông tin xe!");
+      return;
+    }
+    try {
+      const res = await addVehicleApi(vehicle);
+      if (res.success) {
+        toast.success("Thêm xe thành công!");
+        setVehicle({ modelId: "", licensePlate: "" });
+        setBrand("");
+        setStep(1);
+        onSuccess?.();
+        onClose?.();
+      } else {
+        toast.error(res.message || "Thêm xe thất bại!");
+      }
+    } catch (error) {
+      toast.error("Lỗi hệ thống: " + (error.response?.data || error.message));
+    }
+  };
 
-        fetchModelsByBrand(brand);
-    }, [brand]);
-
-    
-
-    return (
-        <div className="add-vehicle-container" >
-            {/* //STEP 1: CHỌN BRAND XE CÓ TRONG HỆ THỐNG và model xe tương ứng */}
-            {step === 1 && (
-            <div> 
-                <h2><FaCar style={{ marginRight: '8px' }} /> Chọn thương hiệu xe</h2>
-                <select
-                    value={brand}
-                    onChange={(e) => setBrand(e.target.value)}
-                >
-                    <option value=""><FaWarehouse /> Chọn thương hiệu</option>
-                    {brands.map((brand) => (
-                        <option key={brand} value={brand}>
-                            {brand}
-                        </option>
-                    ))}
-                </select>
-                {models.length > 0 && (
-                    <div> 
-                        <h2><FaTachometerAlt style={{ marginRight: '8px' }} /> Chọn mẫu xe</h2>
-                        {models.map((model) => (
-                            model.status === 'ACTIVE' && (
-                            <ul key={model.id} style={{listStyleType: 'none', padding: 0, cursor: 'pointer'}} 
-                                onClick={() => {setVehicle({ ...vehicle, modelId: model.modelId}); setStep(2);}}>
-                                <li>
-                                    <ModelVehicle model={model} />
-                                </li>
-                            </ul>
-                            )
-                        ))}
-                    </div>
-                )}
-            </div>
-            )}
-            {/* //STEP 2: NHẬP THÔNG TIN XE */}
-            {step === 2 && ( 
-                <div>
-                    <button onClick={() => setStep(1)}><FaChevronLeft /> Quay lại</button>
-                    <h2><FaCar style={{ marginRight: '8px' }} /> Nhập thông tin xe</h2>
-                    <label>
-                        Biển số xe:
-                        <input
-                            type="text"
-                            value={vehicle.licensePlate}
-                            onChange={(e) => setVehicle({ ...vehicle, licensePlate: e.target.value })}
-                            placeholder="Ví dụ: 51A12345"
-                        />
-                    </label>
-                    <br />
-                    <button
-                        onClick={handleAddVehicle}
-                    >
-                        <FaPlus style={{ marginRight: '5px' }} /> Thêm xe
-                    </button>
-                </div>
-            )}
+  return (
+    <div className="av-overlay" onClick={onClose}>
+      <div className="av-modal" onClick={(e) => e.stopPropagation()}>
+        {/* ── Header ── */}
+        <div className="av-header">
+          <div className="av-header-left">
+            <span className="av-header-icon"><Car size={20} /></span>
+            <h3 className="av-header-title">Thêm xe mới</h3>
+          </div>
+          <button className="av-close-btn" onClick={onClose}>
+            <X size={18} />
+          </button>
         </div>
-    );
+
+        {/* ── Step indicator ── */}
+        <div className="av-progress">
+          <div className={`av-step ${step >= 1 ? "active" : ""} ${step > 1 ? "done" : ""}`}>
+            <span className="av-step-num">{step > 1 ? <Check size={14} /> : "1"}</span>
+            <span className="av-step-label">Chọn xe</span>
+          </div>
+          <div className={`av-step-line ${step > 1 ? "done" : ""}`} />
+          <div className={`av-step ${step >= 2 ? "active" : ""}`}>
+            <span className="av-step-num">2</span>
+            <span className="av-step-label">Xác nhận</span>
+          </div>
+        </div>
+
+        {/* ── Body ── */}
+        <div className="av-body">
+          {/* STEP 1 */}
+          {step === 1 && (
+            <>
+              <label className="av-select-label">Thương hiệu</label>
+              <select
+                className="av-select"
+                value={brand}
+                onChange={(e) => setBrand(e.target.value)}
+              >
+                <option value="">-- Chọn thương hiệu --</option>
+                {brands.map((b) => (
+                  <option key={b} value={b}>{b}</option>
+                ))}
+              </select>
+
+              {models.length > 0 && (
+                <>
+                  <p className="av-model-section-title">Chọn mẫu xe</p>
+                  <div className="av-model-grid">
+                    {models
+                      .filter((m) => m.status === "ACTIVE")
+                      .map((model) => (
+                        <div
+                          key={model.id}
+                          onClick={() => handleSelectModel(model)}
+                        >
+                          <ModelVehicle model={model} />
+                        </div>
+                      ))}
+                  </div>
+                </>
+              )}
+            </>
+          )}
+
+          {/* STEP 2 */}
+          {step === 2 && (
+            <>
+              {/* Selected model summary */}
+              {selectedModel && (
+                <div className="av-confirm-card">
+                  {selectedModel.imageUrl ? (
+                    <img
+                      src={selectedModel.imageUrl}
+                      alt={selectedModel.model}
+                      className="av-confirm-img"
+                    />
+                  ) : (
+                    <span className="av-confirm-icon"><Car size={24} /></span>
+                  )}
+                  <div className="av-confirm-info">
+                    <p className="av-confirm-name">{selectedModel.model}</p>
+                    <p className="av-confirm-detail">
+                      {selectedModel.year} · {selectedModel.connectorTypeDisplayName} · {selectedModel.connectorDefaultMaxPowerKW} kW
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {/* License plate */}
+              <div className="av-input-group">
+                <label className="av-input-label">
+                  <Hash size={13} /> Biển số xe
+                </label>
+                <input
+                  className="av-input"
+                  type="text"
+                  value={vehicle.licensePlate}
+                  onChange={(e) =>
+                    setVehicle({ ...vehicle, licensePlate: e.target.value })
+                  }
+                  placeholder="Ví dụ: 51A-123.45"
+                />
+              </div>
+
+              {/* Actions */}
+              <div className="av-btn-row">
+                <button className="av-btn-back" onClick={() => setStep(1)}>
+                  <ChevronLeft size={16} /> Quay lại
+                </button>
+                <button className="av-btn-submit" onClick={handleAddVehicle}>
+                  <Plus size={16} /> Thêm xe
+                </button>
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  );
 }
