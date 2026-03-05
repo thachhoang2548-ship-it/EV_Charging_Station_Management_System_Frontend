@@ -19,17 +19,18 @@ export default function AppNavigation() {
   const location = useLocation();
   const navigate = useNavigate();
   const isLoggedIn = useSelector(isAuthenticated);
-  
+
   // State quản lý trạng thái cuộn trang
   const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
       // Tìm container scroll chính (driver-layout-large hoặc driver-layout-main)
-      const scrollContainer = document.querySelector('.driver-layout-large') || 
-                             document.querySelector('.driver-layout-mobile') ||
-                             document.querySelector('.driver-layout-main');
-      
+      const scrollContainer =
+        document.querySelector(".driver-layout-large") ||
+        document.querySelector(".driver-layout-mobile") ||
+        document.querySelector(".driver-layout-main");
+
       if (scrollContainer) {
         const scrollTop = scrollContainer.scrollTop;
         setIsScrolled(scrollTop > 50);
@@ -40,10 +41,11 @@ export default function AppNavigation() {
     };
 
     // Lắng nghe scroll từ container chính
-    const scrollContainer = document.querySelector('.driver-layout-large') || 
-                           document.querySelector('.driver-layout-mobile') ||
-                           document.querySelector('.driver-layout-main');
-    
+    const scrollContainer =
+      document.querySelector(".driver-layout-large") ||
+      document.querySelector(".driver-layout-mobile") ||
+      document.querySelector(".driver-layout-main");
+
     if (scrollContainer) {
       scrollContainer.addEventListener("scroll", handleScroll);
       return () => scrollContainer.removeEventListener("scroll", handleScroll);
@@ -57,14 +59,17 @@ export default function AppNavigation() {
   // Khi đã đăng nhập: home icon trỏ vào /driver dashboard
   // Khi chưa đăng nhập: home icon trỏ vào / (trang chủ công khai)
   const homeNavPath = isLoggedIn ? paths.driverDashboard : paths.home;
-
-  // Khi đã đăng nhập: home icon trỏ vào /driver dashboard
-  // Khi chưa đăng nhập: home icon trỏ vào / (trang chủ công khai)
-  const homeNavPath = isLoggedIn ? paths.driverDashboard : paths.home;
-
   const navItems = [
-    { path: homeNavPath, icon: homeIcon, label: isLoggedIn ? "Dashboard" : "Trang chủ" },
-    { path: homeNavPath, icon: homeIcon, label: isLoggedIn ? "Dashboard" : "Trang chủ" },
+    {
+      path: homeNavPath,
+      icon: homeIcon,
+      label: isLoggedIn ? "Dashboard" : "Trang chủ",
+    },
+    {
+      path: homeNavPath,
+      icon: homeIcon,
+      label: isLoggedIn ? "Dashboard" : "Trang chủ",
+    },
     { path: paths.stations, icon: stationsIcon, label: "Trạm sạc" },
     { path: paths.chargingSession, icon: bookingIcon, label: "Phiên sạc" },
     { path: paths.rules, icon: ruleIcon, label: "Điều khoản" },
@@ -76,8 +81,12 @@ export default function AppNavigation() {
       <div className="header-container">
         {/* 1. LOGO AREA (Chỉ hiện trên Desktop) */}
         <div className="brand-logo" onClick={() => navigate(homeNavPath)}>
-          <span className="logo-icon"><EVLogoIcon className="logo-icon-svg" strokeWidth={2.5} /></span>
-          <span className="logo-text">EV<span className="highlight">CHARGE</span></span>
+          <span className="logo-icon">
+            <EVLogoIcon className="logo-icon-svg" strokeWidth={2.5} />
+          </span>
+          <span className="logo-text">
+            EV<span className="highlight">CHARGE</span>
+          </span>
         </div>
 
         {/* 2. NAVIGATION LINKS */}
