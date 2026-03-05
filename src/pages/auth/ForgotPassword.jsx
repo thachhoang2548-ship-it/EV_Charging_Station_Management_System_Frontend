@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { forgotPasswordApi } from "../../api/authApi";
+import EVLogoIcon from "../../components/logo/EVLogoIcon.jsx";
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
@@ -49,46 +50,8 @@ const ForgotPassword = () => {
     <div className="auth-page">
       <div className="auth-container">
         <div className="auth-logo">
-          <div className="auth-logo-icon auth-logo-car">
-            <svg
-              viewBox="0 0 100 100"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <rect
-                x="20"
-                y="45"
-                width="60"
-                height="25"
-                rx="8"
-                fill="white"
-                fillOpacity="0.9"
-              />
-              <rect
-                x="30"
-                y="35"
-                width="18"
-                height="15"
-                rx="3"
-                fill="white"
-                fillOpacity="0.7"
-              />
-              <rect
-                x="52"
-                y="35"
-                width="18"
-                height="15"
-                rx="3"
-                fill="white"
-                fillOpacity="0.7"
-              />
-              <circle cx="32" cy="72" r="8" fill="white" />
-              <circle cx="68" cy="72" r="8" fill="white" />
-              <path
-                d="M50 50 L45 60 L52 60 L47 70 L55 58 L50 58 Z"
-                fill="#FFD700"
-              />
-            </svg>
+          <div className="auth-logo-icon auth-logo-bolt">
+            <EVLogoIcon className="auth-logo-bolt-svg" strokeWidth={2.5} />
           </div>
           <h1 className="auth-title">Quên Mật Khẩu</h1>
           <p className="auth-subtitle">

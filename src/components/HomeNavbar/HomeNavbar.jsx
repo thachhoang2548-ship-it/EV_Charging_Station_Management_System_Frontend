@@ -1,19 +1,29 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import paths from "../../path/paths";
 import EVLogoIcon from "../logo/EVLogoIcon.jsx";
 import "./HomeNavbar.css";
 
 const HomeNavbar = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
 
   const closeMenu = () => setMenuOpen(false);
+  const goHome = () => {
+    navigate(paths.home);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    closeMenu();
+  };
+
+  const isHomeActive = location.pathname === paths.home;
+  const isStationsActive = location.pathname.startsWith(paths.stations);
+  const isRulesActive = location.pathname === paths.rules;
 
   return (
     <header className="tev-nav">
       <div className="tev-nav-inner">
-        <div className="tev-logo" onClick={() => { window.scrollTo({ top: 0, behavior: "smooth" }); closeMenu(); }}>
+        <div className="tev-logo" onClick={goHome}>
           <div className="tev-logo-icon">
             <EVLogoIcon />
           </div>
@@ -21,10 +31,38 @@ const HomeNavbar = () => {
         </div>
 
         <nav className={`tev-nav-links${menuOpen ? " open" : ""}`}>
-          <a href="#" className="tev-nav-link active" onClick={closeMenu}>Trang chủ</a>
-          <a href="#" className="tev-nav-link" onClick={() => { navigate(paths.stations); closeMenu(); }}>Bản đồ trạm sạc</a>
-          <a href="#" className="tev-nav-link" onClick={closeMenu}>Cộng đồng</a>
-          <a href="#" className="tev-nav-link" onClick={() => { navigate(paths.rules); closeMenu(); }}>Hỗ trợ</a>
+          <a
+            href="#"
+            className={`tev-nav-link${isHomeActive ? " active" : ""}`}
+            onClick={(e) => {
+              e.preventDefault();
+              goHome();
+            }}
+          >
+            Trang chủ
+          </a>
+          <a
+            href="#"
+            className={`tev-nav-link${isStationsActive ? " active" : ""}`}
+            onClick={(e) => {
+              e.preventDefault();
+              navigate(paths.stations);
+              closeMenu();
+            }}
+          >
+            Bản đồ trạm sạc
+          </a>
+          <a
+            href="#"
+            className={`tev-nav-link${isRulesActive ? " active" : ""}`}
+            onClick={(e) => {
+              e.preventDefault();
+              navigate(paths.rules);
+              closeMenu();
+            }}
+          >
+            Điều khoản
+          </a>
           <div className="tev-nav-mobile-actions">
             <button className="tev-btn-ghost" onClick={() => { navigate(paths.login); closeMenu(); }}>Đăng nhập</button>
             <button className="tev-btn-primary" onClick={() => { navigate(paths.register); closeMenu(); }}>Đăng ký miễn phí</button>
