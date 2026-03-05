@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Home.css";
 import paths from "../../path/paths";
-import HomeNavbar from "../../components/HomeNavbar/HomeNavbar";
 import HomeFooter from "../../components/HomeFooter/HomeFooter";
 import MeshBackground from "../../components/MeshBackground/MeshBackground";
 
@@ -94,11 +93,6 @@ const Home = () => {
 
   return (
     <div className="tev-root">
-
-      {/* ================================================
-          NAVBAR
-      ================================================ */}
-      <HomeNavbar />
 
       {/* ================================================
           HERO — MAP SEARCH
@@ -244,7 +238,7 @@ const Home = () => {
         <div className="tev-container">
           <div className="tev-section-head">
             <div className="tev-section-badge white">Đơn giản & Nhanh chóng</div>
-            <h2 className="tev-section-title">Sử dụng Trạm EV<br /><span className="tev-green">chỉ với 3 bước</span></h2>
+            <h2 className="tev-section-title">Sử dụng EV Charge<br /><span className="tev-green">chỉ với 3 bước</span></h2>
           </div>
 
           <div className="tev-steps">
@@ -270,21 +264,20 @@ const Home = () => {
                 </svg>
               </div>
               <h3>Sạc xe của bạn</h3>
-              <p>Quét mã QR tại trụ sạc hoặc đặt chỗ trước qua app. Theo dõi tiến trình sạc theo thời gian thực ngay trên điện thoại.</p>
+              <p>Chọn cổng sạc phù hợp, bắt đầu phiên sạc bằng QR hoặc đặt lịch trước. Theo dõi trạng thái công suất và thời gian sạc theo thời gian thực.</p>
             </div>
 
             <div className="tev-step">
               <div className="tev-step-num">03</div>
               <div className="tev-step-icon-circle">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="28" height="28">
-                  <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
-                  <circle cx="9" cy="7" r="4" />
-                  <path d="M23 21v-2a4 4 0 00-3-3.87" />
-                  <path d="M16 3.13a4 4 0 010 7.75" />
+                  <rect x="2" y="5" width="20" height="14" rx="2" />
+                  <line x1="2" y1="10" x2="22" y2="10" />
+                  <line x1="6" y1="15" x2="10" y2="15" />
                 </svg>
               </div>
-              <h3>Chia sẻ cộng đồng</h3>
-              <p>Đánh giá trạm sạc, chia sẻ trải nghiệm và giúp đỡ các thành viên khác trong cộng đồng xe điện Việt Nam.</p>
+              <h3>Thanh toán & giao dịch</h3>
+              <p>Thanh toán nhanh ngay trên ứng dụng, xem hóa đơn và theo dõi lịch sử giao dịch minh bạch cho từng phiên sạc.</p>
             </div>
           </div>
         </div>

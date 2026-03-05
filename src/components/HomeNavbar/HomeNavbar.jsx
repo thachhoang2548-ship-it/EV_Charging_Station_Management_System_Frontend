@@ -17,6 +17,7 @@ const HomeNavbar = () => {
   };
 
   const isHomeActive = location.pathname === paths.home;
+  const isAboutActive = location.pathname === paths.about;
   const isStationsActive = location.pathname.startsWith(paths.stations);
   const isRulesActive = location.pathname === paths.rules;
 
@@ -40,6 +41,17 @@ const HomeNavbar = () => {
             }}
           >
             Trang chủ
+          </a>
+          <a
+            href="#"
+            className={`tev-nav-link${isAboutActive ? " active" : ""}`}
+            onClick={(e) => {
+              e.preventDefault();
+              navigate(paths.about);
+              closeMenu();
+            }}
+          >
+            Giới thiệu
           </a>
           <a
             href="#"

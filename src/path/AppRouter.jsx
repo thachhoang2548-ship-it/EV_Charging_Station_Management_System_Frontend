@@ -18,6 +18,7 @@ import ResetPassword from "../pages/auth/ResetPassword.jsx";
 
 // Driver Pages =====================================
 import Home from "../pages/home/Home.jsx";
+import About from "../pages/home/About.jsx";
 import DriverDashboard from "../pages/driver/DriverDashboard.jsx";
 import Guide from "../pages/driver/Guide.jsx";
 import Rules from "../pages/inNavigateDriver/Rules.jsx";
@@ -70,6 +71,7 @@ const AppRouter = () => {
         {/* ======================= PUBLIC ROUTES (Không cần đăng nhập) ======================= */}
         <Route path="/" element={<DriverLayout />}>
           <Route index element={<Home />} />
+          <Route path={paths.about} element={<About />} />
           <Route path={paths.login} element={<Login />} />
           <Route path={paths.register} element={<Register />} />
           <Route path={paths.verify} element={<Verify />} />

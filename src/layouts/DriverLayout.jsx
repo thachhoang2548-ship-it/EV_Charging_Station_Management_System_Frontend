@@ -9,6 +9,8 @@ export default function DriverLayout() {
   const [isMobile, setIsMobile] = useState(false);
   const location = useLocation();
   const authPaths = [
+    paths.home,
+    paths.about,
     paths.login,
     paths.register,
     paths.forgotPassword,
