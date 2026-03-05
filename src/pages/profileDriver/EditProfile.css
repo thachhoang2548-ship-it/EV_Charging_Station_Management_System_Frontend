@@ -1,6 +1,7 @@
-/* ===== EDIT PROFILE STYLES ===== */
-/* Màu chủ đạo: Trắng (#FFFFFF) */
-/* Màu phụ: #20B2AA (LightSeaGreen) */
+/* ============================================================
+   EDITPROFILE.CSS — Driver Edit Profile (Modern)
+   Green brand #16a34a — prefix: ep-
+   ============================================================ */
 
 /* Container chính */
 .edit-profile-container {
@@ -23,18 +24,105 @@
   padding-bottom: 15px;
 }
 
-/* Form Groups */
-.form-group {
-  margin-bottom: 24px;
+.ep-sidebar-tag {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  color: #16a34a;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  padding: 3px 12px;
+  border-radius: 20px;
+  margin-bottom: 20px;
+}
+
+.ep-sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ep-nav-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 16px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.ep-nav-btn.outline {
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  color: #475569;
+}
+
+.ep-nav-btn.outline:hover {
+  border-color: #16a34a;
+  color: #16a34a;
+  background: #f0fdf4;
+}
+
+/* ══════════════ RIGHT MAIN PANEL ══════════════ */
+.ep-main {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ── Section Card ── */
+.ep-section {
+  background: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.06);
+  padding: 24px 28px;
+}
+
+.ep-section-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 22px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.ep-section-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  flex-shrink: 0;
+}
+
+.ep-section-icon.identity {
+  background: linear-gradient(135deg, #16a34a, #22c55e);
+}
+
+.ep-section-icon.contact {
+  background: linear-gradient(135deg, #2563eb, #3b82f6);
+}
+
+.ep-section-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0;
 }
 
 /* Form Labels */
 .form-label {
-  color: #16a34a;
+  color: #20b2aa;
   font-weight: 600;
-  font-size: 14px;
-  margin-bottom: 8px;
-  display: block;
+  color: #64748b;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -67,14 +155,23 @@
   box-shadow: 0 0 0 3px rgba(32, 178, 170, 0.1);
 }
 
-.form-control::placeholder {
-  color: #b0b0b0;
+.ep-field .form-control::placeholder {
+  color: #94a3b8;
   font-style: italic;
 }
 
-/* Security Notice */
-.edit-profile-container strong {
-  display: block;
+.ep-field .form-control:-webkit-autofill,
+.ep-field .form-control:-webkit-autofill:hover,
+.ep-field .form-control:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0 1000px #ffffff inset !important;
+  -webkit-text-fill-color: #334155 !important;
+}
+
+/* ── Notice ── */
+.ep-notice {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   padding: 12px 16px;
   background-color: rgba(32, 178, 170, 0.08);
   border-left: 4px solid #20b2aa;
@@ -94,54 +191,68 @@
   color: #ffffff;
   font-size: 16px;
   font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 1px;
   cursor: pointer;
-  transition: all 0.3s ease;
-  margin-top: 10px;
+  transition: all 0.25s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 
-.btn-primary:hover {
-  background-color: #1a9a94;
+.ep-btn-submit:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(32, 178, 170, 0.3);
+  box-shadow: 0 6px 20px rgba(22, 163, 74, 0.3);
 }
 
-.btn-primary:active {
+.ep-btn-submit:active {
   transform: translateY(0);
-  box-shadow: 0 2px 10px rgba(32, 178, 170, 0.2);
 }
 
-.btn-primary:disabled {
-  background-color: #b0d4d1;
-  cursor: not-allowed;
-  transform: none;
+.ep-btn-cancel {
+  flex: 1;
+  padding: 13px 24px;
+  background: #ffffff;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  color: #64748b;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 
-/* Responsive Design */
+.ep-btn-cancel:hover {
+  border-color: #cbd5e1;
+  background: #f8fafc;
+  transform: translateY(-2px);
+}
+
+/* ══════════════ RESPONSIVE ══════════════ */
 @media (max-width: 768px) {
-  .edit-profile-container {
-    margin: 20px;
-    padding: 24px;
+  .ep-layout {
+    grid-template-columns: 1fr;
   }
 
-  .edit-profile-container h2 {
-    font-size: 24px;
+  .ep-sidebar {
+    max-width: 340px;
+    margin: 0 auto;
   }
 }
 
-/* Animation cho form khi load */
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
+@media (max-width: 480px) {
+  .ep-section {
+    padding: 20px 18px;
   }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
 
-.edit-profile-container {
-  animation: fadeInUp 0.5s ease;
+  .ep-field-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ep-btn-row {
+    flex-direction: column;
+  }
 }

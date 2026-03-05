@@ -4,7 +4,7 @@
  * Tạo nền với các hình tròn gradient loang mờ, kiểu Stripe / Linear / Vercel.
  *
  * Props:
- *   variant   : "green" | "purple" | "sunset" | "ocean" | "dark"  (default: "green")
+ *   variant   : "green" | "purple" | "sunset" | "ocean" | "dark" | "mint"  (default: "green")
  *   animated  : boolean                                            (default: true)
  *   className : string
  *   style     : object
@@ -173,6 +173,37 @@ const VARIANTS = {
         color: "rgba(245, 158, 11, 0.12)",   /* amber            */
         top: "0%", left: "42%",
         width: "44%",
+        animation: "orb-drift-d",
+      },
+    ],
+  },
+
+  /* Nền trắng xanh nhạt, orb loang rất mờ */
+  mint: {
+    base: "#f7fdfb",
+    orbs: [
+      {
+        color: "rgba(110, 231, 183, 0.30)",  /* mint xanh trái  */
+        top: "-20%", left: "-15%",
+        width: "80%",
+        animation: "orb-drift-a",
+      },
+      {
+        color: "rgba(52, 211, 153, 0.18)",   /* emerald phải    */
+        top: "25%", left: "55%",
+        width: "70%",
+        animation: "orb-drift-b",
+      },
+      {
+        color: "rgba(167, 243, 208, 0.22)",  /* pale mint dưới  */
+        top: "60%", left: "-5%",
+        width: "65%",
+        animation: "orb-drift-c",
+      },
+      {
+        color: "rgba(94, 234, 212, 0.15)",   /* teal nhạt giữa  */
+        top: "5%", left: "38%",
+        width: "55%",
         animation: "orb-drift-d",
       },
     ],

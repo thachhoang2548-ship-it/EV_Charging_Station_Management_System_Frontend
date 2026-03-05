@@ -107,16 +107,14 @@
   }
 
   /* --- LOGO --- */
-  .brand-logo {
+  .brand-logo { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+  .logo-icon {
     display: flex;
     align-items: center;
-    gap: 10px;
-    cursor: pointer;
+    justify-content: center;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
   }
-  .logo-icon {
-    font-size: 32px;
-    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
-  }
+  .logo-icon-svg { width: 28px; height: 28px; }
   .logo-text {
     font-size: 24px;
     font-weight: 800;

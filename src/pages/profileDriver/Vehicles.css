@@ -1,255 +1,676 @@
-/* MyVehicles.css */
+/* ============================================================
+   VEHICLES.CSS — "Electric Garage" Bold Design
+   Brand #16a34a — prefix: vh-
+   ============================================================ */
 
-.my-vehicles-container {
-  background-color: #ffffff;
-  min-height: 100vh;
-  padding: 2rem 0;
+/* ── BACK BUTTON ── */
+.vh-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 18px;
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 10px;
+  color: #475569;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-bottom: 20px;
 }
 
-.my-vehicles-header {
-  text-align: center;
-  color: #20b2aa;
-  font-size: 2rem;
-  font-weight: bold;
-  margin-bottom: 2rem;
-  padding: 1.5rem;
-  background: linear-gradient(135deg, #ffffff 0%, #f0f8f8 100%);
-  border-bottom: 3px solid #20b2aa;
-  box-shadow: 0 2px 4px rgba(32, 178, 170, 0.1);
+.vh-back-btn:hover {
+  border-color: #16a34a;
+  color: #16a34a;
+  background: #f0fdf4;
 }
 
-.vehicle-list {
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 0 1rem;
+/* ═══════════════════════════════════════════════
+   HERO — Soft green gradient (matches Profile)
+   ═══════════════════════════════════════════════ */
+.vh-hero {
+  position: relative;
+  background: linear-gradient(135deg, #16a34a 0%, #15803d 40%, #166534 100%);
+  border-radius: 24px;
+  padding: 40px 36px;
+  margin-bottom: 28px;
+  overflow: hidden;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+  min-height: 200px;
 }
 
-/* Empty state */
-.empty-state {
-  text-align: center;
-  padding: 4rem 2rem;
-  background-color: #f8f9fa;
-  border-radius: 12px;
-  margin: 2rem auto;
-  max-width: 600px;
-  border: 2px dashed #20b2aa;
+/* Decorative circles */
+.vh-hero::before,
+.vh-hero::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.08;
+  background: #ffffff;
+}
+.vh-hero::before {
+  width: 280px; height: 280px;
+  top: -80px; right: -40px;
+}
+.vh-hero::after {
+  width: 180px; height: 180px;
+  bottom: -50px; left: 15%;
 }
 
-.empty-state-icon {
-  font-size: 4rem;
-  color: #20b2aa;
-  margin-bottom: 1rem;
+.vh-hero-body {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  min-width: 0;
 }
 
-.empty-state p {
-  color: #666;
-  font-size: 1.2rem;
+/* "EV Garage" chip */
+.vh-hero-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 14px;
+  background: rgba(255,255,255,0.15);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 20px;
+  color: rgba(255,255,255,0.9);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+}
+
+.vh-hero-title {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin: 0 0 6px;
+  letter-spacing: -0.3px;
+}
+
+.vh-hero-sub {
+  font-size: 0.88rem;
+  color: rgba(255,255,255,0.7);
   margin: 0;
 }
 
-/* Vehicle Card Styles */
-.vehicle-card {
-  background: #ffffff;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
-  height: 100%;
-  border: 2px solid transparent;
+/* Hero counters — glass panel */
+.vh-hero-counters {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin-top: 24px;
+  padding: 14px 20px;
+  background: rgba(255,255,255,0.12);
+  backdrop-filter: blur(12px);
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.15);
+  width: fit-content;
 }
 
-.vehicle-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 16px rgba(32, 178, 170, 0.2);
-  border-color: #20b2aa;
+.vh-hero-counter {
+  text-align: center;
+  padding: 0 20px;
 }
 
-.vehicle-card-image-wrapper {
+.vh-hero-counter-num {
+  display: block;
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: #ffffff;
+  line-height: 1;
+}
+
+.vh-hero-counter-label {
+  display: block;
+  font-size: 0.68rem;
+  color: rgba(255,255,255,0.6);
+  margin-top: 4px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 600;
+}
+
+.vh-hero-counter-divider {
+  width: 1px;
+  height: 32px;
+  background: rgba(255,255,255,0.18);
+  flex-shrink: 0;
+}
+
+/* Hero CTA button */
+.vh-hero-btn {
   position: relative;
-  width: 100%;
-  height: 250px;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 28px;
+  background: #ffffff;
+  color: #16a34a;
+  border: none;
+  border-radius: 14px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+  flex-shrink: 0;
+}
+
+.vh-hero-btn:hover {
+  background: #f0fdf4;
+  transform: translateY(-3px);
+  box-shadow: 0 8px 28px rgba(0,0,0,0.18);
+}
+
+/* ═══════════════════════════════════════════════
+   FILTER TABS — gradient active
+   ═══════════════════════════════════════════════ */
+.vh-filter {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.vh-filter-tab {
+  padding: 10px 22px;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  background: #ffffff;
+  color: #64748b;
+}
+
+.vh-filter-tab:hover {
+  border-color: #bbf7d0;
+  color: #16a34a;
+}
+
+.vh-filter-tab.active {
+  background: linear-gradient(135deg, #16a34a, #22c55e);
+  color: #ffffff;
+  border-color: transparent;
+  box-shadow: 0 4px 16px rgba(22,163,74,0.3);
+}
+
+.vh-filter-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 700;
+  margin-left: 6px;
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+.vh-filter-tab.active .vh-filter-count {
+  background: rgba(255,255,255,0.25);
+  color: #ffffff;
+}
+
+/* ═══════════════════════════════════════════════
+   VEHICLE GRID
+   ═══════════════════════════════════════════════ */
+.vh-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 24px;
+  animation: vh-fadeIn 0.4s ease;
+}
+
+@keyframes vh-fadeIn {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ═══════════════════════════════════════════════
+   VEHICLE CARD — Bold, prominent info
+   ═══════════════════════════════════════════════ */
+.vh-card {
+  position: relative;
+  background: #ffffff;
+  border-radius: 20px;
   overflow: hidden;
-  background-color: #f0f8f8;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+  border: 1px solid #e2e8f0;
+  transition: all 0.4s cubic-bezier(.4,0,.2,1);
+  display: flex;
+  flex-direction: column;
 }
 
-.vehicle-card-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.3s ease;
+.vh-card:hover {
+  transform: translateY(-8px);
+  box-shadow:
+    0 20px 50px rgba(22,163,74,0.12),
+    0 0 0 1px rgba(22,163,74,0.2);
+  border-color: rgba(22,163,74,0.3);
 }
 
-.vehicle-card:hover .vehicle-card-image {
-  transform: scale(1.05);
+/* ── Accent gradient bar (top) ── */
+.vh-card-accent {
+  height: 5px;
+  background: linear-gradient(90deg, #16a34a, #4ade80, #22c55e);
+  background-size: 200% 100%;
+  animation: vh-shimmer 4s ease infinite;
 }
 
-.vehicle-card-placeholder {
-  width: 100%;
-  height: 100%;
+@keyframes vh-shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Inactive variant → amber accent */
+.vh-card--inactive .vh-card-accent {
+  background: linear-gradient(90deg, #d97706, #fbbf24, #f59e0b);
+  background-size: 200% 100%;
+}
+
+.vh-card--inactive {
+  opacity: 0.88;
+}
+
+/* ── Card content ── */
+.vh-card-content {
+  padding: 24px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Top row: brand + status */
+.vh-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.vh-card-brand {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: #16a34a;
+  padding: 4px 12px;
+  background: #f0fdf4;
+  border-radius: 6px;
+}
+
+/* Status badge with animated pulse */
+.vh-card-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.vh-card-badge.active {
+  background: rgba(22,163,74,0.08);
+  color: #16a34a;
+}
+
+.vh-card-badge.inactive {
+  background: rgba(217,119,6,0.08);
+  color: #d97706;
+}
+
+.vh-card-badge-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  position: relative;
+}
+
+.vh-card-badge.active .vh-card-badge-dot {
+  background: #16a34a;
+  animation: vh-pulse 2s ease-in-out infinite;
+}
+
+.vh-card-badge.inactive .vh-card-badge-dot {
+  background: #d97706;
+}
+
+@keyframes vh-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(22,163,74,0.4); }
+  50%      { box-shadow: 0 0 0 6px rgba(22,163,74,0); }
+}
+
+/* Vehicle name — LARGE & BOLD */
+.vh-card-name {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0 0 16px;
+  line-height: 1.2;
+  letter-spacing: -0.3px;
+}
+
+/* License plate — clean badge style */
+.vh-card-plate {
+  display: inline-flex;
+  align-items: center;
+  gap: 0;
+  margin-bottom: 18px;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1.5px solid #e2e8f0;
+  width: fit-content;
+}
+
+.vh-card-plate-flag {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #e0f2f1 0%, #b2dfdb 100%);
-  color: #20b2aa;
-  font-size: 3rem;
+  padding: 10px 12px;
+  background: linear-gradient(135deg, #16a34a, #15803d);
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  align-self: stretch;
 }
 
-.vehicle-card-body {
-  padding: 1.5rem;
+.vh-card-plate-text {
+  padding: 10px 16px;
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #1e293b;
+  letter-spacing: 2px;
+  font-variant-numeric: tabular-nums;
+  background: #f8fafc;
 }
 
-.vehicle-card-title {
-  color: #20b2aa;
-  font-size: 1.5rem;
-  font-weight: bold;
-  margin-bottom: 0.5rem;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+/* Spec chips */
+.vh-card-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 18px;
+  flex: 1;
 }
 
-.vehicle-card-info {
-  color: #666;
-  margin-bottom: 1rem;
+.vh-card-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 7px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #334155;
 }
 
-.vehicle-card-info-item {
+.vh-card-chip.year {
+  background: #f0f9ff;
+  border: 1px solid #e0f2fe;
+}
+
+.vh-card-chip.connector {
+  background: #faf5ff;
+  border: 1px solid #f3e8ff;
+}
+
+.vh-card-chip.power {
+  background: #fff7ed;
+  border: 1px solid #ffedd5;
+}
+
+/* Points reward bar — gradient green */
+.vh-card-reward {
   display: flex;
   align-items: center;
-  margin-bottom: 0.5rem;
-  font-size: 0.95rem;
+  gap: 10px;
+  padding: 14px 18px;
+  background: linear-gradient(135deg, #16a34a, #22c55e);
+  border-radius: 14px;
+  margin-bottom: 18px;
+  color: #ffffff;
 }
 
-.vehicle-card-info-item svg,
-.vehicle-card-info-item i {
-  color: #20b2aa;
-  margin-right: 0.5rem;
-  min-width: 20px;
+.vh-card-reward svg {
+  flex-shrink: 0;
 }
 
-.vehicle-card-price {
-  color: #20b2aa;
-  font-size: 1.4rem;
-  font-weight: bold;
-  margin: 1rem 0;
+.vh-card-reward-num {
+  font-size: 1.2rem;
+  font-weight: 800;
 }
 
-.vehicle-card-actions {
+.vh-card-reward-text {
+  font-size: 0.78rem;
+  opacity: 0.8;
+  margin-left: auto;
+}
+
+/* ── Card Action Button ── */
+.vh-card-action {
+  width: 100%;
   display: flex;
-  gap: 0.75rem;
-  margin-top: 1rem;
-}
-
-.btn-view {
-  flex: 1;
-  background-color: #20b2aa;
-  color: white;
-  border: none;
-  padding: 0.75rem 1rem;
-  border-radius: 8px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 18px;
+  border-radius: 12px;
+  font-size: 14px;
   font-weight: 600;
-  transition: all 0.3s ease;
   cursor: pointer;
-}
-
-.btn-view:hover {
-  background-color: #1a8f89;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(32, 178, 170, 0.3);
-}
-
-.btn-delete {
-  flex: 1;
-  background-color: #dc3545;
-  color: white;
+  transition: all 0.25s ease;
   border: none;
-  padding: 0.75rem 1rem;
-  border-radius: 8px;
-  font-weight: 600;
-  transition: all 0.3s ease;
-  cursor: pointer;
 }
 
-.btn-delete:hover {
-  background-color: #c82333;
+.vh-card-action.deactivate {
+  background: #fff5f5;
+  color: #dc2626;
+  border: 2px solid #fecaca;
+}
+
+.vh-card-action.deactivate:hover {
+  background: #dc2626;
+  color: #ffffff;
+  border-color: #dc2626;
   transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(220, 53, 69, 0.3);
+  box-shadow: 0 6px 20px rgba(220,38,38,0.25);
 }
 
-/* Loading state */
-.loading-spinner {
+.vh-card-action.activate {
+  background: #f0fdf4;
+  color: #16a34a;
+  border: 2px solid #bbf7d0;
+}
+
+.vh-card-action.activate:hover {
+  background: #16a34a;
+  color: #ffffff;
+  border-color: #16a34a;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(22,163,74,0.25);
+}
+
+/* ═══════════════════════════════════════════════
+   EMPTY STATE
+   ═══════════════════════════════════════════════ */
+.vh-empty {
   text-align: center;
-  padding: 4rem;
-  color: #20b2aa;
+  padding: 64px 28px;
+  background: #ffffff;
+  border-radius: 24px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+  border: 2px dashed #cbd5e1;
 }
 
-.btn btn {
-  background-color: #20b2aa;
-  color: white;
-  border: none;
-  padding: 0.75rem 1rem;
-  border-radius: 8px;
-  font-weight: 600;
-  transition: all 0.3s ease;
-  cursor: pointer;
-}
-.loading-spinner::after {
-  content: "";
-  display: inline-block;
-  width: 50px;
-  height: 50px;
-  border: 5px solid #f0f8f8;
-  border-top-color: #20b2aa;
+.vh-empty-icon {
+  width: 80px; height: 80px;
   border-radius: 50%;
-  animation: spin 1s linear infinite;
+  background: linear-gradient(135deg, #064e3b, #16a34a);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  margin-bottom: 20px;
+  box-shadow: 0 8px 24px rgba(22,163,74,0.25);
 }
 
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
+.vh-empty-title {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0 0 8px;
+}
+
+.vh-empty-desc {
+  font-size: 0.88rem;
+  color: #64748b;
+  margin: 0 0 24px;
+}
+
+.vh-empty-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 28px;
+  background: linear-gradient(135deg, #16a34a, #22c55e);
+  color: #ffffff;
+  border: none;
+  border-radius: 14px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 20px rgba(22,163,74,0.3);
+}
+
+.vh-empty-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 32px rgba(22,163,74,0.4);
+}
+
+/* ═══════════════════════════════════════════════
+   LOADING
+   ═══════════════════════════════════════════════ */
+.vh-loading {
+  text-align: center;
+  padding: 64px 20px;
+}
+
+.vh-spinner {
+  width: 44px; height: 44px;
+  border: 4px solid #e2e8f0;
+  border-top-color: #16a34a;
+  border-radius: 50%;
+  animation: vh-spin 0.8s linear infinite;
+  margin: 0 auto 16px;
+}
+
+@keyframes vh-spin {
+  to { transform: rotate(360deg); }
+}
+
+.vh-loading p {
+  color: #64748b;
+  font-size: 0.9rem;
+}
+
+/* ═══════════════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════════════ */
+@media (max-width: 1024px) {
+  .vh-hero {
+    padding: 32px 28px;
   }
-}
 
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  .my-vehicles-header {
+  .vh-hero-title {
     font-size: 1.5rem;
-    padding: 1rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .vh-hero {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 28px 22px;
+    min-height: auto;
   }
 
-  .vehicle-card-image-wrapper {
-    height: 200px;
+  .vh-hero-btn {
+    align-self: flex-start;
   }
 
-  .vehicle-card-title {
-    font-size: 1.25rem;
+  .vh-hero-counters {
+    width: 100%;
+    justify-content: center;
   }
 
-  .vehicle-card-price {
+  .vh-hero-counter {
+    padding: 0 14px;
+  }
+
+  .vh-hero-counter-num {
+    font-size: 1.4rem;
+  }
+
+  .vh-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .vh-filter {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    gap: 8px;
+    padding-bottom: 4px;
+  }
+
+  .vh-filter-tab {
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 480px) {
+  .vh-hero {
+    padding: 24px 18px;
+  }
+
+  .vh-hero-title {
+    font-size: 1.3rem;
+  }
+
+  .vh-hero-counter-num {
     font-size: 1.2rem;
   }
 
-  .vehicle-card-actions {
-    flex-direction: column;
+  .vh-card-content {
+    padding: 20px;
   }
 
-  .btn-view,
-  .btn-delete {
-    width: 100%;
-  }
-}
-
-@media (max-width: 576px) {
-  .my-vehicles-container {
-    padding: 1rem 0;
+  .vh-card-name {
+    font-size: 1.2rem;
   }
 
-  .vehicle-card-image-wrapper {
-    height: 180px;
+  .vh-card-plate-text {
+    font-size: 1rem;
+    letter-spacing: 1.5px;
   }
 
-  .vehicle-card-body {
-    padding: 1rem;
+  .vh-card-chips {
+    gap: 6px;
   }
 }

@@ -110,7 +110,7 @@ const Home = () => {
 
         <div className="tev-hero-body">
           <div className="tev-hero-label">
-            <span className="tev-dot-live" /> Hơn 200 trạm đang hoạt động trực tuyến
+            <span className="tev-dot-live" /> Hơn 100 trạm đang hoạt động trực tuyến
           </div>
 
           <h1 className="tev-hero-title">
@@ -140,106 +140,99 @@ const Home = () => {
               Tìm kiếm
             </button>
           </div>
-
-          <div className="tev-hero-tags">
-            <span className="tev-tag" onClick={() => navigate(paths.stations)}>📍 Gần tôi</span>
-            <span className="tev-tag" onClick={() => navigate(paths.stations)}>⚡ DC nhanh</span>
-            <span className="tev-tag" onClick={() => navigate(paths.stations)}>🅿️ Có chỗ đậu</span>
-            <span className="tev-tag" onClick={() => navigate(paths.stations)}>🕐 Mở 24/7</span>
-          </div>
         </div>
+      </section>
 
-        {/* Floating stats bar */}
-        <div className="tev-stats-bar">
-          <div className="tev-stat-item">
-            <span className="tev-stat-n">200+</span>
-            <span className="tev-stat-l">Trạm sạc</span>
+
+      {/* ================================================
+          ABOUT — BUILT FROM REALITY
+      ================================================ */}
+      <section className="tev-about-section">
+        <div className="tev-container">
+          <h2 className="tev-about-title">
+            Trạm EV - Được xây dựng từ thực tế,<br />dành cho cộng đồng
+          </h2>
+          <div className="tev-about-body">
+            <p>
+              Chúng tôi bắt đầu từ một câu hỏi đơn giản của những người sở hữu xe điện đầu tiên: "Làm sao để hành trình
+              xuyên Việt không bị gián đoạn?". Trạm EV không ra đời từ một phòng thí nghiệm, mà từ những trải nghiệm thực
+              tế trên các cung đường cao tốc, những lần chờ đợi tại trạm sạc và sự hỗ trợ lẫn nhau của các tài xế.
+            </p>
+            <p>
+              <strong>
+                Khi bạn sử dụng Trạm EV, bạn không chỉ xem một bản đồ - bạn đang kết nối với sức mạnh trí tuệ của hàng
+                ngàn người dùng khác. Mỗi lượt đánh giá, mỗi lần cập nhật trạng thái là một đóng góp quý giá giúp người đi
+                sau an tâm hơn.
+              </strong>
+            </p>
           </div>
-          <div className="tev-stat-div" />
-          <div className="tev-stat-item">
-            <span className="tev-stat-n">63</span>
-            <span className="tev-stat-l">Tỉnh thành</span>
-          </div>
-          <div className="tev-stat-div" />
-          <div className="tev-stat-item">
-            <span className="tev-stat-n">50K+</span>
-            <span className="tev-stat-l">Thành viên</span>
-          </div>
-          <div className="tev-stat-div" />
-          <div className="tev-stat-item">
-            <span className="tev-stat-n">120K+</span>
-            <span className="tev-stat-l">Lượt sạc</span>
-          </div>
+          <blockquote className="tev-quote">
+            <p>
+              Tôi còn nhớ cảm giác lo âu khi lần đầu cầm lái chiếc xe điện từ TP. Hồ Chí Minh về Đà Lạt. Những câu hỏi về
+              trạm sạc, độ tương thích của đầu sạc hay liệu trạm đó có đang hoạt động hay không luôn thường trực. Nhưng
+              khi mở Trạm EV, tôi nhận ra mình không đơn độc. Nhờ những cập nhật thực tế từ Cộng đồng người dùng trạm
+              sạc công cộng, tôi biết chính xác trạm sạc tại trạm dừng chân tiếp theo đang trống và có công suất thực tế bao
+              nhiêu. Chính những thông tin nhỏ bé nhưng kịp thời đó đã biến một hành trình đầy áp lực thành một trải
+              nghiệm khám phá thú vị.
+            </p>
+            <cite>— Anh Minh, thành viên đời đầu của Trạm EV</cite>
+          </blockquote>
         </div>
       </section>
 
       {/* ================================================
-          HOT STATIONS
+          FEATURES — WHY TRAM EV?
       ================================================ */}
-      <section className="tev-section tev-section-white">
+      <section className="tev-feat-new-section">
         <div className="tev-container">
-          <div className="tev-section-head">
-            <div className="tev-section-badge green">Nổi bật hôm nay</div>
-            <h2 className="tev-section-title">Trạm sạc được <span className="tev-green">đánh giá cao</span></h2>
-            <p className="tev-section-sub">Dựa trên đánh giá của cộng đồng trong 7 ngày gần nhất</p>
+          <div className="tev-section-hd">
+            <h2>Tại sao Trạm EV là lựa chọn hàng đầu?</h2>
+            <p>Nền tảng thông tin xe điện toàn diện nhất Việt Nam - được xây dựng bởi cộng đồng, dành cho cộng đồng.</p>
           </div>
-
-          <div className="tev-station-tabs">
-            {["all", "dc", "ac", "hanoi", "hcm"].map((t) => (
-              <button
-                key={t}
-                className={`tev-tab ${activeTab === t ? "active" : ""}`}
-                onClick={() => setActiveTab(t)}
-              >
-                {t === "all" ? "Tất cả" : t === "dc" ? "Sạc nhanh DC" : t === "ac" ? "Sạc AC" : t === "hanoi" ? "Hà Nội" : "TP.HCM"}
-              </button>
-            ))}
-          </div>
-
-          <div className="tev-station-grid">
-            {STATIONS.map((st) => (
-              <div className="tev-station-card" key={st.id} onClick={() => navigate(paths.stations)}>
-                <div className="tev-station-img-wrap">
-                  <img src={st.img} alt={st.name} className="tev-station-img" />
-                  <div className="tev-station-badge-power">{st.power}</div>
-                  <div className={`tev-station-avail ${st.available === 0 ? "full" : "open"}`}>
-                    {st.available === 0 ? "Hết chỗ" : `${st.available}/${st.slots} trống`}
-                  </div>
-                </div>
-
-                <div className="tev-station-body">
-                  <h3 className="tev-station-name">{st.name}</h3>
-                  <p className="tev-station-addr">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="14" height="14">
-                      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" />
-                      <circle cx="12" cy="10" r="3" />
-                    </svg>
-                    {st.address}
-                  </p>
-
-                  <div className="tev-station-tags">
-                    {st.tags.map((tag) => (
-                      <span className="tev-pill" key={tag}>{tag}</span>
-                    ))}
-                  </div>
-
-                  <div className="tev-station-footer">
-                    <div className="tev-rating">
-                      <span className="tev-star">★</span>
-                      <strong>{st.rating}</strong>
-                      <span className="tev-rev-count">({st.reviews} đánh giá)</span>
-                    </div>
-                    <button className="tev-btn-sm">Xem chi tiết</button>
-                  </div>
-                </div>
+          <div className="tev-feat-grid">
+            <div className="tev-feat-card">
+              <div className="tev-feat-ic tev-feat-ic--orange">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="22" height="22">
+                  <path d="M12 2L2 7l10 5 10-5-10-5z" />
+                  <path d="M2 17l10 5 10-5" />
+                  <path d="M2 12l10 5 10-5" />
+                </svg>
               </div>
-            ))}
-          </div>
-
-          <div className="tev-center-btn">
-            <button className="tev-btn-outline-green" onClick={() => navigate(paths.stations)}>
-              Xem tất cả trạm sạc &rarr;
-            </button>
+              <h3>Dữ liệu đa tầng</h3>
+              <p>Tích hợp mọi nhà cung cấp sạc trên một giao diện duy nhất, đảm bảo tính trung lập và không giới hạn thương hiệu xe.</p>
+            </div>
+            <div className="tev-feat-card">
+              <div className="tev-feat-ic tev-feat-ic--green">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="22" height="22">
+                  <circle cx="12" cy="12" r="10" />
+                  <polyline points="12 6 12 12 16 14" />
+                </svg>
+              </div>
+              <h3>Tối ưu hóa thời gian</h3>
+              <p>Hệ thống phân tích thông minh giúp bạn tìm thấy trạm sạc phù hợp nhất dựa trên công suất, trạng thái thực tế và tiện ích xung quanh.</p>
+            </div>
+            <div className="tev-feat-card">
+              <div className="tev-feat-ic tev-feat-ic--blue">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="22" height="22">
+                  <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
+                  <circle cx="9" cy="7" r="4" />
+                  <path d="M23 21v-2a4 4 0 00-3-3.87" />
+                  <path d="M16 3.13a4 4 0 010 7.75" />
+                </svg>
+              </div>
+              <h3>Cộng đồng dẫn dắt</h3>
+              <p>Mỗi lượt đánh giá, mỗi lần cập nhật trạng thái là một đóng góp quý giá giúp người đi sau an tâm hơn trên mọi hành trình.</p>
+            </div>
+            <div className="tev-feat-card">
+              <div className="tev-feat-ic tev-feat-ic--purple">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="22" height="22">
+                  <rect x="5" y="2" width="14" height="20" rx="2" ry="2" />
+                  <line x1="12" y1="18" x2="12.01" y2="18" />
+                </svg>
+              </div>
+              <h3>Kết nối CarPlay/Android Auto</h3>
+              <p>Đưa thông tin trực tiếp lên màn hình xe, giúp việc tìm trạm sạc an toàn và thuận tiện khi đang lái xe.</p>
+            </div>
           </div>
         </div>
       </section>
@@ -247,7 +240,7 @@ const Home = () => {
       {/* ================================================
           HOW IT WORKS
       ================================================ */}
-      <MeshBackground variant="green" intensity="low" blur={70} tag="section" className="tev-section">
+      <MeshBackground variant="mint" intensity="low" blur={70} tag="section" className="tev-section">
         <div className="tev-container">
           <div className="tev-section-head">
             <div className="tev-section-badge white">Đơn giản & Nhanh chóng</div>
@@ -297,111 +290,6 @@ const Home = () => {
         </div>
       </MeshBackground>
 
-      {/* ================================================
-          COMMUNITY REVIEWS
-      ================================================ */}
-      <section className="tev-section tev-section-white">
-        <div className="tev-container">
-          <div className="tev-section-head">
-            <div className="tev-section-badge green">Cộng đồng</div>
-            <h2 className="tev-section-title">Chia sẻ từ <span className="tev-green">thành viên</span></h2>
-            <p className="tev-section-sub">Hàng nghìn đánh giá thực từ cộng đồng người dùng xe điện</p>
-          </div>
-
-          <div className="tev-review-grid">
-            {REVIEWS.map((r) => (
-              <div className="tev-review-card" key={r.id}>
-                <div className="tev-review-header">
-                  <div className="tev-avatar" style={{ background: r.color }}>{r.avatar}</div>
-                  <div className="tev-review-meta">
-                    <strong>{r.name}</strong>
-                    <span>{r.time}</span>
-                  </div>
-                  <div className="tev-review-stars">
-                    {Array.from({ length: 5 }).map((_, i) => (
-                      <span key={i} style={{ color: i < r.rating ? "#f59e0b" : "#d1d5db" }}>★</span>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="tev-review-station">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="13" height="13">
-                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" />
-                    <circle cx="12" cy="10" r="3" />
-                  </svg>
-                  {r.station}
-                </div>
-
-                <p className="tev-review-text">{r.text}</p>
-
-                <div className="tev-review-actions">
-                  <button className="tev-like-btn">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="16" height="16">
-                      <path d="M14 9V5a3 3 0 00-3-3l-4 9v11h11.28a2 2 0 002-1.7l1.38-9a2 2 0 00-2-2.3H14z" />
-                      <path d="M7 22H4a2 2 0 01-2-2v-7a2 2 0 012-2h3" />
-                    </svg>
-                    Hữu ích ({r.likes})
-                  </button>
-                  <button className="tev-reply-btn">Trả lời</button>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <div className="tev-center-btn">
-            <button className="tev-btn-outline-green">Xem tất cả đánh giá &rarr;</button>
-          </div>
-        </div>
-      </section>
-
-      {/* ================================================
-          FEATURES HIGHLIGHT
-      ================================================ */}
-      <section className="tev-features-section">
-        <div className="tev-container tev-features-layout">
-          <div className="tev-features-img">
-            <img src={homeBg} alt="EV Charging" />
-            <div className="tev-features-stat-float">
-              <span className="tev-fsf-num">99.9%</span>
-              <span className="tev-fsf-label">Uptime hệ thống</span>
-            </div>
-            <div className="tev-features-badge-float">
-              <span>⚡</span> Sạc nhanh DC lên đến 120kW
-            </div>
-          </div>
-
-          <div className="tev-features-content">
-            <div className="tev-section-badge green" style={{ display: "inline-flex", marginBottom: 16 }}>Tính năng nổi bật</div>
-            <h2 className="tev-section-title" style={{ textAlign: "left", marginBottom: 16 }}>
-              Ứng dụng quản lý<br /><span className="tev-green">trạm sạc thông minh</span>
-            </h2>
-            <p style={{ color: "#64748b", marginBottom: 32, lineHeight: 1.7 }}>
-              Trạm EV cung cấp đầy đủ công cụ để bạn tìm kiếm, đặt chỗ và thanh toán tại mọi trạm sạc công cộng trên toàn quốc.
-            </p>
-
-            <div className="tev-feat-list">
-              {[
-                { icon: "🗺️", title: "Bản đồ thời gian thực", desc: "Xem slot còn trống, giá điện và tình trạng hoạt động của tất cả trạm." },
-                { icon: "📅", title: "Đặt trước & Quản lý lịch", desc: "Đặt chỗ trước tối đa 2 tiếng, nhận thông báo nhắc nhở tự động." },
-                { icon: "💳", title: "Ví điện tử tích hợp", desc: "Nạp tiền và thanh toán liền mạch qua ví điện tử an toàn." },
-                { icon: "⭐", title: "Đánh giá & Nhận xét", desc: "Chia sẻ trải nghiệm thực tế để giúp đỡ cộng đồng." },
-              ].map((f, i) => (
-                <div className="tev-feat-item" key={i}>
-                  <div className="tev-feat-icon">{f.icon}</div>
-                  <div>
-                    <strong>{f.title}</strong>
-                    <p>{f.desc}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            <button className="tev-btn-primary tev-btn-lg" onClick={() => navigate(paths.stations)}>
-              Khám phá ngay &rarr;
-            </button>
-          </div>
-        </div>
-      </section>
 
       {/* ================================================
           CTA BANNER

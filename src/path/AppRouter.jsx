@@ -87,7 +87,7 @@ const AppRouter = () => {
         <Route element={<ProtectedRoute allowedRoles={["DRIVER"]} />}>
           <Route path="/" element={<DriverSidebarLayout />}>
             <Route index element={<Home />} />
-            <Route path={paths.driverDashboard} element={<DriverDashboard />} />
+            <Route path={paths.driverDashboard} element={<Navigate to={paths.guide} replace />} />
             <Route path={paths.guide} element={<Guide />} />
             <Route path={paths.stations} element={<Stations />} />
             <Route path={paths.stationDetail} element={<StationDetail />} />

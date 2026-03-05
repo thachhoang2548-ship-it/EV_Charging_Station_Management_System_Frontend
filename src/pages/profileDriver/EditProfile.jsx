@@ -2,8 +2,16 @@ import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { updateProfileApi } from "../../api/driverApi.js";
 import { toast } from "react-toastify";
-import { Form, Button, Row } from "react-bootstrap";
+import { Form } from "react-bootstrap";
+import Header from "../../components/admin/Header.jsx";
+import "../admin/Dashboard.css";
 import "./EditProfile.css";
+import man from "../../assets/icon/man.png";
+import girl from "../../assets/icon/girl.png";
+import {
+  ArrowLeft, Save, User, Phone, Mail, MapPin,
+  Fingerprint, Info, Contact, X
+} from "lucide-react";
 
 export default function EditProfile() {
   const navigate = useNavigate();
@@ -11,30 +19,18 @@ export default function EditProfile() {
   const [form, setForm] = useState(
     location.state?.profile
       ? location.state.profile
-      : {
-          email: "",
-          phoneNumber: "",
-          name: "",
-          address: "",
-          gender: "",
-        }
+      : { email: "", phoneNumber: "", name: "", address: "", gender: "" }
   );
 
   const handleChange = (e) => {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value,
-    });
+    setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  // Hàm xử lý submit Form
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     try {
       const response = await updateProfileApi(form);
       if (response.success) {
-        // Update localStorage with new profile data
         localStorage.setItem("userDetails", JSON.stringify(form));
         toast.success("Cập nhật thông tin cá nhân thành công!");
         navigate("/profile/information");
@@ -43,89 +39,156 @@ export default function EditProfile() {
       }
     } catch (error) {
       toast.error(
-        error.message ||
-          "Đã xảy ra lỗi trong quá trình cập nhật thông tin cá nhân"
+        error.message || "Đã xảy ra lỗi trong quá trình cập nhật thông tin cá nhân"
       );
     }
   };
 
   return (
-    <div className="edit-profile-container">
-      <h2>Chỉnh sửa thông tin cá nhân của bạn!</h2>
+    <div className="dashboard-container">
+      <Header />
 
       <Form onSubmit={handleSubmit}>
-        <Form.Group className="mb-3" controlId="formBasicName">
-          <Form.Label>Tên</Form.Label>
-          <Form.Control
-            type="text"
-            placeholder="Enter name"
-            name="name"
-            value={form.name}
-            onChange={handleChange}
-          />
-        </Form.Group>
+        <div className="ep-layout">
+          {/* ══ LEFT SIDEBAR ══ */}
+          <aside className="ep-sidebar">
+            <div className="ep-avatar-wrap">
+              <img
+                src={form.gender === "M" ? man : girl}
+                alt={form.name || "Avatar"}
+                className="ep-avatar"
+              />
+            </div>
+            <h2 className="ep-sidebar-name">{form.name || "Chưa có tên"}</h2>
+            <span className="ep-sidebar-tag">Tài xế EV</span>
 
-        <Form.Group className="mb-3" controlId="formBasicPhone">
-          <Form.Label>Số điện thoại</Form.Label>
-          <Form.Control
-            type="text"
-            placeholder="Enter phone number"
-            name="phoneNumber"
-            value={form.phoneNumber}
-            onChange={handleChange}
-          />
-        </Form.Group>
+            <div className="ep-sidebar-nav">
+              <button
+                type="button"
+                className="ep-nav-btn outline"
+                onClick={() => navigate("/profile/information")}
+              >
+                <ArrowLeft size={15} />
+                Quay lại
+              </button>
+            </div>
+          </aside>
 
-        <Form.Group className="mb-3" controlId="formBasicEmail">
-          <Form.Label>Email</Form.Label>
-          <Form.Control
-            type="email"
-            placeholder="Enter email"
-            name="email"
-            value={form.email}
-            onChange={handleChange}
-          />
-        </Form.Group>
+          {/* ══ RIGHT MAIN ══ */}
+          <div className="ep-main">
+            {/* Section: Identity */}
+            <div className="ep-section">
+              <div className="ep-section-header">
+                <span className="ep-section-icon identity">
+                  <User size={18} />
+                </span>
+                <h3 className="ep-section-title">Thông tin cá nhân</h3>
+              </div>
 
-        <Form.Group className="mb-3" controlId="formBasicAddress">
-          <Form.Label>Địa chỉ</Form.Label>
-          <Form.Control
-            type="text"
-            placeholder="Enter address"
-            name="address"
-            value={form.address}
-            onChange={handleChange}
-          />
-        </Form.Group>
+              <div className="ep-field-grid">
+                <div className="ep-field ep-field-full">
+                  <label className="ep-field-label">
+                    <User size={14} /> Họ và tên
+                  </label>
+                  <Form.Control
+                    type="text"
+                    placeholder="Nhập họ và tên"
+                    name="name"
+                    value={form.name}
+                    onChange={handleChange}
+                  />
+                </div>
 
-        <Form.Group className="mb-3" controlId="formBasicGender">
-          <Form.Label>Giới tính</Form.Label>
-          <Form.Select
-            name="gender"
-            value={form.gender}
-            onChange={handleChange}
-          >
-            <option value="">Chọn giới tính</option>
-            <option value="M">Nam</option>
-            <option value="F">Nữ</option>
-          </Form.Select>
-        </Form.Group>
+                <div className="ep-field">
+                  <label className="ep-field-label">
+                    <Fingerprint size={14} /> Giới tính
+                  </label>
+                  <Form.Select
+                    name="gender"
+                    value={form.gender}
+                    onChange={handleChange}
+                  >
+                    <option value="">Chọn giới tính</option>
+                    <option value="M">Nam</option>
+                    <option value="F">Nữ</option>
+                  </Form.Select>
+                </div>
 
-        <div>
-          <strong>Vui lòng nhập đúng mail vì lý do bảo mật và tiện ích!</strong>
+                <div className="ep-field">
+                  <label className="ep-field-label">
+                    <MapPin size={14} /> Địa chỉ
+                  </label>
+                  <Form.Control
+                    type="text"
+                    placeholder="Nhập địa chỉ"
+                    name="address"
+                    value={form.address}
+                    onChange={handleChange}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Section: Contact */}
+            <div className="ep-section">
+              <div className="ep-section-header">
+                <span className="ep-section-icon contact">
+                  <Contact size={18} />
+                </span>
+                <h3 className="ep-section-title">Thông tin liên hệ</h3>
+              </div>
+
+              <div className="ep-field-grid">
+                <div className="ep-field">
+                  <label className="ep-field-label">
+                    <Mail size={14} /> Email
+                  </label>
+                  <Form.Control
+                    type="email"
+                    placeholder="Nhập email"
+                    name="email"
+                    value={form.email}
+                    onChange={handleChange}
+                  />
+                </div>
+
+                <div className="ep-field">
+                  <label className="ep-field-label">
+                    <Phone size={14} /> Số điện thoại
+                  </label>
+                  <Form.Control
+                    type="text"
+                    placeholder="Nhập số điện thoại"
+                    name="phoneNumber"
+                    value={form.phoneNumber}
+                    onChange={handleChange}
+                  />
+                </div>
+              </div>
+
+              <div className="ep-notice">
+                <Info size={16} />
+                Vui lòng nhập đúng email vì lý do bảo mật và tiện ích!
+              </div>
+            </div>
+
+            {/* Submit row */}
+            <div className="ep-btn-row">
+              <button type="submit" className="ep-btn-submit">
+                <Save size={16} />
+                Lưu thay đổi
+              </button>
+              <button
+                type="button"
+                className="ep-btn-cancel"
+                onClick={() => navigate("/profile/information")}
+              >
+                <X size={16} />
+                Hủy bỏ
+              </button>
+            </div>
+          </div>
         </div>
-        <Row>
-          <Button variant="primary" type="submit">
-            CẬP NHẬT
-          </Button>
-          <Button
-            variant="primary"
-            type="button"
-            onClick={() => navigate("/profile/information")}
-          >
-            Quay lại
-          </Button>
-        </Row>
       </Form>
     </div>
   );

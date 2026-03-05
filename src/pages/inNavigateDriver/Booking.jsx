@@ -1,11 +1,17 @@
 // src/pages/inNavigate/Booking.jsx
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 import paths from "../../path/paths.jsx";
 import { isAuthenticated } from "../../utils/authUtils.js";
 import { stationAPI } from "../../api/stationApi.js";
+import Header from "../../components/admin/Header.jsx";
+import "../admin/Dashboard.css";
 import "./Booking.css";
+import {
+  ArrowLeft, MapPin, Zap, PlugZap, Car, Clock,
+  CheckCircle2, AlertTriangle, CalendarCheck, Info
+} from "lucide-react";
 
 // ===== Utility: chuẩn hóa 1 record slot từ API =====
 function normalizeSlotRecord(record, pointId, templateBase, templateMap) {
@@ -274,23 +280,9 @@ export default function Booking() {
     })();
   };
 
-  // ======= Style helpers =======
-  const cardStyle = useMemo(
-    () => ({
-      background: "white",
-      padding: "20px",
-      borderRadius: "12px",
-      marginBottom: "20px",
-      boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-    }),
-    []
-  );
-
-  // ===== Lấy danh sách slot theo PointID và chuẩn hóa (theo logic InstantCharging) =====
+  // ===== Lấy danh sách slot theo PointID và chuẩn hóa =====
   const fetchAvailableSlots = async () => {
-    if (!pointId) {
-      return;
-    }
+    if (!pointId) return;
 
     try {
       setLoading(true);
@@ -321,67 +313,33 @@ export default function Booking() {
         normalizeSlotRecord(record, pointId, undefined, templateMap)
       );
 
-      console.log("📊 Total normalized slots:", normalized.length);
-      console.log("📊 Sample normalized slot:", normalized[0]);
-
-      // ✅ Filter logic: Lấy slot tương lai của HÔM NAY (giống InstantCharging)
+      // Filter logic: Lấy slot tương lai của HÔM NAY
       const now = new Date();
       const year = now.getFullYear();
       const month = String(now.getMonth() + 1).padStart(2, "0");
       const day = String(now.getDate()).padStart(2, "0");
       const todayStr = `${year}-${month}-${day}`;
-
       const currentHour = now.getHours();
+      const currentMinute = now.getMinutes();
 
-      const currentMinute = now.getMinutes(); // ✅ Mới: Lấy thêm phút
-
-      console.log("📅 Today:", todayStr);
-      console.log("⏰ Current time:", `${currentHour}:${currentMinute}`);
-
-      // Filter slots: chỉ hiển thị slot của ngày hôm nay và chưa kết thúc
       const filteredSlots = normalized.filter((slot) => {
-        // 1. Filter theo ngày: chỉ lấy slot của ngày hôm nay
         const slotDate = slot.Date;
         if (!slotDate) return false;
 
-        // Extract YYYY-MM-DD từ slot.Date
         let slotDateStr = String(slotDate);
-        if (slotDateStr.includes("T")) {
-          slotDateStr = slotDateStr.split("T")[0];
-        } else if (slotDateStr.includes(" ")) {
-          slotDateStr = slotDateStr.split(" ")[0];
-        }
+        if (slotDateStr.includes("T")) slotDateStr = slotDateStr.split("T")[0];
+        else if (slotDateStr.includes(" ")) slotDateStr = slotDateStr.split(" ")[0];
 
-        // Nếu không phải ngày hôm nay thì loại bỏ
-        if (slotDateStr !== todayStr) {
-          return false;
-        }
+        if (slotDateStr !== todayStr) return false;
 
-        // 2. ✅ LOGIC MỚI: Filter theo giờ KẾT THÚC (EndTime)
         const slotEndTimeStr = slot.EndTime;
-        if (!slotEndTimeStr || slotEndTimeStr === "N/A") {
-          return true;
-        }
+        if (!slotEndTimeStr || slotEndTimeStr === "N/A") return true;
 
-        // Parse giờ kết thúc của slot
         const [endH, endM] = slotEndTimeStr.split(":").map(Number);
-
-        // Hiển thị nếu slot CHƯA kết thúc (EndTime > CurrentTime)
-        // Ví dụ: 19:15, Slot kết thúc lúc 20:00 -> 20 > 19 -> OK
-        return (
-          endH > currentHour || (endH === currentHour && endM > currentMinute)
-        );
+        return endH > currentHour || (endH === currentHour && endM > currentMinute);
       });
 
-      // Sắp xếp theo thời gian bắt đầu
       filteredSlots.sort((a, b) => a.StartTime.localeCompare(b.StartTime));
-
-      console.log(
-        "✅ Total valid slots (today + future + available):",
-        filteredSlots.length
-      );
-      console.log("✅ Sample valid slot:", filteredSlots[0]);
-
       setAvailableSlots(filteredSlots);
     } catch (error) {
       console.error("❌ Lỗi khi lấy danh sách slot:", error);
@@ -396,13 +354,10 @@ export default function Booking() {
   // ===== Kiểm tra điều kiện và gọi API =====
   useEffect(() => {
     if (!isAuthenticated()) {
-      toast.warning(
-        "Bạn chưa đăng nhập. Vui lòng đăng nhập để có thể đặt chỗ!",
-        {
-          position: "top-center",
-          autoClose: 3000,
-        }
-      );
+      toast.warning("Bạn chưa đăng nhập. Vui lòng đăng nhập để có thể đặt chỗ!", {
+        position: "top-center",
+        autoClose: 3000,
+      });
       navigate(paths.login);
       return;
     }
@@ -416,15 +371,8 @@ export default function Booking() {
       return;
     }
 
-    // Lưu batteryCapacityKWh vào sessionStorage
     if (bookingData.vehicle?.batteryCapacityKWh != null) {
-      sessionStorage.setItem(
-        "batteryCapacityKWh",
-        bookingData.vehicle.batteryCapacityKWh
-      );
-      console.log(
-        `✅ Saved batteryCapacityKWh=${bookingData.vehicle.batteryCapacityKWh} to sessionStorage`
-      );
+      sessionStorage.setItem("batteryCapacityKWh", bookingData.vehicle.batteryCapacityKWh);
     }
 
     fetchAvailableSlots();
@@ -434,256 +382,162 @@ export default function Booking() {
   if (!bookingData) return null;
 
   return (
-    <div style={{ padding: "20px", maxWidth: "1200px", margin: "0 auto" }}>
-      <button
-        onClick={() => navigate(-1)}
-        style={{
-          marginBottom: "20px",
-          padding: "10px 20px",
-          background: "#00BFA6",
-          color: "white",
-          border: "none",
-          borderRadius: "8px",
-          cursor: "pointer",
-        }}
-      >
-        ← Quay lại
-      </button>
+    <div className="dashboard-container">
+      <Header />
 
-      <h1 style={{ color: "#00BFA6", marginBottom: "30px" }}>Đặt chỗ sạc xe</h1>
+      {/* ── Hero ────────────────────────────────────── */}
+      <section className="bk-hero">
+        <button className="bk-hero-back" onClick={() => navigate(-1)}>
+          <ArrowLeft size={16} /> Quay lại
+        </button>
+        <h1>Đặt chỗ sạc xe</h1>
+        <p>Chọn khung giờ phù hợp để đặt lịch sạc tại trạm</p>
+      </section>
 
-      {/* Thông tin trạm */}
-      <div style={cardStyle}>
-        <h2 style={{ color: "#333", marginBottom: "15px" }}>
-          🏢 Thông tin trạm sạc
-        </h2>
-        <p>
-          <strong>Tên trạm:</strong> {bookingData.station?.name}
-        </p>
-        <p>
-          <strong>Địa chỉ:</strong> {bookingData.station?.address}
-        </p>
-      </div>
-
-      {/* Thông tin trụ sạc */}
-      <div style={cardStyle}>
-        <h2 style={{ color: "#333", marginBottom: "15px" }}>
-          🔋 Thông tin trụ sạc
-        </h2>
-        <p>
-          <strong>Số trụ:</strong> {bookingData.chargingPoint?.pointNumber}
-        </p>
-        <p>
-          <strong>Công suất:</strong> {bookingData.chargingPoint?.maxPowerKW} kW
-        </p>
-        <p>
-          <strong>Trạng thái:</strong> {bookingData.chargingPoint?.status}
-        </p>
-      </div>
-
-      {/* Thông tin cổng sạc */}
-      <div style={cardStyle}>
-        <h2 style={{ color: "#333", marginBottom: "15px" }}>
-          🔌 Loại cổng sạc
-        </h2>
-        <p>
-          <strong>Tên:</strong> {bookingData.connector?.displayName}
-        </p>
-        <p>
-          <strong>Mã:</strong> {bookingData.connector?.code}
-        </p>
-        <p>
-          <strong>Chế độ:</strong> {bookingData.connector?.mode}
-        </p>
-        <p>
-          <strong>Công suất:</strong> {bookingData.connector?.defaultMaxPowerKW}{" "}
-          kW
-        </p>
-      </div>
-
-      {/* Thông tin xe */}
-      <div style={cardStyle}>
-        <h2 style={{ color: "#333", marginBottom: "15px" }}>🚗 Xe của bạn</h2>
-        <p>
-          <strong>Tên xe:</strong> {bookingData.vehicle?.vehicleName}
-        </p>
-        <p>
-          <strong>Hãng:</strong> {bookingData.vehicle?.brand}{" "}
-          {bookingData.vehicle?.model}
-        </p>
-        <p>
-          <strong>Biển số:</strong> {bookingData.vehicle?.licensePlate}
-        </p>
-        <p>
-          <strong>Loại cổng sạc:</strong>{" "}
-          {bookingData.vehicle?.connectorTypeName}
-        </p>
-      </div>
-
-      {/* Danh sách slot có sẵn */}
-      <div style={cardStyle}>
-        <h2 style={{ color: "#333", marginBottom: "15px" }}>
-          ⏰ Chọn khung giờ sạc (tối đa {MAX_SLOTS} khung giờ liên tiếp)
-        </h2>
-
-        <div
-          style={{
-            background: "#fff3e0",
-            padding: "12px",
-            borderRadius: "8px",
-            marginBottom: "20px",
-            border: "1px solid #ff9800",
-          }}
-        >
-          <p style={{ margin: 0, fontSize: "14px", color: "#f57c00" }}>
-            ℹ️ <strong>Lưu ý:</strong> Bạn chỉ có thể chọn các khung giờ liên
-            tiếp nhau (không được bỏ trống giữa các khung giờ)
-          </p>
+      {/* ── Info strip ──────────────────────────────── */}
+      <div className="bk-info-strip">
+        <div className="bk-info-card">
+          <h3><MapPin size={16} /> Trạm sạc</h3>
+          <div className="bk-info-row"><span>Tên trạm</span> <strong>{bookingData.station?.name}</strong></div>
+          <div className="bk-info-row"><span>Địa chỉ</span> <strong>{bookingData.station?.address}</strong></div>
         </div>
 
-        {selectedSlots.length > 0 && (
-          <div
-            style={{
-              background: "#e6f9f5",
-              padding: "15px",
-              borderRadius: "8px",
-              marginBottom: "20px",
-              border: "2px solid #00BFA6",
-            }}
-          >
-            <p
-              style={{
-                fontWeight: "600",
-                color: "#00BFA6",
-                margin: "0 0 10px 0",
-              }}
-            >
-              ✓ Đã chọn {selectedSlots.length}/{MAX_SLOTS} khung giờ
-            </p>
-            <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
-              {selectedSlots.map((slot) => (
-                <span
-                  key={slot.id}
-                  style={{
-                    background: "#00BFA6",
-                    color: "white",
-                    padding: "5px 12px",
-                    borderRadius: "20px",
-                    fontSize: "14px",
-                  }}
-                >
-                  {slot.StartTime} - {slot.EndTime}
-                </span>
-              ))}
+        <div className="bk-info-card">
+          <h3><Zap size={16} /> Trụ sạc</h3>
+          <div className="bk-info-row"><span>Số trụ</span> <strong>{bookingData.chargingPoint?.pointNumber}</strong></div>
+          <div className="bk-info-row"><span>Công suất</span> <strong>{bookingData.chargingPoint?.maxPowerKW} kW</strong></div>
+          <div className="bk-info-row"><span>Trạng thái</span> <strong>{bookingData.chargingPoint?.status}</strong></div>
+        </div>
+
+        <div className="bk-info-card">
+          <h3><PlugZap size={16} /> Cổng sạc</h3>
+          <div className="bk-info-row"><span>Loại</span> <strong>{bookingData.connector?.displayName}</strong></div>
+          <div className="bk-info-row"><span>Mã</span> <strong>{bookingData.connector?.code}</strong></div>
+          <div className="bk-info-row"><span>Chế độ</span> <strong>{bookingData.connector?.mode}</strong></div>
+          <div className="bk-info-row"><span>Công suất</span> <strong>{bookingData.connector?.defaultMaxPowerKW} kW</strong></div>
+        </div>
+
+        <div className="bk-info-card">
+          <h3><Car size={16} /> Xe của bạn</h3>
+          <div className="bk-info-row"><span>Tên xe</span> <strong>{bookingData.vehicle?.vehicleName}</strong></div>
+          <div className="bk-info-row"><span>Hãng</span> <strong>{bookingData.vehicle?.brand} {bookingData.vehicle?.model}</strong></div>
+          <div className="bk-info-row"><span>Biển số</span> <strong>{bookingData.vehicle?.licensePlate}</strong></div>
+          <div className="bk-info-row"><span>Cổng sạc</span> <strong>{bookingData.vehicle?.connectorTypeName}</strong></div>
+        </div>
+      </div>
+
+      {/* ── Body: 2 columns ─────────────────────────── */}
+      <div className="bk-body">
+        {/* Left: slot selection */}
+        <div className="bk-slot-section">
+          <h2><Clock size={18} style={{ verticalAlign: "middle", marginRight: 6 }} />Chọn khung giờ sạc</h2>
+          <p className="bk-slot-subtitle">Tối đa {MAX_SLOTS} khung giờ liên tiếp</p>
+
+          {/* Notice */}
+          <div className="bk-notice">
+            <Info size={16} />
+            <span><strong>Lưu ý:</strong> Bạn chỉ có thể chọn các khung giờ liên tiếp nhau (không được bỏ trống giữa các khung giờ)</span>
+          </div>
+
+          {/* Selected summary */}
+          {selectedSlots.length > 0 && (
+            <div className="bk-selected-summary">
+              <p className="bk-selected-count">
+                <CheckCircle2 size={16} /> Đã chọn {selectedSlots.length}/{MAX_SLOTS} khung giờ
+              </p>
+              <div className="bk-selected-tags">
+                {selectedSlots.map((slot) => (
+                  <span key={slot.id} className="bk-tag">{slot.StartTime} – {slot.EndTime}</span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Slot grid */}
+          {loading ? (
+            <div className="bk-loading">
+              <Clock size={28} style={{ marginBottom: 8, opacity: 0.5 }} />
+              <p>Đang tải danh sách khung giờ...</p>
+            </div>
+          ) : availableSlots.length > 0 ? (
+            <>
+              <div className="bk-slot-grid">
+                {availableSlots.map((slot) => {
+                  const isSelected = isSlotSelected(slot.id);
+                  const isAvailable = String(slot.Status ?? "").toLowerCase() === "available";
+                  const canSelect = selectedSlots.length === 0 || isSlotAdjacent(slot.SlotID, selectedSlots);
+                  const isDisabled =
+                    !isAvailable ||
+                    (!isSelected && selectedSlots.length >= MAX_SLOTS) ||
+                    (!isSelected && selectedSlots.length > 0 && !canSelect);
+
+                  return (
+                    <div
+                      key={slot.id || slot.SlotID}
+                      className={`bk-slot${isSelected ? " bk-slot--selected" : ""}${isDisabled ? " bk-slot--disabled" : ""}`}
+                      onClick={() => { if (!isDisabled) handleToggleSlot(slot); }}
+                    >
+                      <div className="bk-slot-check">{isSelected && "✓"}</div>
+                      <p className="bk-slot-time">
+                        <Clock size={14} /> {slot.StartTime} – {slot.EndTime}
+                      </p>
+                      <p className={`bk-slot-status ${isAvailable ? "bk-slot-status--available" : "bk-slot-status--unavailable"}`}>
+                        {isAvailable ? <><CheckCircle2 size={13} /> Còn trống</> : slot.Status}
+                      </p>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {selectedSlots.length > 0 && (
+                <button className="bk-confirm-btn" onClick={handleConfirmBooking}>
+                  <CalendarCheck size={18} style={{ verticalAlign: "middle", marginRight: 6 }} />
+                  Xác nhận đặt {selectedSlots.length} khung giờ
+                </button>
+              )}
+            </>
+          ) : (
+            <div className="bk-empty">
+              <AlertTriangle size={32} />
+              <p>Không có khung giờ nào khả dụng cho trụ này.</p>
+            </div>
+          )}
+        </div>
+
+        {/* Right: sidebar summary */}
+        <aside className="bk-sidebar">
+          <div className="bk-summary-card">
+            <h3><CalendarCheck size={18} /> Tóm tắt đặt chỗ</h3>
+
+            <div className="bk-summary-row"><span>Trạm</span> <span>{bookingData.station?.name || "–"}</span></div>
+            <div className="bk-summary-row"><span>Trụ số</span> <span>{bookingData.chargingPoint?.pointNumber || "–"}</span></div>
+            <div className="bk-summary-row"><span>Công suất</span> <span>{bookingData.chargingPoint?.maxPowerKW ? `${bookingData.chargingPoint.maxPowerKW} kW` : "–"}</span></div>
+            <div className="bk-summary-row"><span>Cổng sạc</span> <span>{bookingData.connector?.displayName || "–"}</span></div>
+
+            {/* Vehicle */}
+            <div className="bk-summary-vehicle">
+              <div className="bk-summary-vehicle-icon"><Car size={20} /></div>
+              <div className="bk-summary-vehicle-info">
+                <strong>{bookingData.vehicle?.vehicleName || "–"}</strong>
+                <span>{bookingData.vehicle?.licensePlate || ""}</span>
+              </div>
+            </div>
+
+            {/* Selected time slots */}
+            <div className="bk-summary-time">
+              <div className="bk-summary-time-label">Khung giờ đã chọn</div>
+              {selectedSlots.length > 0 ? (
+                <div className="bk-summary-time-tags">
+                  {selectedSlots.map((s) => (
+                    <span key={s.id} className="bk-summary-time-tag">{s.StartTime} – {s.EndTime}</span>
+                  ))}
+                </div>
+              ) : (
+                <p className="bk-summary-empty">Chưa chọn khung giờ nào</p>
+              )}
             </div>
           </div>
-        )}
-
-        {loading ? (
-          <p>Đang tải danh sách khung giờ...</p>
-        ) : availableSlots.length > 0 ? (
-          <>
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))",
-                gap: "15px",
-              }}
-            >
-              {availableSlots.map((slot) => {
-                const isSelected = isSlotSelected(slot.id);
-                const isAvailable =
-                  String(slot.Status ?? "").toLowerCase() === "available";
-
-                // Kiểm tra nếu slot đã qua giờ hiện tại
-                const now = new Date(); // Lấy giờ hiện tại
-                // ✅ LOGIC MỚI: Check theo EndTime thay vì StartTime để không disable slot hiện tại
-                const slotEndTime = new Date(`${slot.Date}T${slot.EndTime}:00`);
-                const isPast = slotEndTime <= now;
-
-                const canSelect =
-                  selectedSlots.length === 0 ||
-                  isSlotAdjacent(slot.SlotID, selectedSlots);
-
-                // Disabled if not available or other selection rules
-                const isDisabled =
-                  !isAvailable ||
-                  (!isSelected && selectedSlots.length >= MAX_SLOTS) ||
-                  (!isSelected && selectedSlots.length > 0 && !canSelect);
-
-                return (
-                  <div
-                    key={slot.id || slot.SlotID}
-                    className={`slot-card ${isSelected ? "selected" : ""} ${
-                      isDisabled ? "disabled" : ""
-                    }`}
-                    onClick={() => {
-                      if (!isDisabled) {
-                        handleToggleSlot(slot);
-                      }
-                    }}
-                  >
-                    <div className={`checkbox ${isSelected ? "checked" : ""}`}>
-                      {isSelected && "✓"}
-                    </div>
-
-                    <p className="slot-time">
-                      <strong>
-                        ⏰ {slot.StartTime} - {slot.EndTime}
-                      </strong>
-                    </p>
-                    <p className="slot-status">
-                      <strong>Trạng thái:</strong>{" "}
-                      <span className="available">
-                        {String(slot.Status).toLowerCase() === "available"
-                          ? "Còn trống"
-                          : slot.Status}
-                      </span>
-                    </p>
-                  </div>
-                );
-              })}
-            </div>
-
-            {/* Nút xác nhận đặt chỗ */}
-            {selectedSlots.length > 0 && (
-              <button
-                onClick={handleConfirmBooking}
-                style={{
-                  marginTop: "30px",
-                  width: "100%",
-                  padding: "15px",
-                  background:
-                    "linear-gradient(135deg, #00BFA6 0%, #00897B 100%)",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "10px",
-                  fontSize: "18px",
-                  fontWeight: "600",
-                  cursor: "pointer",
-                  transition: "all 0.3s",
-                  boxShadow: "0 4px 12px rgba(0, 191, 166, 0.3)",
-                }}
-                onMouseOver={(e) => {
-                  e.currentTarget.style.transform = "translateY(-2px)";
-                  e.currentTarget.style.boxShadow =
-                    "0 6px 16px rgba(0, 191, 166, 0.4)";
-                }}
-                onMouseOut={(e) => {
-                  e.currentTarget.style.transform = "translateY(0)";
-                  e.currentTarget.style.boxShadow =
-                    "0 4px 12px rgba(0, 191, 166, 0.3)";
-                }}
-              >
-                🎯 Xác nhận đặt {selectedSlots.length} khung giờ
-              </button>
-            )}
-          </>
-        ) : (
-          <p style={{ color: "#666" }}>
-            Không có khung giờ nào khả dụng cho trụ này.
-          </p>
-        )}
+        </aside>
       </div>
     </div>
   );

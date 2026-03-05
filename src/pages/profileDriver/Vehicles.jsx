@@ -1,232 +1,222 @@
 import { useEffect, useState } from "react";
-import { Container, Row, Col } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import { getMyVehiclesApi } from "../../api/driverApi.js";
+import { getMyVehiclesApi, updateVehicleApi } from "../../api/driverApi.js";
 import VehicleCard from "../../components/driver/VehicleCard.jsx";
 import { toast } from "react-toastify";
-import { updateVehicleApi } from "../../api/driverApi.js";
-import "./Vehicles.css";
+import Header from "../../components/admin/Header.jsx";
 import AddVehicle from "./AddVehicle.jsx";
-import classCss from "../../assets/css/Main.module.css";
-import apiClient from "../../api/apiUrls.js"; // ✅ ADD
+import apiClient from "../../api/apiUrls.js";
+import "../admin/Dashboard.css";
+import "./Vehicles.css";
+import {
+  Car, CircleCheck, CirclePause, Plus, ArrowLeft, Zap
+} from "lucide-react";
+
+const FILTERS = [
+  { key: "all", label: "Tất cả" },
+  { key: "ACTIVE", label: "Hoạt động" },
+  { key: "INACTIVE", label: "Ngưng" },
+];
 
 export default function Vehicles() {
   const navigate = useNavigate();
   const [vehicles, setVehicles] = useState([]);
   const [loading, setLoading] = useState(true);
-
   const [showAddVehicle, setShowAddVehicle] = useState(false);
+  const [filter, setFilter] = useState("all");
 
-  // ✅ ADD: fetch points by vehicleId
+  /* ── Loyalty points helper ── */
   const getPointsByVehicleId = async (vehicleId) => {
     try {
       const res = await apiClient.get("/api/loyalty/available-by-vehicle", {
         params: { vehicleId },
       });
-      const points = res?.data?.pointsAvailable;
-      const n = Number(points);
+      const n = Number(res?.data?.pointsAvailable);
       return Number.isFinite(n) ? n : 0;
-    } catch (e) {
-      console.debug("[LOYALTY] available-by-vehicle failed vehicleId=", vehicleId, e);
+    } catch {
       return 0;
     }
   };
 
-  // ✅ ADD: attach pointsBalance to vehicles array (without changing structure)
   const enrichVehiclesWithPoints = async (list) => {
     if (!Array.isArray(list) || list.length === 0) return list;
-
-    // call all in parallel
     const results = await Promise.allSettled(
-        list.map(async (v) => {
-          const pointsBalance = await getPointsByVehicleId(v.vehicleId);
-          return { ...v, pointsBalance }; // ✅ attach field
-        })
+      list.map(async (v) => {
+        const pointsBalance = await getPointsByVehicleId(v.vehicleId);
+        return { ...v, pointsBalance };
+      })
     );
-
-    return results.map((r, idx) => (r.status === "fulfilled" ? r.value : { ...list[idx], pointsBalance: 0 }));
+    return results.map((r, idx) =>
+      r.status === "fulfilled" ? r.value : { ...list[idx], pointsBalance: 0 }
+    );
   };
 
+  /* ── Toggle status ── */
   const handleUpdate = async (vehicle) => {
-    const newStatus =
-        vehicle.vehicleStatus === "ACTIVE" ? "INACTIVE" : "ACTIVE";
-    const confirmMessage =
-        newStatus === "INACTIVE"
-            ? "Bạn có chắc chắn muốn ngưng hoạt động xe này?"
-            : "Bạn có chắc chắn muốn cho xe này hoạt động trở lại?";
+    const newStatus = vehicle.vehicleStatus === "ACTIVE" ? "INACTIVE" : "ACTIVE";
+    const msg =
+      newStatus === "INACTIVE"
+        ? "Bạn có chắc chắn muốn ngưng hoạt động xe này?"
+        : "Bạn có chắc chắn muốn cho xe này hoạt động trở lại?";
 
-    if (window.confirm(confirmMessage)) {
+    if (window.confirm(msg)) {
       try {
         const response = await updateVehicleApi(vehicle.vehicleId, newStatus);
         if (response.success) {
-          // Cập nhật lại trạng thái xe trong danh sách
-          setVehicles((prevVehicles) =>
-              prevVehicles.map((v) =>
-                  v.vehicleId === vehicle.vehicleId
-                      ? { ...v, vehicleStatus: newStatus }
-                      : v
-              )
+          setVehicles((prev) =>
+            prev.map((v) =>
+              v.vehicleId === vehicle.vehicleId
+                ? { ...v, vehicleStatus: newStatus }
+                : v
+            )
           );
-          const successMessage =
-              newStatus === "INACTIVE"
-                  ? "Ngưng hoạt động xe thành công!"
-                  : "Xe đã hoạt động trở lại!";
-          toast.success(successMessage);
+          toast.success(
+            newStatus === "INACTIVE"
+              ? "Ngưng hoạt động xe thành công!"
+              : "Xe đã hoạt động trở lại!"
+          );
         } else {
           toast.error("Cập nhật trạng thái xe thất bại!");
         }
-      } catch (error) {
-        console.error("Error updating vehicle status:", error);
+      } catch {
         toast.error("Cập nhật trạng thái xe thất bại!");
       }
     }
   };
 
+  /* ── Fetch ── */
   const fetchVehicles = async () => {
     try {
       setLoading(true);
-      const vehiclesRes = await getMyVehiclesApi();
-      if (vehiclesRes.success) {
-        const rawList = vehiclesRes.data || [];
-
-        // ✅ ADD: enrich with pointsBalance
-        const enriched = await enrichVehiclesWithPoints(rawList);
-
+      const res = await getMyVehiclesApi();
+      if (res.success) {
+        const enriched = await enrichVehiclesWithPoints(res.data || []);
         setVehicles(enriched);
-        console.log("My vehicles:", enriched);
       }
-    } catch (error) {
-      console.error("Failed to fetch my vehicles:", error);
+    } catch {
       toast.error("Không thể tải danh sách xe!");
     } finally {
       setLoading(false);
     }
   };
 
-  const handleAddSuccess = () => {
-    fetchVehicles();
-  };
-
   useEffect(() => {
     fetchVehicles();
   }, []);
 
+  /* ── Derived counts ── */
+  const totalCount = vehicles.length;
+  const activeCount = vehicles.filter((v) => v.vehicleStatus === "ACTIVE").length;
+  const inactiveCount = vehicles.filter((v) => v.vehicleStatus === "INACTIVE").length;
+
+  const filtered =
+    filter === "all" ? vehicles : vehicles.filter((v) => v.vehicleStatus === filter);
+
+  const countFor = (key) =>
+    key === "all" ? totalCount : key === "ACTIVE" ? activeCount : inactiveCount;
+
   return (
-      <div className="my-vehicles-container">
-        <Container>
-          <div className="my-vehicles-header">
-            {showAddVehicle ? "Thêm Xe" : "DANH SÁCH XE CỦA TÔI"}
-          </div>
-          {showAddVehicle ? (
-              <AddVehicle
-                  onClose={() => setShowAddVehicle(false)}
-                  onSuccess={handleAddSuccess}
-              />
-          ) : (
-              <div className="vehicle-list">
-                <button
-                    onClick={() => navigate(-1)}
-                    style={{
-                      background: "#20b2aa",
-                      border: "none",
-                      fontSize: "1rem",
-                      cursor: "pointer",
-                      marginRight: "1rem",
-                      borderRadius: "15px",
-                    }}
-                >
-                  ← Quay lại
-                </button>
-                {loading ? (
-                    <p>Đang tải...</p>
-                ) : vehicles.length === 0 ? (
-                    <div className="empty-state">
-                      <div className="empty-state-icon">🚗</div>
-                      <p>Không có xe nào trong danh sách. Hãy thêm xe mới!</p>
-                      <button
-                          className="btn btn-primary"
-                          style={{ width: "200px", marginRight: "10px" }}
-                          onClick={() => setShowAddVehicle(true)}
-                      >
-                        Thêm xe mới
-                      </button>
-                    </div>
-                ) : (
-                    <>
-                      <div style={{ marginBottom: "1.5rem" }}>
-                        <button
-                            className={classCss.button}
-                            onClick={() => setShowAddVehicle(true)}
-                            style={{ width: "auto", padding: "0.5rem 1.5rem" }}
-                        >
-                          Thêm xe mới
-                        </button>
-                      </div>
+    <div className="dashboard-container">
+      <Header />
 
-                      {/* Xe đang hoạt động */}
-                      <div className="vehicle-section">
-                        <h3 className="section-title">Xe đang hoạt động</h3>
-                        <Row className="g-4">
-                          {vehicles.filter((v) => v.vehicleStatus === "ACTIVE")
-                              .length === 0 ? (
-                              <p className="text-muted">
-                                Không có xe nào đang hoạt động
-                              </p>
-                          ) : (
-                              vehicles
-                                  .filter((v) => v.vehicleStatus === "ACTIVE")
-                                  .map((vehicle) => (
-                                      <Col
-                                          xs={12}
-                                          sm={6}
-                                          md={4}
-                                          lg={3}
-                                          key={vehicle.vehicleId}
-                                      >
-                                        <VehicleCard
-                                            vehicle={vehicle} // ✅ now has vehicle.pointsBalance
-                                            onUpdate={() => handleUpdate(vehicle)}
-                                        />
-                                      </Col>
-                                  ))
-                          )}
-                        </Row>
-                      </div>
+      {/* AddVehicle overlay modal */}
+      {showAddVehicle && (
+        <AddVehicle
+          onClose={() => setShowAddVehicle(false)}
+          onSuccess={() => {
+            setShowAddVehicle(false);
+            fetchVehicles();
+          }}
+        />
+      )}
 
-                      {/* Xe ngưng hoạt động */}
-                      <div className="vehicle-section mt-5">
-                        <h3 className="section-title">Xe ngưng hoạt động</h3>
-                        <Row className="g-4">
-                          {vehicles.filter((v) => v.vehicleStatus === "INACTIVE")
-                              .length === 0 ? (
-                              <p className="text-muted">
-                                Không có xe nào ngưng hoạt động
-                              </p>
-                          ) : (
-                              vehicles
-                                  .filter((v) => v.vehicleStatus === "INACTIVE")
-                                  .map((vehicle) => (
-                                      <Col
-                                          xs={12}
-                                          sm={6}
-                                          md={4}
-                                          lg={3}
-                                          key={vehicle.vehicleId}
-                                      >
-                                        <VehicleCard
-                                            vehicle={vehicle} // ✅ now has vehicle.pointsBalance
-                                            onUpdate={() => handleUpdate(vehicle)}
-                                        />
-                                      </Col>
-                                  ))
-                          )}
-                        </Row>
-                      </div>
-                    </>
-                )}
+      {/* Back */}
+      <button className="vh-back-btn" onClick={() => navigate(-1)}>
+        <ArrowLeft size={15} /> Quay lại
+      </button>
+
+          {/* Hero — dark gradient with glass counters */}
+          <div className="vh-hero">
+            <div className="vh-hero-body">
+              <span className="vh-hero-chip"><Zap size={12} /> EV Garage</span>
+              <h1 className="vh-hero-title">Phương tiện của tôi</h1>
+              <p className="vh-hero-sub">Quản lý & theo dõi xe điện đã đăng ký</p>
+              <div className="vh-hero-counters">
+                <div className="vh-hero-counter">
+                  <span className="vh-hero-counter-num">{totalCount}</span>
+                  <span className="vh-hero-counter-label">Tổng xe</span>
+                </div>
+                <span className="vh-hero-counter-divider" />
+                <div className="vh-hero-counter">
+                  <span className="vh-hero-counter-num">{activeCount}</span>
+                  <span className="vh-hero-counter-label">Hoạt động</span>
+                </div>
+                <span className="vh-hero-counter-divider" />
+                <div className="vh-hero-counter">
+                  <span className="vh-hero-counter-num">{inactiveCount}</span>
+                  <span className="vh-hero-counter-label">Ngưng</span>
+                </div>
               </div>
+            </div>
+            <button className="vh-hero-btn" onClick={() => setShowAddVehicle(true)}>
+              <Plus size={18} /> Thêm xe
+            </button>
+          </div>
+
+          {loading ? (
+            <div className="vh-loading">
+              <div className="vh-spinner" />
+              <p>Đang tải danh sách xe...</p>
+            </div>
+          ) : totalCount === 0 ? (
+            <div className="vh-empty">
+              <div className="vh-empty-icon"><Car size={32} /></div>
+              <h3 className="vh-empty-title">Chưa có xe nào</h3>
+              <p className="vh-empty-desc">
+                Hãy thêm xe điện đầu tiên để bắt đầu sử dụng dịch vụ
+              </p>
+              <button className="vh-empty-btn" onClick={() => setShowAddVehicle(true)}>
+                <Plus size={16} /> Thêm xe mới
+              </button>
+            </div>
+          ) : (
+            <>
+              {/* Filter tabs */}
+              <div className="vh-filter">
+                {FILTERS.map((f) => (
+                  <button
+                    key={f.key}
+                    className={`vh-filter-tab ${filter === f.key ? "active" : ""}`}
+                    onClick={() => setFilter(f.key)}
+                  >
+                    {f.label}
+                    <span className="vh-filter-count">{countFor(f.key)}</span>
+                  </button>
+                ))}
+              </div>
+
+              {/* Grid */}
+              {filtered.length === 0 ? (
+                <div className="vh-empty">
+                  <div className="vh-empty-icon"><Car size={32} /></div>
+                  <h3 className="vh-empty-title">Không có xe phù hợp</h3>
+                  <p className="vh-empty-desc">
+                    Thay đổi bộ lọc để xem danh sách xe khác
+                  </p>
+                </div>
+              ) : (
+                <div className="vh-grid">
+                  {filtered.map((vehicle) => (
+                    <VehicleCard
+                      key={vehicle.vehicleId}
+                      vehicle={vehicle}
+                      onUpdate={() => handleUpdate(vehicle)}
+                    />
+                  ))}
+                </div>
+              )}
+            </>
           )}
-        </Container>
-      </div>
+    </div>
   );
 }
