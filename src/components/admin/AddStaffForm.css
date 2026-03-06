@@ -5,9 +5,9 @@
  * Thêm margin để căn giữa form.
  */
 .add-staff-form {
-  max-width: 900px; 
+  max-width: 900px;
   margin: 1.5rem auto; /* Tự động căn giữa form */
-  
+
   background-color: #ffffff;
   padding: 1rem; /* Tăng đệm cho thoáng hơn */
   border-radius: 15px;
@@ -46,11 +46,11 @@
 }
 
 .form-button-group {
-  display: flex;         /* Xếp các nút con trên 1 hàng */
+  display: flex; /* Xếp các nút con trên 1 hàng */
   gap: 10px;
 }
 
-.me-2{
+.me-2 {
   width: 20rem !important;
 }
 
@@ -115,5 +115,5 @@
 }
 
 .add-staff-form .mb-3 {
-  margin-bottom: 0.5rem !important; 
+  margin-bottom: 0.5rem !important;
 }
