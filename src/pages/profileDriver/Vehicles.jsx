@@ -11,6 +11,7 @@ import "./Vehicles.css";
 import {
   Car, CircleCheck, CirclePause, Plus, ArrowLeft, Zap
 } from "lucide-react";
+import { showConfirm } from '../../utils/alertUtils.js';
 
 const FILTERS = [
   { key: "all", label: "Tất cả" },
@@ -59,7 +60,7 @@ export default function Vehicles() {
         ? "Bạn có chắc chắn muốn ngưng hoạt động xe này?"
         : "Bạn có chắc chắn muốn cho xe này hoạt động trở lại?";
 
-    if (window.confirm(msg)) {
+    if (await showConfirm(msg, 'Xác nhận thay đổi trạng thái')) {
       try {
         const response = await updateVehicleApi(vehicle.vehicleId, newStatus);
         if (response.success) {
