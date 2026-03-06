@@ -11,13 +11,11 @@ import vehicleIcon   from "../../assets/icon/admin/model_car.png";
 import transactionIcon from "../../assets/icon/staff/payment-method.png";
 import notifIcon     from "../../assets/icon/admin/statistic.png";
 import profileIcon   from "../../assets/icon/admin/manage_user.png";
-import bookingIcon   from "../../assets/icon/admin/charging-building.png";
 import EVLogoIcon from "../logo/EVLogoIcon.jsx";
 
 const NAV_ITEMS = [
   { path: paths.guide,           icon: dashboardIcon,   label: "Hướng dẫn sử dụng" },
-  { path: paths.stations,        icon: stationIcon,     label: "Tìm trạm sạc"    },
-  { path: paths.booking,         icon: bookingIcon,     label: "Đặt lịch sạc"    },
+  { path: paths.stations,        icon: stationIcon,     label: "Trạm sạc & Đặt lịch" },
   { path: paths.chargingSession, icon: chargingIcon,    label: "Phiên sạc"        },
   { path: paths.transactionHistory, icon: transactionIcon, label: "Giao dịch"    },
   { path: paths.myVehicle,       icon: vehicleIcon,     label: "Xe của tôi"       },

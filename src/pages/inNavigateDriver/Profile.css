@@ -106,47 +106,9 @@
   color: #16a34a;
 }
 
-/* ── STATS STRIP ── */
-.pf-stats {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1px;
-  background: #e2e8f0;
-  margin: 20px 24px 0;
-  border-radius: 14px;
-  overflow: hidden;
-}
-
-.pf-stat {
-  background: #ffffff;
-  text-align: center;
-  padding: 14px 8px;
-}
-
-.pf-stat:first-child { border-radius: 14px 0 0 14px; }
-.pf-stat:last-child  { border-radius: 0 14px 14px 0; }
-
-.pf-stat-value {
-  display: block;
-  font-size: 1.15rem;
-  font-weight: 700;
-  color: #16a34a;
-  line-height: 1;
-}
-
-.pf-stat-label {
-  display: block;
-  font-size: 0.7rem;
-  color: #64748b;
-  margin-top: 4px;
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
-  font-weight: 600;
-}
-
 /* ── MENU ── */
 .pf-menu {
-  padding: 20px 24px 0;
+  padding: 24px 24px 0;
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -282,16 +244,8 @@
     height: 72px;
   }
 
-  .pf-stats {
-    margin: 16px 16px 0;
-  }
-
-  .pf-stat {
-    padding: 12px 6px;
-  }
-
   .pf-menu {
-    padding: 16px 16px 0;
+    padding: 20px 16px 0;
   }
 
   .pf-menu-item {

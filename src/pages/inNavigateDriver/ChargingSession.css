@@ -1,0 +1,488 @@
+/* ============================================================
+   ChargingSession.css — Charging Session Page
+   Green brand #16a34a — prefix: cs-
+   ============================================================ */
+
+/* ── HERO BANNER ── */
+.cs-hero {
+  position: relative;
+  background: linear-gradient(135deg, #16a34a 0%, #15803d 40%, #166534 100%);
+  border-radius: 20px;
+  padding: 28px 24px;
+  margin-bottom: 24px;
+  overflow: hidden;
+}
+.cs-hero::before,
+.cs-hero::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.08;
+  background: #fff;
+}
+.cs-hero::before { width: 200px; height: 200px; top: -60px; right: -30px; }
+.cs-hero::after  { width: 120px; height: 120px; bottom: -40px; left: 20px; }
+.cs-hero-title {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: rgba(255,255,255,0.9);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ── GENERIC CARD ── */
+.cs-card {
+  background: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.06), 0 1px 4px rgba(0,0,0,0.03);
+  overflow: hidden;
+}
+
+/* ── LOADING / CENTER CARD ── */
+.cs-center-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 24px;
+  gap: 16px;
+}
+.cs-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #e2e8f0;
+  border-top-color: #16a34a;
+  border-radius: 50%;
+  animation: cs-spin 0.8s linear infinite;
+}
+@keyframes cs-spin {
+  to { transform: rotate(360deg); }
+}
+.cs-muted {
+  color: #94a3b8;
+  font-size: 0.88rem;
+}
+
+/* ── EMPTY STATE ── */
+.cs-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 56px 32px;
+  text-align: center;
+}
+.cs-empty-icon {
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  background: #f0fdf4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #16a34a;
+  margin-bottom: 20px;
+}
+.cs-empty-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0 0 8px;
+}
+.cs-empty-desc {
+  color: #94a3b8;
+  font-size: 0.88rem;
+  max-width: 340px;
+  margin: 0 0 24px;
+  line-height: 1.5;
+}
+
+/* ── QR SECTION ── */
+.cs-qr-section {
+  max-width: 480px;
+  margin: 0 auto;
+}
+.cs-qr-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 20px 24px;
+  border-bottom: 1px solid #f1f5f9;
+}
+.cs-qr-header h2 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1e293b;
+}
+.cs-qr-icon { color: #16a34a; }
+.cs-qr-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 28px 24px;
+  gap: 20px;
+}
+.cs-qr-img {
+  max-width: 280px;
+  width: 100%;
+  height: auto;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+}
+
+/* ── SESSION CARD ── */
+.cs-session-card {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+/* Session Header */
+.cs-session-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 20px 24px;
+  background: linear-gradient(135deg, #f0fdf4 0%, #ffffff 100%);
+  border-bottom: 1px solid #dcfce7;
+}
+.cs-session-info {
+  flex: 1;
+  min-width: 0;
+}
+.cs-station-name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #166534;
+  margin: 0 0 8px;
+}
+.cs-session-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.cs-meta-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 0.76rem;
+  font-weight: 500;
+  color: #64748b;
+}
+
+/* Status badges */
+.cs-status-badge {
+  padding: 5px 14px;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.cs-status-in-progress,
+.cs-status-in_progress {
+  background: rgba(22,163,74,0.12);
+  color: #16a34a;
+  animation: cs-badge-pulse 2s ease-in-out infinite;
+}
+.cs-status-completed,
+.cs-status-finished {
+  background: rgba(37,99,235,0.1);
+  color: #2563eb;
+}
+.cs-status-failed {
+  background: rgba(239,68,68,0.1);
+  color: #ef4444;
+}
+.cs-status-stopping {
+  background: rgba(100,116,139,0.1);
+  color: #64748b;
+}
+.cs-status-pending {
+  background: rgba(245,158,11,0.1);
+  color: #d97706;
+}
+@keyframes cs-badge-pulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.65; }
+}
+
+/* ── ALERTS ── */
+.cs-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 0 20px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  font-size: 0.84rem;
+  font-weight: 500;
+  line-height: 1.5;
+}
+.cs-alert + .cs-alert { margin-top: 8px; }
+.cs-alert:first-of-type { margin-top: 16px; }
+.cs-alert svg { flex-shrink: 0; margin-top: 2px; }
+
+.cs-alert-info {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  color: #166534;
+}
+.cs-alert-warning {
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  color: #92400e;
+}
+
+/* ── PROGRESS BAR ── */
+.cs-progress {
+  padding: 20px 24px;
+}
+.cs-progress-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.cs-progress-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #374151;
+}
+.cs-progress-info svg { color: #16a34a; }
+.cs-progress-pct {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: #16a34a;
+  line-height: 1;
+}
+.cs-progress-track {
+  width: 100%;
+  height: 18px;
+  background: #e2e8f0;
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+}
+.cs-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #22c55e, #16a34a);
+  border-radius: 12px;
+  transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+.cs-progress-fill::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255,255,255,0.3) 50%,
+    transparent 100%
+  );
+  animation: cs-shimmer 2s ease-in-out infinite;
+}
+@keyframes cs-shimmer {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+.cs-progress-complete {
+  background: linear-gradient(90deg, #3b82f6, #2563eb);
+}
+.cs-progress-complete::after { animation: none; }
+.cs-progress-range {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 6px;
+  font-size: 0.72rem;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+.cs-pulse {
+  animation: cs-icon-pulse 1.5s ease-in-out infinite;
+}
+@keyframes cs-icon-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%      { opacity: 0.6; transform: scale(1.15); }
+}
+
+/* ── STATS GRID ── */
+.cs-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  padding: 20px 24px;
+}
+.cs-stat-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 16px 10px;
+  background: #f8fafc;
+  border-radius: 14px;
+  border: 1px solid #f1f5f9;
+  transition: all 0.25s ease;
+}
+.cs-stat-card:hover {
+  background: #ffffff;
+  border-color: #bbf7d0;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(22,163,74,0.08);
+}
+.cs-stat-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 8px;
+  color: #fff;
+}
+.cs-stat-green   { background: linear-gradient(135deg, #16a34a, #22c55e); }
+.cs-stat-emerald { background: linear-gradient(135deg, #059669, #10b981); }
+.cs-stat-blue    { background: linear-gradient(135deg, #2563eb, #3b82f6); }
+.cs-stat-purple  { background: linear-gradient(135deg, #7c3aed, #8b5cf6); }
+
+.cs-stat-label {
+  font-size: 0.72rem;
+  color: #64748b;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  margin-bottom: 4px;
+}
+.cs-stat-value {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #1e293b;
+}
+.cs-stat-unit {
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: #94a3b8;
+  margin-left: 2px;
+}
+
+/* ── BUTTONS ── */
+.cs-actions {
+  display: flex;
+  gap: 12px;
+  padding: 8px 24px 24px;
+}
+.cs-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: all 0.25s ease;
+}
+.cs-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+.cs-btn-primary {
+  background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(22,163,74,0.25);
+}
+.cs-btn-primary:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(22,163,74,0.35);
+}
+
+.cs-btn-outline {
+  background: #ffffff;
+  color: #16a34a;
+  border: 1.5px solid #bbf7d0;
+}
+.cs-btn-outline:hover:not(:disabled) {
+  background: #f0fdf4;
+  border-color: #16a34a;
+}
+
+.cs-btn-stop {
+  background: #ffffff;
+  color: #dc2626;
+  border: 2px solid #fecaca;
+}
+.cs-btn-stop:hover:not(:disabled) {
+  background: #dc2626;
+  color: #ffffff;
+  border-color: #dc2626;
+  box-shadow: 0 4px 16px rgba(220,38,38,0.25);
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+  .cs-hero {
+    padding: 22px 18px;
+    border-radius: 16px;
+  }
+  .cs-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    padding: 16px 16px;
+  }
+  .cs-session-header {
+    flex-direction: column;
+    padding: 16px 16px;
+  }
+  .cs-session-meta {
+    flex-wrap: wrap;
+  }
+  .cs-progress {
+    padding: 16px 16px;
+  }
+  .cs-alert {
+    margin: 0 12px;
+    padding: 10px 14px;
+  }
+  .cs-actions {
+    padding: 8px 16px 20px;
+    flex-direction: column;
+  }
+  .cs-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .cs-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+  .cs-stat-card {
+    padding: 12px 8px;
+  }
+  .cs-stat-icon {
+    width: 34px;
+    height: 34px;
+  }
+  .cs-empty {
+    padding: 40px 20px;
+  }
+}

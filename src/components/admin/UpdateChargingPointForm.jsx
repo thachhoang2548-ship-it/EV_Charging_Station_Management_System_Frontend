@@ -5,8 +5,8 @@ import {
   updateChargingPoint,
 } from "../../api/chargingPointApi.js";
 import { getAllStations, getConnectorTypes } from "../../api/stationApi.js";
-import chargingPointIcon from '../../assets/icon/admin/charging-building.png';
-import { Form, Button, Row, Col } from 'react-bootstrap';
+import chargingPointIcon from "../../assets/icon/admin/charging-building.png";
+import { Form, Button, Row, Col } from "react-bootstrap";
 import "./AddStaffForm.css";
 
 // Thêm CSS animation cho spinner
@@ -37,11 +37,10 @@ export default function UpdateChargingPointForm({ pointId, onClose }) {
     status: "AVAILABLE",
   });
 
-
   // Lưu thông tin ngày từ database để gửi lại khi update
   const [originalDates, setOriginalDates] = useState({
     installationDate: "",
-    lastMaintenanceDate: ""
+    lastMaintenanceDate: "",
   });
 
   const [stations, setStations] = useState([]);
@@ -78,15 +77,20 @@ export default function UpdateChargingPointForm({ pointId, onClose }) {
 
           // ✅ Map connectorType name sang connectorTypeId
           const matchedConnectorType = connectorTypesRes.data?.find(
-            (ct) => ct.connectorTypeName === point.connectorType || ct.displayName === point.connectorType
+            (ct) =>
+              ct.connectorTypeName === point.connectorType ||
+              ct.displayName === point.connectorType,
           );
 
           // Kiểm tra nếu connector hiện tại bị deprecated
-          const isCurrentConnectorDeprecated = matchedConnectorType?.isDeprecated;
+          const isCurrentConnectorDeprecated =
+            matchedConnectorType?.isDeprecated;
 
           setFormData({
             stationId: String(point.stationId || ""),
-            connectorTypeId: isCurrentConnectorDeprecated ? "" : String(matchedConnectorType?.connectorTypeId || ""),
+            connectorTypeId: isCurrentConnectorDeprecated
+              ? ""
+              : String(matchedConnectorType?.connectorTypeId || ""),
             pointNumber: point.pointNumber || "",
             serialNumber: point.serialNumber || "",
             maxPowerKW: String(point.maxPowerKW || ""),
@@ -96,14 +100,14 @@ export default function UpdateChargingPointForm({ pointId, onClose }) {
           // Lưu thông tin ngày gốc từ database
           setOriginalDates({
             installationDate: point.installationDate,
-            lastMaintenanceDate: point.lastMaintenanceDate
+            lastMaintenanceDate: point.lastMaintenanceDate,
           });
 
           // Thông báo nếu connector hiện tại không còn hỗ trợ
           if (isCurrentConnectorDeprecated) {
             toast.warning(
               `Loại cổng sạc "${point.connectorType}" không còn được hỗ trợ. Vui lòng chọn loại cổng sạc khác.`,
-              { autoClose: 5000 }
+              { autoClose: 5000 },
             );
           }
         } else {
@@ -121,7 +125,6 @@ export default function UpdateChargingPointForm({ pointId, onClose }) {
 
     fetchData();
   }, [pointId, onClose]);
-
 
   // Debug: Log formData changes
   useEffect(() => {
@@ -205,18 +208,26 @@ export default function UpdateChargingPointForm({ pointId, onClose }) {
   if (loading) {
     return (
       <div className="form-overlay">
-        <div className="form-container" style={{ textAlign: "center", padding: "40px" }}>
+        <div
+          className="form-container"
+          style={{ textAlign: "center", padding: "40px" }}
+        >
           <div style={{ fontSize: "48px", marginBottom: "20px" }}>⚡</div>
-          <h3 style={{ color: "#666", marginBottom: "10px" }}>Đang tải thông tin trụ sạc...</h3>
-          <div className="spinner" style={{
-            border: "4px solid #f3f3f3",
-            borderTop: "4px solid #3498db",
-            borderRadius: "50%",
-            width: "40px",
-            height: "40px",
-            animation: "spin 1s linear infinite",
-            margin: "20px auto"
-          }}></div>
+          <h3 style={{ color: "#666", marginBottom: "10px" }}>
+            Đang tải thông tin trụ sạc...
+          </h3>
+          <div
+            className="spinner"
+            style={{
+              border: "4px solid #f3f3f3",
+              borderTop: "4px solid #3498db",
+              borderRadius: "50%",
+              width: "40px",
+              height: "40px",
+              animation: "spin 1s linear infinite",
+              margin: "20px auto",
+            }}
+          ></div>
         </div>
       </div>
     );
@@ -225,154 +236,205 @@ export default function UpdateChargingPointForm({ pointId, onClose }) {
   return (
     <div className="form-overlay">
       <div className="form-container">
-
         <Form noValidate onSubmit={handleSubmit} className="add-staff-form">
-          <img src={chargingPointIcon} alt="ChargingPoint" className="staff-icon" /> <br />
+          {/* Header với icon */}
+          <div className="form-header">
+            <img
+              src={chargingPointIcon}
+              alt="ChargingPoint"
+              className="staff-icon"
+            />
+            <h4 className="form-title">Cập nhật thông tin trụ sạc</h4>
+          </div>
 
-          <Row className="mb-3">
-            <Form.Group as={Col} controlId="pointNumber">
-              <Form.Label>Mã trụ sạc</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Nhập mã trụ sạc"
-                name="pointNumber"
-                value={formData.pointNumber}
-                onChange={handleChange}
-                required
-                disabled={submitting}
-              />
-            </Form.Group>
+          {/* Thông tin nhận diện */}
+          <div className="form-section">
+            <h6 className="section-title">📋 Thông tin nhận diện</h6>
+            <Row className="mb-3">
+              <Form.Group as={Col} md={6} controlId="pointNumber">
+                <Form.Label>Mã trụ sạc</Form.Label>
+                <Form.Control
+                  type="text"
+                  placeholder="Nhập mã trụ sạc"
+                  name="pointNumber"
+                  value={formData.pointNumber}
+                  onChange={handleChange}
+                  required
+                  disabled={submitting}
+                />
+              </Form.Group>
 
-            <Form.Group as={Col} controlId="serialNumber">
-              <Form.Label>Mã serial</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Nhập mã serial"
-                name="serialNumber"
-                value={formData.serialNumber}
-                onChange={handleChange}
-                required
-                disabled={submitting}
-              />
-            </Form.Group>
-          </Row>
+              <Form.Group as={Col} md={6} controlId="serialNumber">
+                <Form.Label>Mã serial</Form.Label>
+                <Form.Control
+                  type="text"
+                  placeholder="Nhập mã serial"
+                  name="serialNumber"
+                  value={formData.serialNumber}
+                  onChange={handleChange}
+                  required
+                  disabled={submitting}
+                />
+              </Form.Group>
+            </Row>
+          </div>
 
-          <Form.Group className="mb-3" controlId="stationId">
-            <Form.Label>Chọn trạm</Form.Label>
-            <Form.Control
-              as="select"
-              name="stationId"
-              value={formData.stationId}
-              onChange={handleChange}
-              required
-              disabled={submitting}
-              style={{ 
-                color: '#000',
-                backgroundColor: '#fff',
-                border: '1px solid #ced4da',
-                minHeight: '38px'
-              }}
-            >
-              <option value="" style={{ color: '#666' }}>
-                {stations.length === 0 ? 'Đang tải...' : 'Chọn trạm...'}
-              </option>
-              {stations && stations.length > 0 ? (
-                stations.map(station => (
-                  <option key={station.stationId} value={String(station.stationId)} style={{ color: '#000' }}>
-                    {station.stationName}
-                  </option>
-                ))
-              ) : (
-                <option value="" disabled style={{ color: '#999' }}>Không có dữ liệu</option>
-              )}
-            </Form.Control>
-          </Form.Group>
-
-          <Row className="mb-3">
-            <Form.Group as={Col} controlId="connectorTypeId">
-              <Form.Label>Chọn cổng sạc</Form.Label>
+          {/* Vị trí và thiết bị */}
+          <div className="form-section">
+            <h6 className="section-title">📍 Vị trí & Thiết bị</h6>
+            <Form.Group className="mb-3" controlId="stationId">
+              <Form.Label>Chọn trạm</Form.Label>
               <Form.Control
                 as="select"
-                name="connectorTypeId"
-                value={formData.connectorTypeId}
+                name="stationId"
+                value={formData.stationId}
                 onChange={handleChange}
                 required
                 disabled={submitting}
-                style={{ 
-                  color: '#000',
-                  backgroundColor: '#fff',
-                  border: '1px solid #ced4da',
-                  minHeight: '38px'
+                style={{
+                  color: "#000",
+                  backgroundColor: "#fff",
+                  border: "1px solid #ced4da",
+                  minHeight: "38px",
                 }}
               >
-                <option value="" style={{ color: '#666' }}>
-                  {connectorTypes.length === 0 ? 'Đang tải...' : 'Chọn cổng sạc...'}
+                <option value="" style={{ color: "#666" }}>
+                  {stations.length === 0 ? "Đang tải..." : "Chọn trạm..."}
                 </option>
-                {connectorTypes && connectorTypes.length > 0 ? (
-                  connectorTypes
-                    .filter(type => !type.isDeprecated) // Chỉ hiển thị cổng sạc đang hoạt động
-                    .map(type => (
-                      <option key={type.connectorTypeId} value={String(type.connectorTypeId)} style={{ color: '#000' }}>
-                        {type.connectorTypeName || type.displayName || `Type ${type.connectorTypeId}`}
-                      </option>
-                    ))
+                {stations && stations.length > 0 ? (
+                  stations.map((station) => (
+                    <option
+                      key={station.stationId}
+                      value={String(station.stationId)}
+                      style={{ color: "#000" }}
+                    >
+                      {station.stationName}
+                    </option>
+                  ))
                 ) : (
-                  <option value="" disabled style={{ color: '#999' }}>Không có dữ liệu</option>
+                  <option value="" disabled style={{ color: "#999" }}>
+                    Không có dữ liệu
+                  </option>
                 )}
               </Form.Control>
             </Form.Group>
 
-            <Form.Group as={Col} controlId="maxPowerKW">
-              <Form.Label>Năng lượng tối đa (kW)</Form.Label>
-              <Form.Control
-                type="number"
-                placeholder="Nhập năng lượng tối đa"
-                name="maxPowerKW"
-                value={formData.maxPowerKW}
+            <Row className="mb-3">
+              <Form.Group as={Col} md={6} controlId="connectorTypeId">
+                <Form.Label>Chọn cổng sạc</Form.Label>
+                <Form.Control
+                  as="select"
+                  name="connectorTypeId"
+                  value={formData.connectorTypeId}
+                  onChange={handleChange}
+                  required
+                  disabled={submitting}
+                  style={{
+                    color: "#000",
+                    backgroundColor: "#fff",
+                    border: "1px solid #ced4da",
+                    minHeight: "38px",
+                  }}
+                >
+                  <option value="" style={{ color: "#666" }}>
+                    {connectorTypes.length === 0
+                      ? "Đang tải..."
+                      : "Chọn cổng sạc..."}
+                  </option>
+                  {connectorTypes && connectorTypes.length > 0 ? (
+                    connectorTypes
+                      .filter((type) => !type.isDeprecated)
+                      .map((type) => (
+                        <option
+                          key={type.connectorTypeId}
+                          value={String(type.connectorTypeId)}
+                          style={{ color: "#000" }}
+                        >
+                          {type.connectorTypeName ||
+                            type.displayName ||
+                            `Type ${type.connectorTypeId}`}
+                        </option>
+                      ))
+                  ) : (
+                    <option value="" disabled style={{ color: "#999" }}>
+                      Không có dữ liệu
+                    </option>
+                  )}
+                </Form.Control>
+              </Form.Group>
+
+              <Form.Group as={Col} md={6} controlId="maxPowerKW">
+                <Form.Label>Năng lượng tối đa (kW)</Form.Label>
+                <Form.Control
+                  type="number"
+                  placeholder="Nhập năng lượng tối đa"
+                  name="maxPowerKW"
+                  value={formData.maxPowerKW}
+                  onChange={handleChange}
+                  step="0.1"
+                  min={0}
+                  max={350}
+                  required
+                  disabled={submitting}
+                />
+              </Form.Group>
+            </Row>
+          </div>
+
+          {/* Trạng thái */}
+          <div className="form-section">
+            <h6 className="section-title">⚡ Trạng thái</h6>
+            <Form.Group className="mb-3" controlId="status">
+              <Form.Label>Trạng thái hoạt động</Form.Label>
+              <Form.Select
+                name="status"
+                value={formData.status}
                 onChange={handleChange}
-                step="0.1"
-                min={0}
-                max={350}
                 required
                 disabled={submitting}
-              />
+                style={{ color: "#000" }}
+              >
+                <option value="AVAILABLE" style={{ color: "#000" }}>
+                  ✅ Sẵn sàng
+                </option>
+                <option value="OCCUPIED" style={{ color: "#000" }}>
+                  🔌 Đang sử dụng
+                </option>
+                <option value="MAINTENANCE" style={{ color: "#000" }}>
+                  🔧 Bảo trì
+                </option>
+                <option value="OUT_OF_SERVICE" style={{ color: "#000" }}>
+                  ❌ Ngưng hoạt động
+                </option>
+              </Form.Select>
             </Form.Group>
-          </Row>
+          </div>
 
-          <Form.Group className="mb-3" controlId="status">
-            <Form.Label>Trạng thái</Form.Label>
-            <Form.Select
-              name="status"
-              value={formData.status}
-              onChange={handleChange}
-              required
-              disabled={submitting}
-              style={{ color: '#000' }}
-            >
-              <option value="AVAILABLE" style={{ color: '#000' }}>Sẵn sàng</option>
-              <option value="OCCUPIED" style={{ color: '#000' }}>Đang sử dụng</option>
-              <option value="MAINTENANCE" style={{ color: '#000' }}>Bảo trì</option>
-              <option value="OUT_OF_SERVICE" style={{ color: '#000' }}>Ngưng hoạt động</option>
-            </Form.Select>
-          </Form.Group>
-
-          <div className="form-button-group mt-3">
-            <Button 
-              variant="primary" 
-              type="submit" 
-              className="me-2"
+          {/* Action buttons */}
+          <div className="form-button-group">
+            <Button
+              variant="success"
+              type="submit"
+              className="btn-submit"
               disabled={submitting}
             >
-              {submitting ? "⏳ Đang lưu..." : "💾 Cập nhật"}
+              {submitting ? (
+                <>
+                  <span className="spinner-border spinner-border-sm me-2"></span>
+                  Đang lưu...
+                </>
+              ) : (
+                <>💾 Cập nhật</>
+              )}
             </Button>
-            <Button 
-              variant="primary" 
-              type="button" 
-              className="me-2" 
+            <Button
+              variant="outline-secondary"
+              type="button"
+              className="btn-cancel"
               onClick={onClose}
               disabled={submitting}
             >
-              Trở về
+              ← Trở về
             </Button>
           </div>
         </Form>

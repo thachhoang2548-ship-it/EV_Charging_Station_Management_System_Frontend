@@ -13,6 +13,7 @@ import {
 import { useNavigate } from "react-router-dom"; // ✅ Mới
 import { toast } from "react-toastify"; // ✅ Mới
 import paths from "../../path/paths.jsx"; // ✅ Mới (để chuyển hướng)
+import { showWarning, showConfirm } from '../../utils/alertUtils.js';
 
 import {
   getConnectorTypes,
@@ -102,7 +103,7 @@ export default function InstantCharging() {
 
         const staffRes = await getStationStaffMe();
         if (!staffRes.data || staffRes.data.length === 0) {
-          alert("Không tìm thấy thông tin trạm của nhân viên!");
+          showWarning("Không tìm thấy thông tin trạm của nhân viên!");
           return;
         }
         const myStationId = staffRes.data[0].stationId;
@@ -225,7 +226,7 @@ export default function InstantCharging() {
 
     // RULE 1: Check Available. Nếu không available thì chặn luôn.
     if (!isAvail) {
-      alert("Khung giờ này đã kín hoặc không khả dụng.");
+      showWarning("Khung giờ này đã kín hoặc không khả dụng.");
       return;
     }
 
@@ -248,7 +249,7 @@ export default function InstantCharging() {
     } else {
       // RULE 2: Check số lượng tối đa (3 slot)
       if (currentSelected.length >= 3) {
-        alert("Bạn chỉ có thể chọn tối đa 3 khung giờ.");
+        showWarning("Bạn chỉ có thể chọn tối đa 3 khung giờ.");
         return;
       }
 
@@ -269,7 +270,7 @@ export default function InstantCharging() {
           [pointId]: [...currentSelected, clickedSlot],
         }));
       } else {
-        alert("Vui lòng chọn các khung giờ liên tiếp nhau.");
+        showWarning("Vui lòng chọn các khung giờ liên tiếp nhau.");
       }
     }
   };
@@ -295,9 +296,10 @@ export default function InstantCharging() {
     };
 
     if (
-      !window.confirm(
-        `Xác nhận kích hoạt sạc tại Trụ ${point?.pointNumber}?\nThời gian: ${startTime} - ${endTime}`
-      )
+      !(await showConfirm(
+        `Xác nhận kích hoạt sạc tại Trụ ${point?.pointNumber}?\nThời gian: ${startTime} - ${endTime}`,
+        'Xác nhận kích hoạt sạc'
+      ))
     ) {
       return;
     }

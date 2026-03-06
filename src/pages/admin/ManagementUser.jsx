@@ -17,6 +17,7 @@ import "./ManagementUser.css";
 import Header from "../../components/admin/Header.jsx";
 import SelectStationForm from "../../components/admin/SelectStationForm.jsx";
 import { toast } from "react-toastify";
+import { showConfirm, showSuccess, showError } from '../../utils/alertUtils.js';
 
 export default function ManagementUser() {
   const navigator = useNavigate();
@@ -168,19 +169,20 @@ export default function ManagementUser() {
   };
 
   const handleStatusStaff = async (staffId, status) => {
-    const confirmed = window.confirm(
+    const confirmed = await showConfirm(
       `Bạn có chắc chắn muốn ${status === "BANNED" ? "xóa" : "kích hoạt lại"} nhân viên này?`,
+      'Xác nhận'
     );
     if (confirmed) {
       const response = await statusStaffApi(staffId, status);
       if (response.success) {
-        alert(
-          `${status === "BANNED" ? "Nghỉ việc" : "Kích hoạt lại"} nhân viên có id ${staffId} thành công `,
+        await showSuccess(
+          `${status === "BANNED" ? "Nghỉ việc" : "Kích hoạt lại"} nhân viên có id ${staffId} thành công`
         );
         setLoading((pre) => !pre);
       } else {
-        alert(
-          `${status === "BANNED" ? "Nghỉ việc" : "Kích hoạt lại"} nhân viên có id ${staffId} thất bại`,
+        await showError(
+          `${status === "BANNED" ? "Nghỉ việc" : "Kích hoạt lại"} nhân viên có id ${staffId} thất bại`
         );
       }
     }
@@ -221,16 +223,17 @@ export default function ManagementUser() {
   };
 
   const handleDriverUnblock = async (driverId) => {
-    const confirmed = window.confirm(
+    const confirmed = await showConfirm(
       "Bạn có chắc chắn muốn gỡ lệnh khóa tài khoản tài xế này?",
+      'Xác nhận'
     );
     if (confirmed) {
       const response = await unbanDriverApi(driverId);
       if (response.success) {
-        alert(`Gỡ lệnh khóa tài khoản tài xế có id ${driverId} thành công `);
+        await showSuccess(`Gỡ lệnh khóa tài khoản tài xế có id ${driverId} thành công`);
         setLoading((pre) => !pre);
       } else {
-        alert(`Gỡ lệnh khóa tài khoản tài xế có id ${driverId} thất bại`);
+        await showError(`Gỡ lệnh khóa tài khoản tài xế có id ${driverId} thất bại`);
       }
     }
   };

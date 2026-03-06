@@ -1,87 +1,92 @@
-import Button from 'react-bootstrap/Button';
-import Col from 'react-bootstrap/Col';
-import Form from 'react-bootstrap/Form';
-import Row from 'react-bootstrap/Row';
-import Alert from 'react-bootstrap/Alert';
-import chargingIcon from '../../assets/icon/admin/charging-building.png'; 
-import { useState } from 'react';
-import './AddStaffForm.css'; 
-import {addConnectorTypeApi, updateConnectorTypeApi} from '../../api/stationApi.js';
-import { toast } from 'react-toastify';
-
+import Button from "react-bootstrap/Button";
+import Col from "react-bootstrap/Col";
+import Form from "react-bootstrap/Form";
+import Row from "react-bootstrap/Row";
+import Alert from "react-bootstrap/Alert";
+import chargingIcon from "../../assets/icon/admin/charging-building.png";
+import { useState } from "react";
+import "./AddStaffForm.css";
+import {
+  addConnectorTypeApi,
+  updateConnectorTypeApi,
+} from "../../api/stationApi.js";
+import { toast } from "react-toastify";
 
 export default function AddChargerForm({ onClose, charger }) {
   const initialFormData = {
-  code: charger ? charger.code : '',
-  mode: charger ? charger.mode : '',
-  displayName: charger ? charger.displayName : '',
-  defaultMaxPowerKW: charger ? charger.defaultMaxPowerKW : '',
-  isDeprecated: charger ? charger.isDeprecated : false,
-};
+    code: charger ? charger.code : "",
+    mode: charger ? charger.mode : "",
+    displayName: charger ? charger.displayName : "",
+    defaultMaxPowerKW: charger ? charger.defaultMaxPowerKW : "",
+    isDeprecated: charger ? charger.isDeprecated : false,
+  };
 
-const initialFormErrors = {
-  code: '',
-  mode: '',
-  displayName: '',
-  defaultMaxPowerKW: '',
-  isDeprecated: false,
-};
+  const initialFormErrors = {
+    code: "",
+    mode: "",
+    displayName: "",
+    defaultMaxPowerKW: "",
+    isDeprecated: false,
+  };
   const [formData, setFormData] = useState(initialFormData);
   const [formErrors, setFormErrors] = useState(initialFormErrors);
-  const [apiError, setApiError] = useState(''); 
+  const [apiError, setApiError] = useState("");
 
   const validateField = (name, value) => {
     switch (name) {
-      case 'code':
-        return value.trim() ? '' : 'Vui lòng nhập mã cổng sạc.';
-      case 'mode':
-        return value.trim() ? '' : 'Vui lòng nhập loại cổng sạc.';
-      case 'displayName':
-        return value.trim() ? '' : 'Vui lòng nhập tên hiển thị.';
-      case 'defaultMaxPowerKW':
-        if (!value.trim()) return 'Vui lòng nhập công suất tối đa (kW).';
-        if (isNaN(value) || Number(value) <= 10) return 'Công suất tối đa phải là một số lớn hơn 10.';
-        return '';
-      case 'isDeprecated':
-        return value ? '' : 'Vui lòng phân loại cổng sạc.';
+      case "code":
+        return value.trim() ? "" : "Vui lòng nhập mã cổng sạc.";
+      case "mode":
+        return value.trim() ? "" : "Vui lòng nhập loại cổng sạc.";
+      case "displayName":
+        return value.trim() ? "" : "Vui lòng nhập tên hiển thị.";
+      case "defaultMaxPowerKW":
+        if (!value.trim()) return "Vui lòng nhập công suất tối đa (kW).";
+        if (isNaN(value) || Number(value) <= 10)
+          return "Công suất tối đa phải là một số lớn hơn 10.";
+        return "";
+      case "isDeprecated":
+        return value ? "" : "Vui lòng phân loại cổng sạc.";
       default:
-        return '';
+        return "";
     }
   };
 
   const handleBlur = (event) => {
     const { name, value } = event.target;
-    
+
     const error = validateField(name, value);
-    setFormErrors(prevErrors => ({
+    setFormErrors((prevErrors) => ({
       ...prevErrors,
       [name]: error,
     }));
   };
 
-
   const handleChange = (event) => {
     const { name, value } = event.target;
-    setFormData(prevData => ({
+    setFormData((prevData) => ({
       ...prevData,
       [name]: value,
     }));
 
     if (formErrors[name]) {
-      setFormErrors(prevErrors => ({
+      setFormErrors((prevErrors) => ({
         ...prevErrors,
-        [name]: '',
+        [name]: "",
       }));
     }
-    if(apiError) {
-      setApiError('');
+    if (apiError) {
+      setApiError("");
     }
   };
 
   const handleUpdate = async (event) => {
     event.preventDefault();
     console.log("Charger ID:", charger.connectorTypeId);
-    const response = await updateConnectorTypeApi(charger.connectorTypeId, formData);
+    const response = await updateConnectorTypeApi(
+      charger.connectorTypeId,
+      formData,
+    );
     console.log("DATA:", formData);
     if (response.success) {
       onClose();
@@ -92,137 +97,171 @@ const initialFormErrors = {
     }
   };
 
-    const handleSubmit = async (event) => {
-      event.preventDefault();
-      const response = await addConnectorTypeApi(formData);
-      console.log("DATA:", formData);
-      if (response.success) {
-        onClose();
-        toast.success("Thêm mới cổng sạc thành công.");
-      } else {
-        toast.error("Thêm mới cổng sạc thất bại.");
-        setApiError(response.error);
-      }
-    };
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    const response = await addConnectorTypeApi(formData);
+    console.log("DATA:", formData);
+    if (response.success) {
+      onClose();
+      toast.success("Thêm mới cổng sạc thành công.");
+    } else {
+      toast.error("Thêm mới cổng sạc thất bại.");
+      setApiError(response.error);
+    }
+  };
 
   const handleBack = () => {
     onClose();
   };
 
   return (
-    <Form noValidate onSubmit={charger ? handleUpdate : handleSubmit} className="add-staff-form">
-
-      <img src={chargingIcon} alt="Add Charger" className="staff-icon" /> <br />
-
-      {/* HÀNG 1: Tên trạm + Giờ hoạt động */}
-      <Row className="mb-3">
-        <Form.Group as={Col} controlId="chargerName">
-          <Form.Label>Tên cổng sạc</Form.Label>
-          <Form.Control
-            type="text"
-            placeholder="Nhập tên cổng sạc"
-            name="displayName"
-            value={formData.displayName}
-            onChange={handleChange}
-            onBlur={handleBlur}
-            isInvalid={!!formErrors.displayName}
-            required
-          />
-          <Form.Control.Feedback type="invalid">
-            {formErrors.displayName}
-          </Form.Control.Feedback>
-        </Form.Group>
-
-        <Form.Group as={Col} controlId="code">
-          <Form.Label>Mã cổng sạc</Form.Label>
-          <Form.Control
-            type="text"
-            placeholder="VD: Type2 / CCS2 / CHAdeMO /..."
-            name="code"
-            value={formData.code }
-            onChange={handleChange}
-            onBlur={handleBlur}
-            isInvalid={!!formErrors.code}
-            required
-          />
-          <Form.Control.Feedback type="invalid">
-            {formErrors.code}
-          </Form.Control.Feedback>
-        </Form.Group>
-      </Row>
-
-      <Row className="mb-3">
-        <Form.Group as={Col} controlId="mode">
-          <Form.Label>Loại cổng sạc</Form.Label>
-          <Form.Control
-            type="text" 
-            placeholder="VD: AC / DC"
-            name="mode"
-            value={formData.mode }
-            onChange={handleChange}
-            onBlur={handleBlur}
-            isInvalid={!!formErrors.mode}
-            required
-          />
-          <Form.Control.Feedback type="invalid">
-            {formErrors.mode}
-          </Form.Control.Feedback>
-        </Form.Group>
-
-        <Form.Group as={Col} controlId="longitude">
-          <Form.Label>Năng lượng tối đa (kW)</Form.Label>
-          <Form.Control
-            type="number"
-            placeholder="VD: 106"
-            name="defaultMaxPowerKW"
-            value={formData.defaultMaxPowerKW }
-            onChange={handleChange}
-            onBlur={handleBlur}
-            isInvalid={!!formErrors.defaultMaxPowerKW}
-            required
-          />
-          <Form.Control.Feedback type="invalid">
-            {formErrors.defaultMaxPowerKW}
-          </Form.Control.Feedback>
-        </Form.Group>
-      </Row>
-
-    
-      {/* HÀNG 4: Trạng thái có lỗi thời hay không */}
-      <Form.Group className="mb-3" controlId="status">
-        <Form.Label>Trạng thái</Form.Label>
-        <Form.Select
-          name="isDeprecated"
-          value={formData.isDeprecated}
-          onChange={handleChange}
-          onBlur={handleBlur}
-          isInvalid={!!formErrors.isDeprecated}
-          required
+    <div className="form-overlay">
+      <div className="form-container">
+        <Form
+          noValidate
+          onSubmit={charger ? handleUpdate : handleSubmit}
+          className="add-staff-form"
         >
-          <option value="" disabled>Chọn trạng thái ban đầu...</option>
-          <option selected={charger?.isDeprecated === false} value="false"> Đang hoạt động </option>
-          <option selected={charger?.isDeprecated === true} value="true"> Không còn phục vụ </option>
-        </Form.Select>
-        <Form.Control.Feedback type="invalid">
-          {formErrors.isDeprecated}
-        </Form.Control.Feedback>
-      </Form.Group>
+          {/* Header với icon */}
+          <div className="form-header">
+            <img src={chargingIcon} alt="Charger" className="staff-icon" />
+            <h4 className="form-title">
+              {charger
+                ? "Cập nhật thông tin cổng sạc"
+                : "Thêm loại cổng sạc mới"}
+            </h4>
+          </div>
 
+          {/* Thông tin cơ bản */}
+          <div className="form-section">
+            <h6 className="section-title">🔌 Thông tin cơ bản</h6>
+            <Row className="mb-3">
+              <Form.Group as={Col} md={6} controlId="chargerName">
+                <Form.Label>Tên cổng sạc</Form.Label>
+                <Form.Control
+                  type="text"
+                  placeholder="Nhập tên cổng sạc"
+                  name="displayName"
+                  value={formData.displayName}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  isInvalid={!!formErrors.displayName}
+                  required
+                />
+                <Form.Control.Feedback type="invalid">
+                  {formErrors.displayName}
+                </Form.Control.Feedback>
+              </Form.Group>
 
-      {apiError && (
-        <Alert variant="danger" className="mt-3">
-          {apiError}
-        </Alert>
-      )}
+              <Form.Group as={Col} md={6} controlId="code">
+                <Form.Label>Mã cổng sạc</Form.Label>
+                <Form.Control
+                  type="text"
+                  placeholder="VD: Type2 / CCS2 / CHAdeMO"
+                  name="code"
+                  value={formData.code}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  isInvalid={!!formErrors.code}
+                  required
+                />
+                <Form.Control.Feedback type="invalid">
+                  {formErrors.code}
+                </Form.Control.Feedback>
+              </Form.Group>
+            </Row>
+          </div>
 
-      <div className="form-button-group mt-3">
-        <Button variant="primary" type="submit" className="me-2">
-          {charger ? 'Cập nhật' : 'Tạo mới'}
-        </Button>
-        <Button variant="primary" type="button" className="me-2" onClick={handleBack}>
-          Trở về
-        </Button>
+          {/* Thông số kỹ thuật */}
+          <div className="form-section">
+            <h6 className="section-title">⚙️ Thông số kỹ thuật</h6>
+            <Row className="mb-3">
+              <Form.Group as={Col} md={6} controlId="mode">
+                <Form.Label>Loại cổng sạc</Form.Label>
+                <Form.Select
+                  name="mode"
+                  value={formData.mode}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  isInvalid={!!formErrors.mode}
+                  required
+                >
+                  <option value="">Chọn loại...</option>
+                  <option value="AC">⚡ AC (Sạc chậm)</option>
+                  <option value="DC">🔋 DC (Sạc nhanh)</option>
+                </Form.Select>
+                <Form.Control.Feedback type="invalid">
+                  {formErrors.mode}
+                </Form.Control.Feedback>
+              </Form.Group>
+
+              <Form.Group as={Col} md={6} controlId="defaultMaxPowerKW">
+                <Form.Label>Năng lượng tối đa (kW)</Form.Label>
+                <Form.Control
+                  type="number"
+                  placeholder="VD: 150"
+                  name="defaultMaxPowerKW"
+                  value={formData.defaultMaxPowerKW}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  isInvalid={!!formErrors.defaultMaxPowerKW}
+                  min="10"
+                  max="500"
+                  required
+                />
+                <Form.Control.Feedback type="invalid">
+                  {formErrors.defaultMaxPowerKW}
+                </Form.Control.Feedback>
+              </Form.Group>
+            </Row>
+          </div>
+
+          {/* Trạng thái */}
+          <div className="form-section">
+            <h6 className="section-title">⚡ Trạng thái</h6>
+            <Form.Group className="mb-3" controlId="status">
+              <Form.Label>Trạng thái hoạt động</Form.Label>
+              <Form.Select
+                name="isDeprecated"
+                value={formData.isDeprecated}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                isInvalid={!!formErrors.isDeprecated}
+                required
+              >
+                <option value="">Chọn trạng thái...</option>
+                <option value="false">✅ Đang hoạt động</option>
+                <option value="true">❌ Không còn phục vụ</option>
+              </Form.Select>
+              <Form.Control.Feedback type="invalid">
+                {formErrors.isDeprecated}
+              </Form.Control.Feedback>
+            </Form.Group>
+          </div>
+
+          {/* Alert for API errors */}
+          {apiError && (
+            <Alert variant="danger" className="mt-3">
+              {apiError}
+            </Alert>
+          )}
+
+          {/* Action buttons */}
+          <div className="form-button-group">
+            <Button variant="success" type="submit" className="btn-submit">
+              {charger ? "💾 Cập nhật" : "➕ Tạo mới"}
+            </Button>
+            <Button
+              variant="outline-secondary"
+              type="button"
+              className="btn-cancel"
+              onClick={handleBack}
+            >
+              ← Trở về
+            </Button>
+          </div>
+        </Form>
       </div>
-    </Form>
+    </div>
   );
 }

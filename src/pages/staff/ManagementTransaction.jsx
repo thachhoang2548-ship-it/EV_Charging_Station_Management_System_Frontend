@@ -14,6 +14,7 @@ import {
 } from "../../api/staffApi.js";
 import Header from "../../components/admin/Header.jsx";
 import "../admin/ManagementUser.css";
+import { showConfirm } from '../../utils/alertUtils.js';
 
 export default function ManagementTransaction() {
   const [transactions, setTransactions] = useState([]);
@@ -250,7 +251,7 @@ export default function ManagementTransaction() {
   };
 
   const handlePayInvoice = async (invoiceId) => {
-    if (!window.confirm(`Xác nhận thanh toán hóa đơn #${invoiceId}?`)) {
+    if (!(await showConfirm(`Xác nhận thanh toán hóa đơn #${invoiceId}?`, 'Xác nhận thanh toán'))) {
       return;
     }
 

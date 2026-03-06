@@ -1,4 +1,4 @@
-/* ===== REGISTER PAGE - SINGLE PAGE LAYOUT ===== */
+﻿/* ===== REGISTER PAGE - SINGLE PAGE LAYOUT ===== */
 
 /* DatePicker z-index fix */
 .date-picker-popper,
@@ -16,6 +16,10 @@
 .register-page .register-container {
   max-width: 500px;
   padding: 36px 36px 28px;
+}
+
+.auth-container {
+  overflow: visible !important;
 }
 
 .register-page .auth-logo {
@@ -207,6 +211,7 @@
 }
 
 /* ===== RESPONSIVE: mobile ===== */
+
 @media (max-width: 480px) {
   .register-page .register-container {
     max-width: 100%;
