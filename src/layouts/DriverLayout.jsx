@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import HomeNavbar from "../components/HomeNavbar/HomeNavbar.jsx";
 import paths from "../path/paths.jsx";
-import './DriverLayout.css';
+import "./DriverLayout.css";
 
 export default function DriverLayout() {
   const [isMobile, setIsMobile] = useState(false);
@@ -16,8 +16,11 @@ export default function DriverLayout() {
     paths.forgotPassword,
     paths.resetPassword,
     paths.rules,
+    paths.stations,
   ];
-  const isAuthRoute = authPaths.includes(location.pathname);
+  const isAuthRoute =
+    authPaths.includes(location.pathname) ||
+    location.pathname.startsWith("/stations/");
 
   function MainLayoutLarge() {
     return (
@@ -52,13 +55,13 @@ export default function DriverLayout() {
   useEffect(() => {
     const checkScreenSize = () => {
       // 768px là breakpoint phổ biến cho mobile
-      setIsMobile(window.innerWidth <= 768); 
+      setIsMobile(window.innerWidth <= 768);
     };
 
     checkScreenSize();
-    window.addEventListener('resize', checkScreenSize);
+    window.addEventListener("resize", checkScreenSize);
 
-    return () => window.removeEventListener('resize', checkScreenSize);
+    return () => window.removeEventListener("resize", checkScreenSize);
   }, []);
 
   if (isAuthRoute) {
