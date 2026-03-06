@@ -58,12 +58,7 @@ export default function AppNavigation() {
   // Khi chưa đăng nhập: home icon trỏ vào / (trang chủ công khai)
   const homeNavPath = isLoggedIn ? paths.driverDashboard : paths.home;
 
-  // Khi đã đăng nhập: home icon trỏ vào /driver dashboard
-  // Khi chưa đăng nhập: home icon trỏ vào / (trang chủ công khai)
-  const homeNavPath = isLoggedIn ? paths.driverDashboard : paths.home;
-
   const navItems = [
-    { path: homeNavPath, icon: homeIcon, label: isLoggedIn ? "Dashboard" : "Trang chủ" },
     { path: homeNavPath, icon: homeIcon, label: isLoggedIn ? "Dashboard" : "Trang chủ" },
     { path: paths.stations, icon: stationsIcon, label: "Trạm sạc" },
     { path: paths.chargingSession, icon: bookingIcon, label: "Phiên sạc" },
