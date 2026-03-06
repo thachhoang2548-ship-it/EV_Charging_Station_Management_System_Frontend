@@ -8,6 +8,9 @@
   left: 0;
   right: 0;
   z-index: 999;
+  font-family: 'Inter', 'SVN-Gilroy', 'Segoe UI', sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(12px);
   border-bottom: 1px solid rgba(0, 0, 0, 0.07);

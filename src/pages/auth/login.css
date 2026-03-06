@@ -96,6 +96,19 @@ body {
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
 }
 
+.auth-logo-icon.auth-logo-bolt {
+  width: 58px;
+  height: 58px;
+  border-radius: 14px;
+  animation: none;
+}
+
+.auth-logo-bolt-svg {
+  width: 30px;
+  height: 30px;
+  color: #ffffff;
+}
+
 @keyframes pulse {
   0%,
   100% {
