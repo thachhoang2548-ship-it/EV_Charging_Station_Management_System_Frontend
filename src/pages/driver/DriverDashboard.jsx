@@ -19,13 +19,6 @@ const FEATURES = [
     badge: null,
   },
   {
-    icon: "📅",
-    title: "Đặt lịch sạc",
-    desc: "Đặt trước khung giờ sạc tại trạm bạn muốn",
-    path: "booking",
-    badge: null,
-  },
-  {
     icon: "⚡",
     title: "Phiên sạc",
     desc: "Theo dõi phiên sạc đang diễn ra theo thời gian thực",
