@@ -34,6 +34,16 @@
   overflow: auto;
 }
 
+.driver-layout-auth {
+  min-height: 100vh;
+  background: #f0f4f8;
+}
+
+.driver-layout-auth-main {
+  min-height: 100vh;
+  padding-top: 64px;
+}
+
 /* ========== CÁC STYLES CŨ (giữ nguyên nếu cần) ========== */
 
 /* Container chính */

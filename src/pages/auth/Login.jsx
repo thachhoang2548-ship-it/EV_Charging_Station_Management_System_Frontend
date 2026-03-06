@@ -6,6 +6,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { useLogin } from "../../hooks/useAuth";
 import { useDispatch } from "react-redux";
 import { loginSuccess } from "../../redux/slices/authSlice.js";
+import EVLogoIcon from "../../components/logo/EVLogoIcon.jsx";
 
 const Login = () => {
   const [form, setForm] = useState({
@@ -159,46 +160,8 @@ const Login = () => {
     <div className="auth-page">
       <div className="auth-container">
         <div className="auth-logo">
-          <div className="auth-logo-icon auth-logo-car">
-            <svg
-              viewBox="0 0 100 100"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <rect
-                x="20"
-                y="45"
-                width="60"
-                height="25"
-                rx="8"
-                fill="white"
-                fillOpacity="0.9"
-              />
-              <rect
-                x="30"
-                y="35"
-                width="18"
-                height="15"
-                rx="3"
-                fill="white"
-                fillOpacity="0.7"
-              />
-              <rect
-                x="52"
-                y="35"
-                width="18"
-                height="15"
-                rx="3"
-                fill="white"
-                fillOpacity="0.7"
-              />
-              <circle cx="32" cy="72" r="8" fill="white" />
-              <circle cx="68" cy="72" r="8" fill="white" />
-              <path
-                d="M50 50 L45 60 L52 60 L47 70 L55 58 L50 58 Z"
-                fill="#FFD700"
-              />
-            </svg>
+          <div className="auth-logo-icon auth-logo-bolt">
+            <EVLogoIcon className="auth-logo-bolt-svg" strokeWidth={2.5} />
           </div>
           <h1 className="auth-title">Đăng Nhập</h1>
         </div>

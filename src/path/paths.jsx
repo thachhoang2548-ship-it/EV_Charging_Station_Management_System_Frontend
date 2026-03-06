@@ -10,6 +10,7 @@ export const paths = {
   error: "/error",
   //driver
   home: "/",
+  about: "/about",
   driverDashboard: "/driver",
   guide: "/guide",
   rules: "/rules",

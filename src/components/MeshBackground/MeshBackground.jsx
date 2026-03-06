@@ -30,6 +30,7 @@ import "./MeshBackground.css";
 const VARIANTS = {
   green: {
     base: "#f6fef9",
+    gradient: "linear-gradient(135deg, rgba(22, 163, 74, 0.14) 0%, rgba(22, 101, 52, 0.08) 100%)",
     orbs: [
       {
         color: "rgba(74, 222, 128, 0.45)",   /* xanh lá non     */
@@ -60,6 +61,7 @@ const VARIANTS = {
 
   purple: {
     base: "#faf8ff",
+    gradient: "linear-gradient(135deg, rgba(167, 139, 250, 0.14) 0%, rgba(96, 165, 250, 0.08) 100%)",
     orbs: [
       {
         color: "rgba(167, 139, 250, 0.45)",  /* violet           */
@@ -90,6 +92,7 @@ const VARIANTS = {
 
   sunset: {
     base: "#fff9f5",
+    gradient: "linear-gradient(135deg, rgba(251, 146, 60, 0.16) 0%, rgba(252, 165, 165, 0.10) 100%)",
     orbs: [
       {
         color: "rgba(252, 165, 165, 0.50)",  /* coral            */
@@ -120,6 +123,7 @@ const VARIANTS = {
 
   ocean: {
     base: "#f0f7ff",
+    gradient: "linear-gradient(135deg, rgba(14, 165, 233, 0.14) 0%, rgba(59, 130, 246, 0.08) 100%)",
     orbs: [
       {
         color: "rgba(96, 165, 250, 0.45)",   /* blue             */
@@ -150,6 +154,7 @@ const VARIANTS = {
 
   dark: {
     base: "#07101f",
+    gradient: "linear-gradient(135deg, rgba(22, 163, 74, 0.18) 0%, rgba(14, 116, 144, 0.10) 100%)",
     orbs: [
       {
         color: "rgba(14, 165, 233, 0.22)",   /* sky              */
@@ -181,6 +186,7 @@ const VARIANTS = {
   /* Nền trắng xanh nhạt, orb loang rất mờ */
   mint: {
     base: "#f7fdfb",
+    gradient: "linear-gradient(135deg, rgba(22, 163, 74, 0.12) 0%, rgba(22, 101, 52, 0.06) 100%)",
     orbs: [
       {
         color: "rgba(110, 231, 183, 0.30)",  /* mint xanh trái  */
@@ -213,17 +219,32 @@ const VARIANTS = {
 const MeshBackground = ({
   variant   = "green",
   animated  = true,
+  floating  = true,
   className = "",
   style     = {},
   tag: Tag  = "div",
   children,
 }) => {
   const cfg = VARIANTS[variant] ?? VARIANTS.green;
+  const FLOATS = [
+    { left: "8%", top: "18%", size: "6px", delay: "0s", duration: "6.8s" },
+    { left: "18%", top: "72%", size: "7px", delay: "1.1s", duration: "7.4s" },
+    { left: "31%", top: "36%", size: "5px", delay: "0.8s", duration: "6.2s" },
+    { left: "46%", top: "14%", size: "8px", delay: "1.6s", duration: "7.9s" },
+    { left: "58%", top: "63%", size: "6px", delay: "0.4s", duration: "6.6s" },
+    { left: "73%", top: "26%", size: "7px", delay: "2.1s", duration: "8.2s" },
+    { left: "86%", top: "54%", size: "5px", delay: "1.4s", duration: "6.9s" },
+    { left: "92%", top: "80%", size: "6px", delay: "0.2s", duration: "7.1s" },
+  ];
 
   return (
     <Tag
       className={`mesh-root ${className}`}
-      style={{ "--mesh-base": cfg.base, ...style }}
+      style={{
+        "--mesh-base": cfg.base,
+        "--mesh-gradient": cfg.gradient,
+        ...style,
+      }}
     >
       {/* Orb layer */}
       <div className="mesh-orbs" aria-hidden="true">
@@ -241,6 +262,25 @@ const MeshBackground = ({
           />
         ))}
       </div>
+
+      {floating && (
+        <div className="mesh-floats" aria-hidden="true">
+          {FLOATS.map((dot, index) => (
+            <span
+              key={index}
+              className="mesh-float"
+              style={{
+                left: dot.left,
+                top: dot.top,
+                width: dot.size,
+                height: dot.size,
+                animationDelay: dot.delay,
+                animationDuration: dot.duration,
+              }}
+            />
+          ))}
+        </div>
+      )}
 
       {/* Content */}
       <div className="mesh-content">
