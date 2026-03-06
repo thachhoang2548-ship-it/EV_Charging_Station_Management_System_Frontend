@@ -106,7 +106,7 @@ export default function FormProfile({ onClose }) {
       <Modal show={true} onHide={onClose} backdrop="static" keyboard={false}>
         <Modal.Header
           style={{
-            background: "linear-gradient(135deg, #20b2aa 0%, #1a8f89 100%)",
+            background: "linear-gradient(135deg, #16a34a 0%, #15803d 100%)",
             color: "white",
             borderBottom: "3px solid white",
             padding: "16px 20px",
@@ -131,7 +131,7 @@ export default function FormProfile({ onClose }) {
               fontSize: "13px",
               background: "white",
               border: "none",
-              color: "#20b2aa",
+              color: "#16a34a",
               boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
             }}
           >
