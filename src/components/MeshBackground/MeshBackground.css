@@ -11,12 +11,36 @@
   width: 100%;
 }
 
+.mesh-root::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--mesh-gradient, transparent);
+  pointer-events: none;
+  z-index: 0;
+}
+
 /* --- Orb container (fills parent, pointer-events off) --- */
 .mesh-orbs {
   position: absolute;
   inset: 0;
   z-index: 0;
   pointer-events: none;
+}
+
+.mesh-floats {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.mesh-float {
+  position: absolute;
+  border-radius: 9999px;
+  background: rgba(22, 163, 74, 0.28);
+  box-shadow: 0 0 0 6px rgba(22, 163, 74, 0.06);
+  animation: mesh-float-up 7s ease-in-out infinite;
 }
 
 /* ----------------------------------------------------------------
@@ -101,9 +125,21 @@
   100% { transform: translate(-50%, -50%) scale(1);    }
 }
 
+@keyframes mesh-float-up {
+  0%, 100% {
+    transform: translateY(0) translateX(0);
+    opacity: 0.24;
+  }
+  50% {
+    transform: translateY(-14px) translateX(6px);
+    opacity: 0.6;
+  }
+}
+
 /* ================================================================
    PREFERS REDUCED MOTION — tắt animation cho người dùng cần
 ================================================================ */
 @media (prefers-reduced-motion: reduce) {
   .mesh-orb { animation: none !important; }
+  .mesh-float { animation: none !important; }
 }

@@ -1,10 +1,23 @@
 import AppNavigation from "../components/navigate/DriverNavigate.jsx";
 import { useState, useEffect } from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
+import HomeNavbar from "../components/HomeNavbar/HomeNavbar.jsx";
+import paths from "../path/paths.jsx";
 import './DriverLayout.css';
 
 export default function DriverLayout() {
   const [isMobile, setIsMobile] = useState(false);
+  const location = useLocation();
+  const authPaths = [
+    paths.home,
+    paths.about,
+    paths.login,
+    paths.register,
+    paths.forgotPassword,
+    paths.resetPassword,
+    paths.rules,
+  ];
+  const isAuthRoute = authPaths.includes(location.pathname);
 
   function MainLayoutLarge() {
     return (
@@ -47,6 +60,17 @@ export default function DriverLayout() {
 
     return () => window.removeEventListener('resize', checkScreenSize);
   }, []);
+
+  if (isAuthRoute) {
+    return (
+      <div className="driver-layout-auth">
+        <HomeNavbar />
+        <main className="driver-layout-auth-main">
+          <Outlet />
+        </main>
+      </div>
+    );
+  }
 
   // Render layout phù hợp
   if (isMobile) {
