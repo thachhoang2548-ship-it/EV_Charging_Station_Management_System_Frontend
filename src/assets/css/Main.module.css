@@ -104,9 +104,9 @@
   width: 80%;
   min-width: 100px;
   padding: 7px 20px;
-  background: #20b2aa;
+  background: #16a34a !important;
   color: var(--white);
-  border: 2px solid #20b2aa;
+  border: 2px solid #16a34a !important;
   border-radius: var(--border-radius);
   font-size: 16px;
   font-weight: 600;
@@ -123,10 +123,10 @@
 }
 
 .button:hover:not(:disabled) {
-  background: var(--primary-dark);
-  border-color: var(--primary-dark);
+  background: #15803d !important;
+  border-color: #15803d !important;
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(45, 212, 191, 0.3);
+  box-shadow: 0 6px 16px rgba(22, 163, 74, 0.3);
 }
 
 .button:active:not(:disabled) {
@@ -227,7 +227,7 @@ p {
 /* 2. Khung Form */
 .formContainer {
   background-color: #ffffff;
-  border: 2px solid #20b2aa;
+  border: 2px solid #16a34a;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
   border-radius: 12px;
   padding: 2.5rem;
