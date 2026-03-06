@@ -8,6 +8,7 @@ import Header from '../../components/admin/Header.jsx';
 import {toast} from 'react-toastify';
 import {getAllVehicleModels, changeStatusModelApi } from '../../api/modelVehicleApi.js';
 import VehicleModelForm from '../../components/admin/VehicleModelForm.jsx';
+import { showConfirm } from '../../utils/alertUtils.js';
 
 
 
@@ -58,7 +59,7 @@ export default function ManagementModel() {
   };
 
   const handleStatusModel = async (modelId, newStatus) => {
-    const confirm = window.confirm('Bạn có chắc chắn muốn thay đổi trạng thái mẫu xe này không?');
+    const confirm = await showConfirm('Bạn có chắc chắn muốn thay đổi trạng thái mẫu xe này không?', 'Xác nhận thay đổi trạng thái');
     if (!confirm) return;
     try {
       const response = await changeStatusModelApi(modelId, newStatus);

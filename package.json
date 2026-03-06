@@ -34,6 +34,7 @@
     "react-zxing": "^2.1.0",
     "recharts": "^2.15.4",
     "styled-components": "^6.1.19",
+    "sweetalert2": "^11.26.21",
     "tailwind-merge": "^3.4.0"
   },
   "devDependencies": {

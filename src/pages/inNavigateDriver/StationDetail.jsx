@@ -11,6 +11,7 @@ import {
   MapPin, Navigation, Zap, ChevronDown, ChevronUp,
   CheckCircle2, Clock, Wrench, Car, AlertTriangle, LogIn
 } from "lucide-react";
+import { showWarning } from '../../utils/alertUtils.js';
 
 // AWS Map
 import AwsLocationMap from "../../components/maps/StationRouteMap.jsx";
@@ -165,11 +166,14 @@ const StationDetail = () => {
 
   const handleBooking = (pointId, connectorId) => {
     if (!isLoggedIn) {
-      alert("Vui lòng đăng nhập để đặt chỗ sạc!");
+      showWarning("Vui lòng đăng nhập để đặt chỗ sạc!");
       navigate("/login", { state: { from: `/stations/${id}` } });
       return;
     }
-    if (!selectedVehicle) { alert("Vui lòng chọn xe trước khi đặt chỗ!"); return; }
+    if (!selectedVehicle) { 
+      showWarning("Vui lòng chọn xe trước khi đặt chỗ!"); 
+      return; 
+    }
 
     const point     = chargingPoints.find((p) => (p.pointId || p.PointID) === pointId);
     const connector = getConnectorDetail(connectorId);

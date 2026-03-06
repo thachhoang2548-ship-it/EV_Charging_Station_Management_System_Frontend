@@ -13,6 +13,7 @@ import paths from "../../path/paths.jsx";
 import "./ManagementUser.css"; // Vẫn dùng file CSS này
 import Header from "../../components/admin/Header.jsx";
 import { toast } from "react-toastify";
+import { showConfirm, showConfirmWarning } from '../../utils/alertUtils.js';
 import AddStationForm from "../../components/admin/AddStationForm.jsx";
 
 export default function ManagementStation() {
@@ -79,8 +80,9 @@ export default function ManagementStation() {
   };
   // ============================================================================================
   const handleStatusStation = async (stationId, newStatus) => {
-    const confirmChange = window.confirm(
-      `Bạn có chắc chắn muốn thay đổi trạng thái trạm sạc này ?`,
+    const confirmChange = await showConfirm(
+      'Bạn có chắc chắn muốn thay đổi trạng thái trạm sạc này?',
+      'Xác nhận thay đổi trạng thái'
     );
     if (!confirmChange) return;
     try {
@@ -101,9 +103,10 @@ export default function ManagementStation() {
     setSelectedStation(station);
   };
 
-  const handleConfigSlotTime = (stationID, slotConfig) => {
-    const confirmConfig = window.confirm(
-      "Khi cấu hình lại thời gian thì sẽ áp dụng ngay lập tức thay thế cấu hình hiện có của trạm. Bạn có muốn tiếp tục?",
+  const handleConfigSlotTime = async (stationID, slotConfig) => {
+    const confirmConfig = await showConfirmWarning(
+      'Khi cấu hình lại thời gian thì sẽ áp dụng ngay lập tức thay thế cấu hình hiện có của trạm. Bạn có muốn tiếp tục?',
+      'Cảnh báo!'
     );
     if (!confirmConfig) return;
     setShowAddSlotConfigForm(true);

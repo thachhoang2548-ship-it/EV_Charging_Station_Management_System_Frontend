@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import { stationAPI } from "../../api/stationApi.js";
 import { getMySessions } from "../../api/driverApi.js";
 import { isAuthenticated } from "../../utils/authUtils.js";
+import { showConfirm } from '../../utils/alertUtils.js';
 import Header from "../../components/admin/Header.jsx";
 import "../admin/Dashboard.css";
 import "./ChargingSession.css";
@@ -844,7 +845,7 @@ export default function ChargingSession() {
             toast.error("Không có sessionId để dừng", { position: "top-center" });
             return;
         }
-        if (!window.confirm("Bạn có chắc chắn muốn dừng phiên sạc này không?")) return;
+        if (!(await showConfirm("Bạn có chắc chắn muốn dừng phiên sạc này không?", 'Xác nhận dừng phiên sạc'))) return;
 
         try {
             setStopping(true);

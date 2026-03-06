@@ -10,6 +10,7 @@ import {
   ArrowLeft, CheckCircle2, XCircle, Clock, Loader,
   CalendarCheck, Car, MapPin, Zap, PlugZap, Hash, Tag
 } from "lucide-react";
+import { showConfirm } from '../../utils/alertUtils.js';
 
 export default function BookingDetail() {
   const navigate = useNavigate();
@@ -129,7 +130,7 @@ export default function BookingDetail() {
       return;
     }
 
-    if (!window.confirm("Bạn có chắc chắn muốn hủy booking này không?")) {
+    if (!(await showConfirm("Bạn có chắc chắn muốn hủy booking này không?", 'Xác nhận hủy booking'))) {
       return;
     }
 

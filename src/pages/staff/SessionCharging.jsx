@@ -9,6 +9,7 @@ import Header from "../../components/admin/Header.jsx";
 import paths from "../../path/paths.jsx";
 import { stationAPI } from "../../api/stationApi.js";
 import { staffStopSessionApi } from "../../api/staffApi.js";
+import { showConfirm } from '../../utils/alertUtils.js';
 
 const POLL_MS = 50000; // 5 minutes
 
@@ -159,7 +160,7 @@ export default function SessionCharging() {
     e.stopPropagation(); // Prevent row click navigation
 
     if (
-      !window.confirm(`Bạn có chắc chắn muốn dừng phiên sạc #${sessionId}?`)
+      !(await showConfirm(`Bạn có chắc chắn muốn dừng phiên sạc #${sessionId}?`, 'Xác nhận dừng phiên sạc'))
     ) {
       return;
     }
