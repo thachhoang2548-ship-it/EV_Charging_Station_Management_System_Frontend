@@ -5,12 +5,35 @@ import {
 } from "../../api/driverApi.js";
 import { toast } from "react-toastify";
 import NotificationCard from "../../components/driver/NotifiationCard.jsx";
+import Header from "../../components/admin/Header.jsx";
+import "../admin/Dashboard.css";
 import "./Notification.css";
+import {
+  Bell, BellRing, Zap, PlugZap, Clock, Battery,
+  DollarSign, CreditCard, X, Info, Inbox,
+} from "lucide-react";
+
+/* --- type helpers (same as Card) --- */
+const TYPE_MAP = {
+  CHARGING_COMPLETED: { Icon: Zap, cls: "charging" },
+  SYSTEM:             { Icon: Info, cls: "system" },
+  WARNING:            { Icon: Info, cls: "warning" },
+};
+const getTypeInfo = (type) => TYPE_MAP[type] || { Icon: Info, cls: "default" };
+
+/* --- tabs config --- */
+const TAB_CONFIG = [
+  { key: "all",      label: "Tất cả" },
+  { key: "unread",   label: "Chưa đọc" },
+  { key: "read",     label: "Đã đọc" },
+  { key: "charging", label: "Sạc điện" },
+];
 
 export default function Notification() {
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedNotification, setSelectedNotification] = useState(null);
+  const [activeTab, setActiveTab] = useState("all");
 
   const fetchNotifications = async () => {
     try {
@@ -18,7 +41,6 @@ export default function Notification() {
       const response = await getNotificationsApi();
       if (response.success) {
         setNotifications(response.data.content || []);
-        console.log("My notifications:", response.data);
       }
     } catch (error) {
       console.error("Failed to fetch my notifications:", error);
@@ -32,14 +54,11 @@ export default function Notification() {
     fetchNotifications();
   }, []);
 
-  // -----------------------
-  // FORMAT MONEY (VIETNAMESE)
-  // -----------------------
+  /* --- format money --- */
   const formatMoney = (value) => {
     if (!value) return "";
     const number = parseFloat(value.replace(/[^\d.-]/g, ""));
     if (isNaN(number)) return value;
-
     return number.toLocaleString("vi-VN", {
       style: "currency",
       currency: "VND",
@@ -47,11 +66,9 @@ export default function Notification() {
     });
   };
 
+  /* --- mark as read (optimistic) --- */
   const handleReaded = async (notification) => {
-    if (notification.isRead) {
-      console.log("Thông báo này đã đọc rồi.");
-      return;
-    }
+    if (notification.isRead) return;
 
     setNotifications((prev) =>
       prev.map((n) =>
@@ -62,9 +79,7 @@ export default function Notification() {
     );
 
     try {
-      const response = await markNotificationAsReadApi(
-        notification.notificationId
-      );
+      const response = await markNotificationAsReadApi(notification.notificationId);
       if (!response.success) {
         toast.error("Đánh dấu đã đọc thất bại, vui lòng thử lại.");
         setNotifications((prev) =>
@@ -88,10 +103,33 @@ export default function Notification() {
     }
   };
 
+  /* --- sort --- */
   const sortedNotifications = [...notifications].sort(
     (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
   );
 
+  /* --- filter by tab --- */
+  const filteredNotifications = sortedNotifications.filter((n) => {
+    if (activeTab === "unread")   return !n.isRead && n.status === "UNREAD";
+    if (activeTab === "read")     return n.isRead || n.status !== "UNREAD";
+    if (activeTab === "charging") return n.type === "CHARGING_COMPLETED";
+    return true;
+  });
+
+  /* --- derived stats --- */
+  const totalCount  = notifications.length;
+  const unreadCount = notifications.filter((n) => !n.isRead && n.status === "UNREAD").length;
+  const readCount   = totalCount - unreadCount;
+
+  /* --- tab counts --- */
+  const tabCounts = {
+    all:      totalCount,
+    unread:   unreadCount,
+    read:     readCount,
+    charging: notifications.filter((n) => n.type === "CHARGING_COMPLETED").length,
+  };
+
+  /* --- card click -> open modal --- */
   const handleCardClick = (notification) => {
     setSelectedNotification(notification);
     if (notification.status === "UNREAD") {
@@ -99,323 +137,162 @@ export default function Notification() {
     }
   };
 
-  const closeModal = () => {
-    setSelectedNotification(null);
-  };
+  const closeModal = () => setSelectedNotification(null);
 
-  // -----------------------------------
-  // PARSE NỘI DUNG CHARGING SUMMARY
-  // -----------------------------------
+  /* --- parse charging content --- */
   const parseChargingContent = (content) => {
     const info = {};
     const patterns = {
-      point: /Điểm sạc:\s*([^|]+)/,
-      duration: /Thời lượng:\s*([^|]+)/,
-      soc: /Tăng SOC:\s*([^|]+)/,
-      energy: /Năng lượng:\s*([^|]+)/,
-      timeFee: /Phí thời gian:\s*([^|]+)/,
+      point:     /Điểm sạc:\s*([^|]+)/,
+      duration:  /Thời lượng:\s*([^|]+)/,
+      soc:       /Tăng SOC:\s*([^|]+)/,
+      energy:    /Năng lượng:\s*([^|]+)/,
+      timeFee:   /Phí thời gian:\s*([^|]+)/,
       energyFee: /Phí điện năng:\s*([^|]+)/,
-      total: /Tổng:\s*(.+)/,
+      total:     /Tổng:\s*(.+)/,
     };
-
     Object.entries(patterns).forEach(([key, regex]) => {
       const match = content.match(regex);
       if (match) info[key] = match[1].trim();
     });
-
     return Object.keys(info).length > 0 ? info : null;
   };
 
-  return (
-    <div className="notification-container">
-      <h1>Những thông báo của bạn</h1>
+  /* --- charging info items config --- */
+  const CHARGE_ITEMS = [
+    { key: "point",     label: "ĐIỂM SẠC",       Icon: PlugZap,    color: "blue" },
+    { key: "duration",  label: "THỜI LƯỢNG",     Icon: Clock,      color: "purple" },
+    { key: "soc",       label: "TĂNG SOC",                  Icon: Battery,    color: "green" },
+    { key: "energy",    label: "NĂNG LƯỢNG",      Icon: Zap,        color: "amber" },
+    { key: "timeFee",   label: "PHÍ THỜI GIAN",       Icon: DollarSign,  color: "cyan", fmt: true },
+    { key: "energyFee", label: "PHÍ ĐIỆN NĂNG", Icon: DollarSign, color: "cyan", fmt: true },
+  ];
 
+  /* ========== RENDER ========== */
+  return (
+    <div className="dashboard-container">
+      <Header />
+
+      {/* -- HERO BANNER -- */}
+      <div className="nt-hero">
+        <div className="nt-hero-chip">
+          <BellRing size={14} /> Trung tâm thông báo
+        </div>
+        <h1 className="nt-hero-title">Thông Báo</h1>
+        <p className="nt-hero-sub">Theo dõi cập nhật và thông tin từ hệ thống</p>
+
+        {/* Glass counters */}
+        <div className="nt-counters">
+          <div className="nt-counter">
+            <div className="nt-counter-num">{loading ? "—" : totalCount}</div>
+            <div className="nt-counter-label">Tổng</div>
+          </div>
+          <div className="nt-counter">
+            <div className="nt-counter-num">{loading ? "—" : unreadCount}</div>
+            <div className="nt-counter-label">Chưa đọc</div>
+          </div>
+          <div className="nt-counter">
+            <div className="nt-counter-num">{loading ? "—" : readCount}</div>
+            <div className="nt-counter-label">Đã đọc</div>
+          </div>
+        </div>
+      </div>
+
+      {/* -- FILTER TABS -- */}
+      <div className="nt-tabs">
+        {TAB_CONFIG.map((tab) => (
+          <button
+            key={tab.key}
+            className={`nt-tab ${activeTab === tab.key ? "nt-tab--active" : ""}`}
+            onClick={() => setActiveTab(tab.key)}
+          >
+            {tab.label}
+            <span className="nt-tab-count">{tabCounts[tab.key]}</span>
+          </button>
+        ))}
+      </div>
+
+      {/* -- CONTENT -- */}
       {loading ? (
-        <p className="notification-loading">Đang tải thông báo...</p>
-      ) : notifications.length === 0 ? (
-        <p className="notification-empty">Không có thông báo nào.</p>
+        <div className="nt-loading">
+          <div className="nt-spinner" />
+          <p className="nt-loading-text">Đang tải thông báo...</p>
+        </div>
+      ) : filteredNotifications.length === 0 ? (
+        <div className="nt-empty">
+          <Inbox className="nt-empty-icon" />
+          <p className="nt-empty-title">Không có thông báo nào</p>
+          <p className="nt-empty-desc">
+            {activeTab === "all"
+              ? "Bạn chưa có thông báo nào từ hệ thống"
+              : "Không có thông báo phù hợp với bộ lọc"}
+          </p>
+        </div>
       ) : (
-        <ul className="notification-list">
-          {sortedNotifications.map((notification) => (
-            <li
+        <div className="nt-list">
+          {filteredNotifications.map((notification) => (
+            <div
               key={notification.notificationId}
               onClick={() => handleCardClick(notification)}
-              style={{
-                listStyle: "none",
-                cursor: "pointer",
-                position: "relative",
-                zIndex: 1,
-              }}
             >
               <NotificationCard
                 notification={notification}
                 onSelect={handleReaded}
               />
-            </li>
+            </div>
           ))}
-        </ul>
+        </div>
       )}
 
-      {/* ---------------- MODAL ---------------- */}
+      {/* -- MODAL -- */}
       {selectedNotification && (
-        <div
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            background: "rgba(0,0,0,0.7)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            zIndex: 9999,
-            padding: "20px",
-          }}
-          onClick={closeModal}
-        >
-          <div
-            style={{
-              background: "white",
-              borderRadius: "16px",
-              maxWidth: "700px",
-              width: "100%",
-              maxHeight: "90vh",
-              overflow: "auto",
-              boxShadow: "0 10px 40px rgba(0,0,0,0.3)",
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
+        <div className="nt-modal-overlay" onClick={closeModal}>
+          <div className="nt-modal" onClick={(e) => e.stopPropagation()}>
             {/* Header */}
-            <div
-              style={{
-                padding: "24px",
-                background: "linear-gradient(135deg, #20b2aa 0%, #17a397 100%)",
-                color: "white",
-                borderRadius: "16px 16px 0 0",
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-              }}
-            >
-              <h3 style={{ margin: 0 }}>📰 {selectedNotification.title}</h3>
-              <button
-                onClick={closeModal}
-                style={{
-                  background: "rgba(255,255,255,0.2)",
-                  border: "none",
-                  width: "36px",
-                  height: "36px",
-                  borderRadius: "50%",
-                  color: "white",
-                  fontSize: "24px",
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                ✕
+            <div className="nt-modal-header">
+              <div className="nt-modal-header-left">
+                <div className="nt-modal-header-icon">
+                  {(() => {
+                    const { Icon } = getTypeInfo(selectedNotification.type);
+                    return <Icon size={22} />;
+                  })()}
+                </div>
+                <h3 className="nt-modal-title">{selectedNotification.title}</h3>
+              </div>
+              <button className="nt-modal-close" onClick={closeModal}>
+                <X size={20} />
               </button>
             </div>
 
             {/* Body */}
-            <div style={{ padding: "24px" }}>
+            <div className="nt-modal-body">
               {(() => {
                 if (selectedNotification.type === "CHARGING_COMPLETED") {
-                  const chargingInfo = parseChargingContent(
-                    selectedNotification.content
-                  );
-
+                  const chargingInfo = parseChargingContent(selectedNotification.content);
                   if (!chargingInfo) return null;
 
                   return (
-                    <div
-                      style={{
-                        display: "grid",
-                        gridTemplateColumns:
-                          "repeat(auto-fit, minmax(200px, 1fr))",
-                        gap: "16px",
-                      }}
-                    >
-                      {/* Điểm sạc */}
-                      {chargingInfo.point && (
-                        <div
-                          style={{
-                            background: "#f8f9fa",
-                            padding: "16px",
-                            borderRadius: "12px",
-                            borderLeft: "4px solid #2196f3",
-                          }}
-                        >
-                          <div
-                            style={{
-                              fontSize: "12px",
-                              color: "#666",
-                              marginBottom: "6px",
-                            }}
-                          >
-                            🔌 ĐIỂM SẠC
+                    <div className="nt-charge-grid">
+                      {CHARGE_ITEMS.map(({ key, label, Icon, color, fmt }) =>
+                        chargingInfo[key] ? (
+                          <div key={key} className={`nt-charge-item nt-charge-item--${color}`}>
+                            <div className="nt-charge-label">
+                              <Icon size={14} /> {label}
+                            </div>
+                            <div className="nt-charge-value">
+                              {fmt ? formatMoney(chargingInfo[key]) : chargingInfo[key]}
+                            </div>
                           </div>
-                          <div style={{ fontSize: "18px", fontWeight: "bold" }}>
-                            {chargingInfo.point}
-                          </div>
-                        </div>
+                        ) : null
                       )}
 
-                      {/* Thời lượng */}
-                      {chargingInfo.duration && (
-                        <div
-                          style={{
-                            background: "#f8f9fa",
-                            padding: "16px",
-                            borderRadius: "12px",
-                            borderLeft: "4px solid #9c27b0",
-                          }}
-                        >
-                          <div
-                            style={{
-                              fontSize: "12px",
-                              color: "#666",
-                              marginBottom: "6px",
-                            }}
-                          >
-                            ⏱️ THỜI LƯỢNG
-                          </div>
-                          <div style={{ fontSize: "18px", fontWeight: "bold" }}>
-                            {chargingInfo.duration}
-                          </div>
-                        </div>
-                      )}
-
-                      {/* SOC */}
-                      {chargingInfo.soc && (
-                        <div
-                          style={{
-                            background: "#f8f9fa",
-                            padding: "16px",
-                            borderRadius: "12px",
-                            borderLeft: "4px solid #4caf50",
-                          }}
-                        >
-                          <div
-                            style={{
-                              fontSize: "12px",
-                              color: "#666",
-                              marginBottom: "6px",
-                            }}
-                          >
-                            🔋 TĂNG SOC
-                          </div>
-                          <div style={{ fontSize: "18px", fontWeight: "bold" }}>
-                            {chargingInfo.soc}
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Năng lượng */}
-                      {chargingInfo.energy && (
-                        <div
-                          style={{
-                            background: "#f8f9fa",
-                            padding: "16px",
-                            borderRadius: "12px",
-                            borderLeft: "4px solid #ff9800",
-                          }}
-                        >
-                          <div
-                            style={{
-                              fontSize: "12px",
-                              color: "#666",
-                              marginBottom: "6px",
-                            }}
-                          >
-                            ⚡ NĂNG LƯỢNG
-                          </div>
-                          <div style={{ fontSize: "18px", fontWeight: "bold" }}>
-                            {chargingInfo.energy}
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Phí thời gian */}
-                      {chargingInfo.timeFee && (
-                        <div
-                          style={{
-                            background: "#f8f9fa",
-                            padding: "16px",
-                            borderRadius: "12px",
-                            borderLeft: "4px solid #00bcd4",
-                          }}
-                        >
-                          <div
-                            style={{
-                              fontSize: "12px",
-                              color: "#666",
-                              marginBottom: "6px",
-                            }}
-                          >
-                            💵 PHÍ THỜI GIAN
-                          </div>
-                          <div style={{ fontSize: "18px", fontWeight: "bold" }}>
-                            {formatMoney(chargingInfo.timeFee)}
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Phí điện năng */}
-                      {chargingInfo.energyFee && (
-                        <div
-                          style={{
-                            background: "#f8f9fa",
-                            padding: "16px",
-                            borderRadius: "12px",
-                            borderLeft: "4px solid #00bcd4",
-                          }}
-                        >
-                          <div
-                            style={{
-                              fontSize: "12px",
-                              color: "#666",
-                              marginBottom: "6px",
-                            }}
-                          >
-                            💰 PHÍ ĐIỆN NĂNG
-                          </div>
-                          <div style={{ fontSize: "18px", fontWeight: "bold" }}>
-                            {formatMoney(chargingInfo.energyFee)}
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Tổng tiền */}
+                      {/* Total */}
                       {chargingInfo.total && (
-                        <div
-                          style={{
-                            gridColumn: "1 / -1",
-                            background:
-                              "linear-gradient(135deg, #e8f5e9 0%, #fff 100%)",
-                            padding: "16px",
-                            borderRadius: "12px",
-                            borderLeft: "4px solid #4caf50",
-                          }}
-                        >
-                          <div
-                            style={{
-                              fontSize: "12px",
-                              color: "#666",
-                              marginBottom: "6px",
-                            }}
-                          >
-                            💳 TỔNG THANH TOÁN
+                        <div className="nt-charge-item nt-charge-item--green nt-charge-total">
+                          <div className="nt-charge-label">
+                            <CreditCard size={14} /> TỔNG THANH TOÁN
                           </div>
-                          <div
-                            style={{
-                              fontSize: "24px",
-                              fontWeight: "bold",
-                              color: "#4caf50",
-                            }}
-                          >
+                          <div className="nt-charge-value">
                             {formatMoney(chargingInfo.total)}
                           </div>
                         </div>
@@ -424,18 +301,9 @@ export default function Notification() {
                   );
                 }
 
-                // Default content
+                /* Default content */
                 return (
-                  <div
-                    style={{
-                      padding: "20px",
-                      background: "#f8f9fa",
-                      borderRadius: "12px",
-                      borderLeft: "4px solid #20b2aa",
-                      fontSize: "15px",
-                      lineHeight: "1.8",
-                    }}
-                  >
+                  <div className="nt-modal-content-block">
                     {selectedNotification.content}
                   </div>
                 );
@@ -443,15 +311,8 @@ export default function Notification() {
             </div>
 
             {/* Footer */}
-            <div
-              style={{
-                padding: "20px 24px",
-                borderTop: "2px solid #f0f0f0",
-                color: "#999",
-                fontSize: "13px",
-              }}
-            >
-              🕒{" "}
+            <div className="nt-modal-footer">
+              <Clock size={15} />
               {new Date(selectedNotification.createdAt).toLocaleString("vi-VN")}
             </div>
           </div>

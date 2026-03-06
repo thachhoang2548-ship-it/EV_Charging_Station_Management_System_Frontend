@@ -166,10 +166,7 @@ export default function EditProfile() {
                 </div>
               </div>
 
-              <div className="ep-notice">
-                <Info size={16} />
-                Vui lòng nhập đúng email vì lý do bảo mật và tiện ích!
-              </div>
+
             </div>
 
             {/* Submit row */}

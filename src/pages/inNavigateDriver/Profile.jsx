@@ -102,22 +102,6 @@ export default function Profile() {
           </span>
         </div>
 
-        {/* Stats */}
-        <div className="pf-stats">
-          <div className="pf-stat">
-            <span className="pf-stat-value">{memberYear}</span>
-            <span className="pf-stat-label">Tham gia</span>
-          </div>
-          <div className="pf-stat">
-            <span className="pf-stat-value">—</span>
-            <span className="pf-stat-label">Phương tiện</span>
-          </div>
-          <div className="pf-stat">
-            <span className="pf-stat-value">—</span>
-            <span className="pf-stat-label">Giao dịch</span>
-          </div>
-        </div>
-
         {/* Menu */}
         <div className="pf-menu">
           {MENU_ITEMS.map((item, i) => (
