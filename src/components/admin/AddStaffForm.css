@@ -44,7 +44,7 @@
  */
 .add-staff-form {
   max-width: 900px;
-  margin: 0 auto; /* Tự động căn giữa form */
+  margin: 1.5rem auto; /* Tự động căn giữa form */
 
   background-color: #ffffff;
   padding: 2rem; /* Tăng đệm cho thoáng hơn */
@@ -117,7 +117,7 @@
 /* Style cho các ô input và select */
 .add-staff-form .form-control,
 .add-staff-form .form-select {
-  border-radius: 8px; /* Bo tròn góc chuẩn Bootstrap */
+  border-radius: 8px;
   border: 1.5px solid #d1d5db;
   padding: 0.625rem 0.875rem;
   transition: all 0.2s ease;
