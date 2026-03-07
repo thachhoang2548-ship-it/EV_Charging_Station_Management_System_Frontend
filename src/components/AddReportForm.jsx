@@ -67,8 +67,24 @@ export default function AddReportForm({ onClose }) {
   };
   const handleSubmit = async (event) => {
     event.preventDefault();
+    setApiError("");
+
+    let newErrors = {};
+    let hasError = false;
+    for (const key in formData) {
+      const error = validateField(key, formData[key]);
+      if (error) {
+        newErrors[key] = error;
+        hasError = true;
+      }
+    }
+
+    if (hasError) {
+      setFormErrors(newErrors);
+      return;
+    }
+
     const response = await createAccidentReportApi(formData);
-    console.log("DATA:", formData);
     if (response.success) {
       onClose();
       toast.success("Thêm mới báo cáo sự cố thành công.");
@@ -83,91 +99,103 @@ export default function AddReportForm({ onClose }) {
   };
 
   return (
-    <Form noValidate onSubmit={handleSubmit} className="add-staff-form">
-      <img src={icon} alt="Add Report" className="staff-icon" /> <br />
-      <Row className="mb-3">
-        <Form.Group as={Col} controlId="title">
-          <Form.Label>Báo cáo</Form.Label>
-          <Form.Control
-            type="text"
-            placeholder="Nhập tên báo cáo"
-            name="title"
-            value={formData.title}
-            onChange={handleChange}
-            onBlur={handleBlur}
-            isInvalid={!!formErrors.title}
-            required
-          />
-          <Form.Control.Feedback type="invalid">
-            {formErrors.title}
-          </Form.Control.Feedback>
-        </Form.Group>
+    <div className="form-overlay">
+      <div className="form-container">
+        <Form noValidate onSubmit={handleSubmit} className="add-staff-form">
+          {/* Header với icon */}
+          <div className="form-header">
+            <img src={icon} alt="Add Report" className="staff-icon" />
+            <h4 className="form-title">Thêm báo cáo sự cố mới</h4>
+          </div>
 
-        <Form.Group as={Col} controlId="severity">
-          <Form.Label>Mức độ nghiêm trọng</Form.Label>
-          <Form.Select
-            name="severity"
-            value={formData.severity}
-            onChange={handleChange}
-            onBlur={handleBlur}
-            isInvalid={!!formErrors.severity}
-            required
-          >
-            <option value="" disabled>
-              Chọn mức độ nghiêm trọng...
-            </option>
-            <option selected={formData.severity === "low"} value="low">
-              {" "}
-              Thấp{" "}
-            </option>
-            <option selected={formData.severity === "medium"} value="medium">
-              {" "}
-              Trung bình{" "}
-            </option>
-            <option selected={formData.severity === "high"} value="high">
-              {" "}
-              Cao{" "}
-            </option>
-          </Form.Select>
-          <Form.Control.Feedback type="invalid">
-            {formErrors.severity}
-          </Form.Control.Feedback>
-        </Form.Group>
-      </Row>
-      <Form.Group className="mb-3" controlId="description">
-        <Form.Label>Nội dung báo cáo</Form.Label>
-        <Form.Control
-          as="textarea"
-          placeholder="nội dung..."
-          name="description"
-          value={formData.description}
-          onChange={handleChange}
-          onBlur={handleBlur}
-          isInvalid={!!formErrors.description}
-          required
-        />
-        <Form.Control.Feedback type="invalid">
-          {formErrors.description}
-        </Form.Control.Feedback>
-      </Form.Group>
-      {apiError && (
-        <Alert variant="danger" className="mt-3">
-          {apiError}
-        </Alert>
-      )}
-      <div className="form-button-group mt-3">
-        <Button variant="primary" type="submit" className="me-2">
-          Tạo mới
-        </Button>
-        <Button
-          variant="primary"
-          type="button"
-          className="me-2"
-          onClick={handleBack}
-        >
-          Trở về
-        </Button>
+          {/* Thông tin báo cáo */}
+          <div className="form-section">
+            <h6 className="section-title">📋 Thông tin báo cáo</h6>
+            <Row className="mb-3">
+              <Form.Group as={Col} md={6} controlId="title">
+                <Form.Label>Tên báo cáo</Form.Label>
+                <Form.Control
+                  type="text"
+                  placeholder="Nhập tên báo cáo"
+                  name="title"
+                  value={formData.title}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  isInvalid={!!formErrors.title}
+                  required
+                />
+                <Form.Control.Feedback type="invalid">
+                  {formErrors.title}
+                </Form.Control.Feedback>
+              </Form.Group>
+
+              <Form.Group as={Col} md={6} controlId="severity">
+                <Form.Label>Mức độ nghiêm trọng</Form.Label>
+                <Form.Select
+                  name="severity"
+                  value={formData.severity}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  isInvalid={!!formErrors.severity}
+                  required
+                >
+                  <option value="" disabled>
+                    Chọn mức độ nghiêm trọng...
+                  </option>
+                  <option value="low">Thấp</option>
+                  <option value="medium">Trung bình</option>
+                  <option value="high">Cao</option>
+                </Form.Select>
+                <Form.Control.Feedback type="invalid">
+                  {formErrors.severity}
+                </Form.Control.Feedback>
+              </Form.Group>
+            </Row>
+          </div>
+
+          {/* Nội dung chi tiết */}
+          <div className="form-section">
+            <h6 className="section-title">📝 Nội dung chi tiết</h6>
+            <Form.Group className="mb-3" controlId="description">
+              <Form.Label>Nội dung báo cáo</Form.Label>
+              <Form.Control
+                as="textarea"
+                rows={4}
+                placeholder="Mô tả chi tiết sự cố..."
+                name="description"
+                value={formData.description}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                isInvalid={!!formErrors.description}
+                required
+              />
+              <Form.Control.Feedback type="invalid">
+                {formErrors.description}
+              </Form.Control.Feedback>
+            </Form.Group>
+          </div>
+
+          {apiError && (
+            <Alert variant="danger" className="mt-3">
+              {apiError}
+            </Alert>
+          )}
+
+          <div className="form-button-group">
+            <Button variant="success" type="submit" className="btn-submit">
+              ➕ Tạo mới
+            </Button>
+            <Button
+              variant="outline-secondary"
+              type="button"
+              className="btn-cancel"
+              onClick={handleBack}
+            >
+              ← Trở về
+            </Button>
+          </div>
+        </Form>
       </div>
-    </Form>
+    </div>
   );
 }

@@ -2,8 +2,6 @@ import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import Nav from "react-bootstrap/Nav";
 import Table from "react-bootstrap/Table";
-import Modal from "react-bootstrap/Modal";
-import Button from "react-bootstrap/Button";
 import {
   getStationTransactionsApi,
   getStationTransactionStatsApi,
@@ -14,7 +12,8 @@ import {
 } from "../../api/staffApi.js";
 import Header from "../../components/admin/Header.jsx";
 import "../admin/ManagementUser.css";
-import { showConfirm } from '../../utils/alertUtils.js';
+import "../../components/admin/AddStaffForm.css";
+import { showConfirm } from "../../utils/alertUtils.js";
 
 export default function ManagementTransaction() {
   const [transactions, setTransactions] = useState([]);
@@ -47,11 +46,13 @@ export default function ManagementTransaction() {
       const response = await getMyStationApi();
       console.log("✅ Full API response:", response);
       console.log("✅ Response.data:", response.data);
-      
+
       // API trả về array, lấy phần tử đầu tiên
-      const stationData = Array.isArray(response.data) ? response.data[0] : response.data;
+      const stationData = Array.isArray(response.data)
+        ? response.data[0]
+        : response.data;
       console.log("✅ StationData:", stationData);
-      
+
       if (stationData?.station) {
         console.log("✅ Station object:", stationData.station);
         console.log("✅ Station ID:", stationData.station.stationId);
@@ -62,7 +63,10 @@ export default function ManagementTransaction() {
         setMyStation(stationData);
       } else {
         console.error("❌ Không tìm thấy thông tin station trong response");
-        console.error("❌ Response structure:", JSON.stringify(response.data, null, 2));
+        console.error(
+          "❌ Response structure:",
+          JSON.stringify(response.data, null, 2),
+        );
         toast.error("Không tìm thấy trạm được phân công");
       }
     } catch (error) {
@@ -102,18 +106,18 @@ export default function ManagementTransaction() {
     try {
       setLoading(true);
       console.log("📡 Fetching transactions with filter:", filter);
-      
+
       const response = await getStationTransactionsApi({
         status: filter,
       });
 
       console.log("✅ Transactions response:", response);
       console.log("✅ Response.data:", response.data);
-      
+
       const txList = response.data.content || response.data || response || [];
       console.log("✅ Parsed txList:", txList);
       console.log("✅ Total transactions:", txList.length);
-      
+
       setTransactions(txList);
 
       // ✅ Tính toán thống kê theo payment method (Cash vs VNPay)
@@ -137,7 +141,7 @@ export default function ManagementTransaction() {
 
     txList.forEach((tx) => {
       // Chỉ tính các giao dịch COMPLETED
-        console.log(tx);
+      console.log(tx);
       if (tx.status === "COMPLETED") {
         // Backend có thể trả về paymentMethodName hoặc description chứa thông tin
         // Giả định: nếu description chứa "VNPay" hoặc "VNPAY" → VNPay, còn lại → Cash
@@ -202,7 +206,7 @@ export default function ManagementTransaction() {
   const fetchInvoices = async () => {
     console.log("🔍 Checking myStation:", myStation);
     console.log("🔍 myStation.stationId:", myStation?.stationId);
-    
+
     if (!myStation?.stationId) {
       console.error("⚠️ myStation is null or missing stationId");
       console.error("⚠️ myStation value:", myStation);
@@ -214,23 +218,30 @@ export default function ManagementTransaction() {
       setLoadingInvoices(true);
       const stationId = myStation.stationId;
       console.log("📡 Fetching invoices for stationId:", stationId);
-      console.log("📡 API URL will be: /api/invoice/station/" + stationId + "/details");
-      
+      console.log(
+        "📡 API URL will be: /api/invoice/station/" + stationId + "/details",
+      );
+
       const response = await getStationInvoicesApi(stationId);
       console.log("✅ Invoices response:", response);
       console.log("✅ Invoices data:", response.data);
-      
+
       // Chỉ hiển thị hóa đơn chưa thanh toán
-      const unpaidInvoices = (response.data || []).filter(inv => inv.status === "UNPAID");
+      const unpaidInvoices = (response.data || []).filter(
+        (inv) => inv.status === "UNPAID",
+      );
       console.log("✅ Unpaid invoices:", unpaidInvoices);
-      
+
       setInvoices(unpaidInvoices);
       setShowInvoiceModal(true);
     } catch (error) {
       console.error("❌ Lỗi khi tải hóa đơn:", error);
       console.error("❌ Error response:", error.response?.data);
       console.error("❌ Error message:", error.message);
-      toast.error("Không thể tải danh sách hóa đơn: " + (error.response?.data?.message || error.message));
+      toast.error(
+        "Không thể tải danh sách hóa đơn: " +
+          (error.response?.data?.message || error.message),
+      );
     } finally {
       setLoadingInvoices(false);
     }
@@ -251,36 +262,40 @@ export default function ManagementTransaction() {
   };
 
   const handlePayInvoice = async (invoiceId) => {
-    if (!(await showConfirm(`Xác nhận thanh toán hóa đơn #${invoiceId}?`, 'Xác nhận thanh toán'))) {
+    if (
+      !(await showConfirm(
+        `Xác nhận thanh toán hóa đơn #${invoiceId}?`,
+        "Xác nhận thanh toán",
+      ))
+    ) {
       return;
     }
 
     try {
       setPayingInvoiceId(invoiceId);
       console.log("💳 Bắt đầu thanh toán hóa đơn #", invoiceId);
-      
+
       // Bước 1: Lấy chi tiết hóa đơn
       console.log("📡 Lấy chi tiết hóa đơn...");
       const detailResponse = await getInvoiceDetailApi(invoiceId);
       console.log("✅ Chi tiết hóa đơn:", detailResponse.data);
-      
+
       // Bước 2: Thanh toán hóa đơn
       console.log("📡 Gọi API thanh toán...");
       const payResponse = await payInvoiceApi(invoiceId);
       console.log("✅ Kết quả thanh toán:", payResponse.data);
-      
+
       toast.success(`Thanh toán hóa đơn #${invoiceId} thành công!`);
-      
+
       // Bước 3: Cập nhật lại danh sách hóa đơn
       console.log("🔄 Cập nhật lại danh sách hóa đơn...");
       await fetchInvoices();
-      
     } catch (error) {
       console.error("❌ Lỗi khi thanh toán hóa đơn:", error);
       console.error("❌ Error response:", error.response?.data);
       toast.error(
-        "Thanh toán thất bại: " + 
-        (error.response?.data?.message || error.message)
+        "Thanh toán thất bại: " +
+          (error.response?.data?.message || error.message),
       );
     } finally {
       setPayingInvoiceId(null);
@@ -293,7 +308,7 @@ export default function ManagementTransaction() {
       searchTerm === "" ||
       t.transactionId.toString().includes(searchTerm) ||
       t.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      t.vehiclePlate?.toLowerCase().includes(searchTerm.toLowerCase())
+      t.vehiclePlate?.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   return (
@@ -372,7 +387,7 @@ export default function ManagementTransaction() {
                   <Nav.Link eventKey="FAILED">Thất bại</Nav.Link>
                 </Nav.Item>
               </Nav>
-              
+
               <button
                 onClick={fetchInvoices}
                 className="btn"
@@ -385,7 +400,7 @@ export default function ManagementTransaction() {
                   fontWeight: "500",
                   cursor: "pointer",
                   whiteSpace: "nowrap",
-                  transition: "all 0.3s"
+                  transition: "all 0.3s",
                 }}
                 onMouseEnter={(e) => {
                   e.target.style.backgroundColor = "#e65100";
@@ -457,115 +472,163 @@ export default function ManagementTransaction() {
       </div>
 
       {/* Modal hiển thị hóa đơn */}
-      <Modal 
-        show={showInvoiceModal} 
-        onHide={() => setShowInvoiceModal(false)}
-        size="xl"
-        centered
-      >
-        <Modal.Header closeButton>
-          <Modal.Title>📄 Danh sách Hóa đơn Station chưa thanh toán</Modal.Title>
-        </Modal.Header>
-        <Modal.Body style={{ maxHeight: "95vh", overflowY: "auto", maxWidth: "100%" }}>
-          {loadingInvoices ? (
-            <div style={{ textAlign: "center", padding: "30px" }}>
-              Đang tải hóa đơn...
-            </div>
-          ) : (
-            <Table striped bordered hover>
-              <thead>
-                <tr>
-                  <th>Mã HĐ</th>
-                  <th>Biển số xe</th>
-                  <th>Trạm</th>
-                  <th>Điểm sạc</th>
-                  <th>Năng lượng (kWh)</th>
-                  <th>Thời gian (phút)</th>
-                  <th>Số tiền</th>
-                  <th>Trạng thái</th>
-                  <th>Ngày phát hành</th>
-                  <th>Thao tác</th>
-                </tr>
-              </thead>
-              <tbody>
-                {invoices.length > 0 ? (
-                  invoices.map((inv) => (
-                    <tr key={inv.invoiceId}>
-                      <td>#{inv.invoiceId}</td>
-                      <td>{inv.vehiclePlate || "N/A"}</td>
-                      <td>{inv.stationName || "N/A"}</td>
-                      <td>{inv.pointNumber || "N/A"}</td>
-                      <td>{inv.energyKWh?.toFixed(2) || "0.00"}</td>
-                      <td>{inv.durationMinutes || 0}</td>
-                      <td>{formatCurrency(inv.amount)}</td>
-                      <td>
-                        <span style={getInvoiceStatusStyle(inv.status)}>
-                          {inv.status === "PAID" ? "✅ " : "❌ "}
-                          {getInvoiceStatusText(inv.status)}
-                        </span>
-                      </td>
-                      <td>{formatDateTime(inv.issuedAt)}</td>
-                      <td>
-                        {inv.status === "UNPAID" ? (
-                          <button
-                            onClick={() => handlePayInvoice(inv.invoiceId)}
-                            disabled={payingInvoiceId === inv.invoiceId}
-                            style={{
-                              backgroundColor: payingInvoiceId === inv.invoiceId ? "#ccc" : "#28a745",
-                              color: "#fff",
-                              border: "none",
-                              padding: "6px 12px",
-                              borderRadius: "4px",
-                              cursor: payingInvoiceId === inv.invoiceId ? "not-allowed" : "pointer",
-                              fontWeight: "500",
-                              fontSize: "0.9em",
-                              transition: "all 0.3s"
-                            }}
-                            onMouseEnter={(e) => {
-                              if (payingInvoiceId !== inv.invoiceId) {
-                                e.target.style.backgroundColor = "#218838";
-                              }
-                            }}
-                            onMouseLeave={(e) => {
-                              if (payingInvoiceId !== inv.invoiceId) {
-                                e.target.style.backgroundColor = "#28a745";
-                              }
-                            }}
-                          >
-                            {payingInvoiceId === inv.invoiceId ? "Đang xử lý..." : "💳 Thanh toán"}
-                          </button>
-                        ) : (
-                          <span style={{ color: "#28a745", fontWeight: "500" }}>✓ Đã thanh toán</span>
+      {showInvoiceModal && (
+        <div className="form-overlay">
+          <div className="form-container" style={{ maxWidth: "1100px" }}>
+            <div className="add-staff-form">
+              {/* Header */}
+              <div className="form-header">
+                <h4 className="form-title">📄 Hóa đơn chưa thanh toán</h4>
+              </div>
+
+              {/* Thống kê nhanh */}
+              {invoices.length > 0 && (
+                <div className="form-section">
+                  <h6 className="section-title">📊 Thống kê</h6>
+                  <div className="row">
+                    <div className="col-md-6 mb-2">
+                      <label className="form-label">Tổng số hóa đơn</label>
+                      <div
+                        className="form-control"
+                        style={{
+                          backgroundColor: "#f9fafb",
+                          cursor: "default",
+                          fontWeight: 600,
+                        }}
+                      >
+                        {invoices.length}
+                      </div>
+                    </div>
+                    <div className="col-md-6 mb-2">
+                      <label className="form-label">
+                        Tổng tiền cần thanh toán
+                      </label>
+                      <div
+                        className="form-control"
+                        style={{
+                          backgroundColor: "#fef2f2",
+                          cursor: "default",
+                          fontWeight: 600,
+                          color: "#d32f2f",
+                        }}
+                      >
+                        {formatCurrency(
+                          invoices.reduce((sum, i) => sum + (i.amount || 0), 0),
                         )}
-                      </td>
-                    </tr>
-                  ))
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Bảng hóa đơn */}
+              <div className="form-section">
+                <h6 className="section-title">🧾 Danh sách hóa đơn</h6>
+                {loadingInvoices ? (
+                  <div style={{ textAlign: "center", padding: "30px" }}>
+                    Đang tải hóa đơn...
+                  </div>
                 ) : (
-                  <tr>
-                    <td colSpan="10" style={{ textAlign: "center", padding: "30px" }}>
-                      Không có hóa đơn nào
-                    </td>
-                  </tr>
+                  <div style={{ overflowX: "auto" }}>
+                    <Table className="custom-table">
+                      <thead>
+                        <tr>
+                          <th>Mã HĐ</th>
+                          <th>Biển số xe</th>
+                          <th>Trạm</th>
+                          <th>Điểm sạc</th>
+                          <th>Năng lượng (kWh)</th>
+                          <th>Thời gian (phút)</th>
+                          <th>Số tiền</th>
+                          <th>Trạng thái</th>
+                          <th>Ngày phát hành</th>
+                          <th>Thao tác</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {invoices.length > 0 ? (
+                          invoices.map((inv) => (
+                            <tr key={inv.invoiceId}>
+                              <td>#{inv.invoiceId}</td>
+                              <td>{inv.vehiclePlate || "N/A"}</td>
+                              <td>{inv.stationName || "N/A"}</td>
+                              <td>{inv.pointNumber || "N/A"}</td>
+                              <td>{inv.energyKWh?.toFixed(2) || "0.00"}</td>
+                              <td>{inv.durationMinutes || 0}</td>
+                              <td>{formatCurrency(inv.amount)}</td>
+                              <td>
+                                <span style={getInvoiceStatusStyle(inv.status)}>
+                                  {inv.status === "PAID" ? "✅ " : "❌ "}
+                                  {getInvoiceStatusText(inv.status)}
+                                </span>
+                              </td>
+                              <td>{formatDateTime(inv.issuedAt)}</td>
+                              <td>
+                                {inv.status === "UNPAID" ? (
+                                  <button
+                                    onClick={() =>
+                                      handlePayInvoice(inv.invoiceId)
+                                    }
+                                    disabled={payingInvoiceId === inv.invoiceId}
+                                    className="btn-edit"
+                                    style={{
+                                      opacity:
+                                        payingInvoiceId === inv.invoiceId
+                                          ? 0.6
+                                          : 1,
+                                      cursor:
+                                        payingInvoiceId === inv.invoiceId
+                                          ? "not-allowed"
+                                          : "pointer",
+                                    }}
+                                  >
+                                    {payingInvoiceId === inv.invoiceId
+                                      ? "Đang xử lý..."
+                                      : "💳 Thanh toán"}
+                                  </button>
+                                ) : (
+                                  <span
+                                    style={{
+                                      color: "#16a34a",
+                                      fontWeight: "600",
+                                    }}
+                                  >
+                                    ✓ Đã thanh toán
+                                  </span>
+                                )}
+                              </td>
+                            </tr>
+                          ))
+                        ) : (
+                          <tr>
+                            <td
+                              colSpan="10"
+                              style={{ textAlign: "center", padding: "30px" }}
+                            >
+                              Không có hóa đơn nào chưa thanh toán.
+                            </td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </Table>
+                  </div>
                 )}
-              </tbody>
-            </Table>
-          )}
-          {invoices.length > 0 && (
-            <div style={{ marginTop: "15px", padding: "10px", backgroundColor: "#fff3e0", borderRadius: "5px", border: "1px solid #e65100" }}>
-              <strong style={{ color: "#e65100" }}>📊 Thống kê hóa đơn chưa thanh toán:</strong>
-              <ul style={{ marginTop: "10px", marginBottom: "0" }}>
-                <li>Tổng số hóa đơn: <strong>{invoices.length}</strong></li>
-                <li>Tổng số tiền cần thanh toán: <strong style={{ color: "#d32f2f" }}>{formatCurrency(invoices.reduce((sum, i) => sum + (i.amount || 0), 0))}</strong></li>
-              </ul>
+              </div>
+
+              {/* Nút đóng */}
+              <div className="form-button-group">
+                <button
+                  type="button"
+                  className="btn-cancel"
+                  onClick={() => setShowInvoiceModal(false)}
+                >
+                  ← Đóng
+                </button>
+              </div>
             </div>
-          )}
-        </Modal.Body>
-        <Modal.Footer>
-          <Button style={{color:"white", backgroundColor:"#20b2aa" , width:"120px"}} variant="secondary" onClick={() => setShowInvoiceModal(false)}>
-            Đóng
-          </Button>
-        </Modal.Footer>
-      </Modal>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
