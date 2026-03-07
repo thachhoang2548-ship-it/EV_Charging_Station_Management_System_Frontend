@@ -2,8 +2,8 @@ import React from "react";
 import {
   FiCpu,
   FiDatabase,
-  FiDownload,
   FiFlag,
+  FiLogIn,
   FiMail,
   FiMapPin,
   FiMessageCircle,
@@ -14,26 +14,28 @@ import {
   FiTool,
   FiUsers,
 } from "react-icons/fi";
+import { useNavigate } from "react-router-dom";
 import MeshBackground from "../../components/MeshBackground/MeshBackground.jsx";
 import HomeFooter from "../../components/HomeFooter/HomeFooter.jsx";
+import { paths } from "../../path/paths.jsx";
 import "./About.css";
 
 const CORE_VALUES = [
   {
     title: "Tầm nhìn",
-    desc: "Trạm EV là dự án công nghệ phi lợi nhuận, ra đời với sứ mệnh giải quyết bài toán hạ tầng năng lượng cho người dùng xe điện tại Việt Nam.",
+    desc: "EV Charge là dự án công nghệ, ra đời với sứ mệnh giải quyết bài toán hạ tầng năng lượng cho người dùng xe điện tại Việt Nam.",
     icon: FiTarget,
     tone: "amber",
   },
   {
     title: "Sứ mệnh",
-    desc: "Được xây dựng trên triết lý Dữ liệu mở và Trung lập, chúng tôi tin rằng thông tin trạm sạc phải được tiếp cận một cách bình đẳng bởi mọi chủ xe.",
+    desc: "Được xây dựng trên triết lý Dữ liệu mở và Trung lập, EV Charge tin rằng thông tin trạm sạc phải được tiếp cận một cách bình đẳng bởi mọi chủ xe.",
     icon: FiFlag,
     tone: "blue",
   },
   {
     title: "Tính khách quan",
-    desc: "Chúng tôi không thuộc về bất cứ nhà vận hành hay nhà sản xuất nào, mọi thông tin đều được kiểm chứng và trình bày minh bạch.",
+    desc: "EV Charge không thuộc về bất cứ nhà vận hành hay nhà sản xuất nào, mọi thông tin đều được kiểm chứng và trình bày minh bạch.",
     icon: FiShield,
     tone: "green",
   },
@@ -75,10 +77,12 @@ const PILLARS = [
 const CONTACTS = [
   { label: "Email", value: "contact@ev.vn", icon: FiMail },
   { label: "Điện thoại", value: "+84 93 151 9293", icon: FiPhone },
-  { label: "Địa chỉ", value: "Thành phố Hồ Chí Minh, Việt Nam", icon: FiMapPin },
+  { label: "Địa chỉ", value: ["Thành phố Hồ Chí Minh", "Việt Nam"], icon: FiMapPin },
 ];
 
 export default function About() {
+  const navigate = useNavigate();
+
   return (
     <div >
       <MeshBackground variant="mint" floating className="about-hero-wrap">
@@ -142,7 +146,11 @@ export default function About() {
                 <item.icon />
               </span>
               <h3>{item.label}</h3>
-              <p>{item.value}</p>
+              {Array.isArray(item.value) ? (
+                item.value.map((val, index) => <p key={index}>{val}</p>)
+              ) : (
+                <p>{item.value}</p>
+              )}
             </article>
           ))}
         </div>
@@ -153,10 +161,10 @@ export default function About() {
           <FiStar />
         </span>
         <h2>Sẵn sàng bắt đầu?</h2>
-        <p>Tải ứng dụng ngay hôm nay và tham gia cộng đồng người dùng xe điện.</p>
-        <button type="button" className="about-cta-btn">
-          <FiDownload />
-          Tải ứng dụng
+        <p>Đăng nhập ngay hôm nay để tham gia cộng đồng người dùng xe điện.</p>
+        <button type="button" className="about-cta-btn" onClick={() => navigate(paths.login)}>
+          <FiLogIn />
+          Đăng nhập ngay
         </button>
       </section>
 
