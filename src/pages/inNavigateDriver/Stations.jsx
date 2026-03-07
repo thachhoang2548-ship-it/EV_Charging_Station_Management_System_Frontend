@@ -1,20 +1,35 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { useSelector } from "react-redux";
 import "./Stations.css";
 import "../admin/Dashboard.css";
 import Header from "../../components/admin/Header.jsx";
+import HomeNavbar from "../../components/HomeNavbar/HomeNavbar.jsx";
+import { selectIsLoggedIn } from "../../redux/slices/authSlice.js";
 import { stationAPI } from "../../api/stationApi.js";
-import { Search, MapPin, Zap, Navigation, Info, CheckCircle2, Clock, Wrench, PlugZap } from "lucide-react";
+import {
+  Search,
+  MapPin,
+  Zap,
+  Navigation,
+  Info,
+  CheckCircle2,
+  Clock,
+  Wrench,
+  PlugZap,
+} from "lucide-react";
 
 export default function Stations() {
   const navigate = useNavigate();
-  
+  const [searchParams] = useSearchParams();
+  const isLoggedIn = useSelector(selectIsLoggedIn);
+
   // --- STATE DỮ LIỆU ---
   const [stations, setStations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [userLocation, setUserLocation] = useState(null);
-  const [searchQuery, setSearchQuery] = useState("");
-  
+  const [searchQuery, setSearchQuery] = useState(searchParams.get("q") || "");
+
   // --- PHÂN TRANG ---
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
@@ -23,9 +38,13 @@ export default function Stations() {
   useEffect(() => {
     if ("geolocation" in navigator) {
       navigator.geolocation.getCurrentPosition(
-        (pos) => setUserLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
+        (pos) =>
+          setUserLocation({
+            lat: pos.coords.latitude,
+            lng: pos.coords.longitude,
+          }),
         (err) => console.warn("Lỗi vị trí:", err.message),
-        { enableHighAccuracy: true }
+        { enableHighAccuracy: true },
       );
     }
   }, []);
@@ -45,7 +64,7 @@ export default function Stations() {
           lat: parseFloat(item.latitude || item.lat || 0),
           lng: parseFloat(item.longitude || item.lng || 0),
           distance: item.distanceKm, // BE đã tính sẵn
-          ports: item.ports || ["CCS2", "Type 2"] 
+          ports: item.ports || ["CCS2", "Type 2"],
         }));
         setStations(normalized);
       } catch (error) {
@@ -59,14 +78,16 @@ export default function Stations() {
 
   // 3. Logic Lọc (chỉ search, không tính khoảng cách)
   const processedStations = stations.filter((station) => {
-    return (station.name || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
-           (station.address || "").toLowerCase().includes(searchQuery.toLowerCase());
+    return (
+      (station.name || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (station.address || "").toLowerCase().includes(searchQuery.toLowerCase())
+    );
   });
 
   const totalPages = Math.ceil(processedStations.length / itemsPerPage);
   const currentStations = processedStations.slice(
-    (currentPage - 1) * itemsPerPage, 
-    currentPage * itemsPerPage
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage,
   );
 
   const handleNavigate = (lat, lng) => {
@@ -78,16 +99,31 @@ export default function Stations() {
 
   const getStatusInfo = (status) => {
     if (status === "AVAILABLE" || status === "ACTIVE")
-      return { label: "Khả dụng", color: "#16a34a", bg: "#f0fdf4", border: "#bbf7d0" };
+      return {
+        label: "Khả dụng",
+        color: "#16a34a",
+        bg: "#f0fdf4",
+        border: "#bbf7d0",
+      };
     if (status === "BUSY")
-      return { label: "Đang bận", color: "#d97706", bg: "#fffbeb", border: "#fde68a" };
-    return { label: "Bảo trì", color: "#dc2626", bg: "#fef2f2", border: "#fecaca" };
+      return {
+        label: "Đang bận",
+        color: "#d97706",
+        bg: "#fffbeb",
+        border: "#fde68a",
+      };
+    return {
+      label: "Bảo trì",
+      color: "#dc2626",
+      bg: "#fef2f2",
+      border: "#fecaca",
+    };
   };
 
   if (loading)
     return (
       <div className="dashboard-container">
-        <Header />
+        {isLoggedIn ? <Header /> : <HomeNavbar />}
         <div className="stations-loading-state">
           <div className="stations-spinner" />
           <p>Đang tải danh sách trạm sạc...</p>
@@ -95,14 +131,18 @@ export default function Stations() {
       </div>
     );
 
-  const availableCount = stations.filter((s) => s.status === "AVAILABLE" || s.status === "ACTIVE").length;
+  const availableCount = stations.filter(
+    (s) => s.status === "AVAILABLE" || s.status === "ACTIVE",
+  ).length;
   const busyCount = stations.filter((s) => s.status === "BUSY").length;
-  const maintenanceCount = stations.filter((s) => s.status !== "AVAILABLE" && s.status !== "ACTIVE" && s.status !== "BUSY").length;
+  const maintenanceCount = stations.filter(
+    (s) =>
+      s.status !== "AVAILABLE" && s.status !== "ACTIVE" && s.status !== "BUSY",
+  ).length;
 
   return (
     <div className="dashboard-container">
-      <Header />
-
+      {isLoggedIn ? <Header /> : <HomeNavbar />}
       {/* ── HERO BANNER ── */}
       <div className="stations-hero">
         {/* decorative blobs */}
@@ -116,7 +156,8 @@ export default function Stations() {
           </div>
           <h1 className="stations-hero-title">Tìm trạm sạc gần bạn</h1>
           <p className="stations-hero-sub">
-            {stations.length} trạm trên toàn hệ thống &mdash; cập nhật theo thời gian thực
+            {stations.length} trạm trên toàn hệ thống &mdash; cập nhật theo thời
+            gian thực
           </p>
 
           {/* Search bar inside hero */}
@@ -127,10 +168,21 @@ export default function Stations() {
               className="stations-hero-search-input"
               placeholder="Nhập tên trạm, địa chỉ, khu vực..."
               value={searchQuery}
-              onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                setCurrentPage(1);
+              }}
             />
             {searchQuery && (
-              <button className="stations-hero-search-clear" onClick={() => { setSearchQuery(""); setCurrentPage(1); }}>✕</button>
+              <button
+                className="stations-hero-search-clear"
+                onClick={() => {
+                  setSearchQuery("");
+                  setCurrentPage(1);
+                }}
+              >
+                ✕
+              </button>
             )}
           </div>
         </div>
@@ -138,7 +190,10 @@ export default function Stations() {
         {/* Stats strip */}
         <div className="stations-stats">
           <div className="station-stat-item">
-            <div className="station-stat-icon" style={{ background: "rgba(255,255,255,0.15)" }}>
+            <div
+              className="station-stat-icon"
+              style={{ background: "rgba(255,255,255,0.15)" }}
+            >
               <MapPin size={16} color="#fff" />
             </div>
             <div>
@@ -148,7 +203,10 @@ export default function Stations() {
           </div>
           <div className="station-stat-divider" />
           <div className="station-stat-item">
-            <div className="station-stat-icon" style={{ background: "rgba(74,222,128,0.25)" }}>
+            <div
+              className="station-stat-icon"
+              style={{ background: "rgba(74,222,128,0.25)" }}
+            >
               <CheckCircle2 size={16} color="#4ade80" />
             </div>
             <div>
@@ -158,7 +216,10 @@ export default function Stations() {
           </div>
           <div className="station-stat-divider" />
           <div className="station-stat-item">
-            <div className="station-stat-icon" style={{ background: "rgba(251,191,36,0.25)" }}>
+            <div
+              className="station-stat-icon"
+              style={{ background: "rgba(251,191,36,0.25)" }}
+            >
               <Clock size={16} color="#fbbf24" />
             </div>
             <div>
@@ -168,7 +229,10 @@ export default function Stations() {
           </div>
           <div className="station-stat-divider" />
           <div className="station-stat-item">
-            <div className="station-stat-icon" style={{ background: "rgba(248,113,113,0.25)" }}>
+            <div
+              className="station-stat-icon"
+              style={{ background: "rgba(248,113,113,0.25)" }}
+            >
               <Wrench size={16} color="#f87171" />
             </div>
             <div>
@@ -182,9 +246,14 @@ export default function Stations() {
       {/* ── RESULTS SECTION HEADER ── */}
       <div className="stations-results-bar">
         <span className="stations-results-count">
-          {searchQuery
-            ? <>{processedStations.length} kết quả cho <strong>&ldquo;{searchQuery}&rdquo;</strong></>
-            : <>{processedStations.length} trạm sạc</>}
+          {searchQuery ? (
+            <>
+              {processedStations.length} kết quả cho{" "}
+              <strong>&ldquo;{searchQuery}&rdquo;</strong>
+            </>
+          ) : (
+            <>{processedStations.length} trạm sạc</>
+          )}
         </span>
       </div>
 
@@ -210,7 +279,10 @@ export default function Stations() {
                       border: `1px solid ${statusInfo.border}`,
                     }}
                   >
-                    <span className="station-status-dot" style={{ background: statusInfo.color }} />
+                    <span
+                      className="station-status-dot"
+                      style={{ background: statusInfo.color }}
+                    />
                     {statusInfo.label}
                   </span>
                   {station.distance != null && (

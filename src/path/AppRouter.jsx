@@ -1,7 +1,15 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  Navigate,
+  Outlet,
+} from "react-router-dom";
+import { useSelector } from "react-redux";
 import ProtectedRoute from "./ProtectedRoute.jsx";
 import paths from "./paths.jsx";
 import OAuthHandler from "../components/OAuthHandler.jsx";
+import { selectIsLoggedIn, selectRole } from "../redux/slices/authSlice.js";
 
 // Import Layouts
 import AdminLayout from "../layouts/AdminLayout";
@@ -61,6 +69,16 @@ import StaffDashboard from "../pages/staff/StaffDashboard.jsx";
 import Triplet from "../pages/staff/Triplet.jsx";
 import InstantCharging from "../pages/staff/InstantCharging.jsx";
 
+// Layout linh hoạt: DRIVER đã login → sidebar, chưa login → top navbar
+const StationsLayout = () => {
+  const isLoggedIn = useSelector(selectIsLoggedIn);
+  const role = useSelector(selectRole);
+  if (isLoggedIn && role === "DRIVER") {
+    return <DriverSidebarLayout />;
+  }
+  return <DriverLayout />;
+};
+
 const AppRouter = () => {
   return (
     <BrowserRouter>
@@ -68,111 +86,130 @@ const AppRouter = () => {
         <Routes>
           <Route path={paths.error} element={<Error404 />} />
 
-        {/* ======================= PUBLIC ROUTES (Không cần đăng nhập) ======================= */}
-        <Route path="/" element={<DriverLayout />}>
-          <Route index element={<Home />} />
-          <Route path={paths.about} element={<About />} />
-          <Route path={paths.login} element={<Login />} />
-          <Route path={paths.register} element={<Register />} />
-          <Route path={paths.verify} element={<Verify />} />
-          <Route path={paths.forgotPassword} element={<ForgotPassword />} />
-          <Route path={paths.resetPassword} element={<ResetPassword />} />
-          <Route path={paths.paymentSuccess} element={<PaymentSuccess />} />
-          <Route path={paths.paymentFailed} element={<PaymentFailed />} />
-
-          <Route path={paths.rules} element={<Rules />} />
-        </Route>
-
-        {/* ======================= PROTECTED ROUTES (Cần đăng nhập) ======================= */}
-
-        {/* 1. DRIVER Routes - Chỉ DRIVER mới truy cập được */}
-        <Route element={<ProtectedRoute allowedRoles={["DRIVER"]} />}>
-          <Route path="/" element={<DriverSidebarLayout />}>
+          {/* ======================= PUBLIC ROUTES (Không cần đăng nhập) ======================= */}
+          <Route path="/" element={<DriverLayout />}>
             <Route index element={<Home />} />
-            <Route path={paths.driverDashboard} element={<Navigate to={paths.guide} replace />} />
-            <Route path={paths.guide} element={<Guide />} />
+            <Route path={paths.about} element={<About />} />
+            <Route path={paths.login} element={<Login />} />
+            <Route path={paths.register} element={<Register />} />
+            <Route path={paths.verify} element={<Verify />} />
+            <Route path={paths.forgotPassword} element={<ForgotPassword />} />
+            <Route path={paths.resetPassword} element={<ResetPassword />} />
+            <Route path={paths.paymentSuccess} element={<PaymentSuccess />} />
+            <Route path={paths.paymentFailed} element={<PaymentFailed />} />
+
+            <Route path={paths.rules} element={<Rules />} />
+          </Route>
+
+          {/* Stations & StationDetail: public (chưa login xem được, chỉ book mới cần login) */}
+          <Route path="/" element={<StationsLayout />}>
             <Route path={paths.stations} element={<Stations />} />
             <Route path={paths.stationDetail} element={<StationDetail />} />
-            <Route path={paths.booking} element={<Booking />} />
-            <Route path={paths.bookingDetail} element={<BookingDetail />} />
-            <Route path={paths.bookingQr} element={<BookingQRCode />} />
-            <Route path={paths.chargingSession} element={<ChargingSession />} />
-            <Route path={paths.payment} element={<Payment />} />
-            <Route path={paths.profile} element={<Profile />} />
-            <Route path={paths.myVehicle} element={<Vehicles />} />
-            <Route path={paths.editProfile} element={<EditProfile />} />
-            <Route path={paths.information} element={<Information />} />
-            <Route path={paths.notifications} element={<Notification />} />
-            <Route
-              path={paths.transactionHistory}
-              element={<TransactionHistory />}
-            />
-            <Route
-              path={paths.transactionDetail}
-              element={<TransactionDetail />}
-            />
           </Route>
-        </Route>
 
-        {/* 2. ADMIN Routes - Chỉ ADMIN mới truy cập được */}
-        <Route element={<ProtectedRoute allowedRoles={["ADMIN"]} />}>
-          <Route path={paths.adminDashboard} element={<AdminLayout />}>
-            <Route index element={<AdminDashboard />} />
-            <Route path={paths.userManagement} element={<ManagementUser />} />
-            <Route
-              path={paths.stationManagement}
-              element={<ManagementStation />}
-            />
-            <Route path={paths.modelManagement} element={<ManagementModel />} />
-            <Route path={paths.policyManagement} element={<Policy />} />
-            <Route
-              path={paths.chargerManagement}
-              element={<ManagementCharger />}
-            />
-            <Route
-              path={paths.accidentReports}
-              element={<ManagementAccident />}
-            />
-            <Route
-              path={paths.chargingPriceConfiguration}
-              element={<PriceConfiguration />}
-            />
-            <Route
-              path={paths.chargingPointManagement}
-              element={<ManagementChargingPoint />}
-            />
+          {/* ======================= PROTECTED ROUTES (Cần đăng nhập) ======================= */}
+
+          {/* 1. DRIVER Routes - Chỉ DRIVER mới truy cập được */}
+          <Route element={<ProtectedRoute allowedRoles={["DRIVER"]} />}>
+            <Route path="/" element={<DriverSidebarLayout />}>
+              <Route index element={<Home />} />
+              <Route
+                path={paths.driverDashboard}
+                element={<Navigate to={paths.guide} replace />}
+              />
+              <Route path={paths.guide} element={<Guide />} />
+              <Route path={paths.booking} element={<Booking />} />
+              <Route path={paths.bookingDetail} element={<BookingDetail />} />
+              <Route path={paths.bookingQr} element={<BookingQRCode />} />
+              <Route
+                path={paths.chargingSession}
+                element={<ChargingSession />}
+              />
+              <Route path={paths.payment} element={<Payment />} />
+              <Route path={paths.profile} element={<Profile />} />
+              <Route path={paths.myVehicle} element={<Vehicles />} />
+              <Route path={paths.editProfile} element={<EditProfile />} />
+              <Route path={paths.information} element={<Information />} />
+              <Route path={paths.notifications} element={<Notification />} />
+              <Route
+                path={paths.transactionHistory}
+                element={<TransactionHistory />}
+              />
+              <Route
+                path={paths.transactionDetail}
+                element={<TransactionDetail />}
+              />
+            </Route>
           </Route>
-        </Route>
 
-        {/* 3. STAFF Routes - Chỉ STAFF mới truy cập được */}
-        <Route element={<ProtectedRoute allowedRoles={["STAFF"]} />}>
-          <Route path={paths.staffDashboard} element={<AdminLayout />}>
-            <Route index element={<StaffDashboard />} />
-            <Route
-              path={paths.manageSessionCharging}
-              element={<SessionCharging />}
-            />
-            <Route
-              path={paths.manageSessionChargingCreate}
-              element={<SessionChargingCreate />}
-            />
-            <Route
-              path={paths.manageTransaction}
-              element={<ManagementTransaction />}
-            />
-            <Route
-              path={paths.manageTransaction}
-              element={<ManagementTransaction />}
-            />
-            <Route path={paths.reportAccidents} element={<ReportAccidents />} />
-            <Route path={paths.incidents} element={<Triplet />} />
-            <Route path={paths.instantCharging} element={<InstantCharging />} />
+          {/* 2. ADMIN Routes - Chỉ ADMIN mới truy cập được */}
+          <Route element={<ProtectedRoute allowedRoles={["ADMIN"]} />}>
+            <Route path={paths.adminDashboard} element={<AdminLayout />}>
+              <Route index element={<AdminDashboard />} />
+              <Route path={paths.userManagement} element={<ManagementUser />} />
+              <Route
+                path={paths.stationManagement}
+                element={<ManagementStation />}
+              />
+              <Route
+                path={paths.modelManagement}
+                element={<ManagementModel />}
+              />
+              <Route path={paths.policyManagement} element={<Policy />} />
+              <Route
+                path={paths.chargerManagement}
+                element={<ManagementCharger />}
+              />
+              <Route
+                path={paths.accidentReports}
+                element={<ManagementAccident />}
+              />
+              <Route
+                path={paths.chargingPriceConfiguration}
+                element={<PriceConfiguration />}
+              />
+              <Route
+                path={paths.chargingPointManagement}
+                element={<ManagementChargingPoint />}
+              />
+            </Route>
           </Route>
-        </Route>
 
-        {/* ======================= 404 - Route không tồn tại ======================= */}
-        <Route path="*" element={<Error404 />} />
-      </Routes>
+          {/* 3. STAFF Routes - Chỉ STAFF mới truy cập được */}
+          <Route element={<ProtectedRoute allowedRoles={["STAFF"]} />}>
+            <Route path={paths.staffDashboard} element={<AdminLayout />}>
+              <Route index element={<StaffDashboard />} />
+              <Route
+                path={paths.manageSessionCharging}
+                element={<SessionCharging />}
+              />
+              <Route
+                path={paths.manageSessionChargingCreate}
+                element={<SessionChargingCreate />}
+              />
+              <Route
+                path={paths.manageTransaction}
+                element={<ManagementTransaction />}
+              />
+              <Route
+                path={paths.manageTransaction}
+                element={<ManagementTransaction />}
+              />
+              <Route
+                path={paths.reportAccidents}
+                element={<ReportAccidents />}
+              />
+              <Route path={paths.incidents} element={<Triplet />} />
+              <Route
+                path={paths.instantCharging}
+                element={<InstantCharging />}
+              />
+            </Route>
+          </Route>
+
+          {/* ======================= 404 - Route không tồn tại ======================= */}
+          <Route path="*" element={<Error404 />} />
+        </Routes>
       </OAuthHandler>
     </BrowserRouter>
   );
