@@ -13,6 +13,7 @@ import {
 import { useNavigate } from "react-router-dom"; // ✅ Mới
 import { toast } from "react-toastify"; // ✅ Mới
 import paths from "../../path/paths.jsx"; // ✅ Mới (để chuyển hướng)
+import { showWarning, showConfirm } from "../../utils/alertUtils.js";
 
 import {
   getConnectorTypes,
@@ -102,7 +103,7 @@ export default function InstantCharging() {
 
         const staffRes = await getStationStaffMe();
         if (!staffRes.data || staffRes.data.length === 0) {
-          alert("Không tìm thấy thông tin trạm của nhân viên!");
+          showWarning("Không tìm thấy thông tin trạm của nhân viên!");
           return;
         }
         const myStationId = staffRes.data[0].stationId;
@@ -149,11 +150,11 @@ export default function InstantCharging() {
           } catch (e) {
             console.warn(`⚠️ Error template ${tid}`);
           }
-        })
+        }),
       );
 
       const normalizedSlots = rawSlots.map((record) =>
-        normalizeSlotRecord(record, pointId, templateMap)
+        normalizeSlotRecord(record, pointId, templateMap),
       );
 
       // Filter logic: Lấy slot tương lai của HÔM NAY (Local Time)
@@ -206,7 +207,7 @@ export default function InstantCharging() {
   const handleConnectorSelect = (connectorName) => {
     setSelectedConnectorName(connectorName);
     const filtered = chargingPoints.filter(
-      (p) => p.connectorType === connectorName
+      (p) => p.connectorType === connectorName,
     );
     setFilteredPoints(filtered);
 
@@ -225,7 +226,7 @@ export default function InstantCharging() {
 
     // RULE 1: Check Available. Nếu không available thì chặn luôn.
     if (!isAvail) {
-      alert("Khung giờ này đã kín hoặc không khả dụng.");
+      showWarning("Khung giờ này đã kín hoặc không khả dụng.");
       return;
     }
 
@@ -241,14 +242,14 @@ export default function InstantCharging() {
     if (isSelected) {
       // Nếu bỏ chọn 1 slot -> Xóa nó và các slot sau nó để đảm bảo tính liền kề
       const clickedIndexInSelection = currentSelected.findIndex(
-        (s) => s.id === clickedSlot.id
+        (s) => s.id === clickedSlot.id,
       );
       const newSelection = currentSelected.slice(0, clickedIndexInSelection);
       setSelections((prev) => ({ ...prev, [pointId]: newSelection }));
     } else {
       // RULE 2: Check số lượng tối đa (3 slot)
       if (currentSelected.length >= 3) {
-        alert("Bạn chỉ có thể chọn tối đa 3 khung giờ.");
+        showWarning("Bạn chỉ có thể chọn tối đa 3 khung giờ.");
         return;
       }
 
@@ -256,10 +257,10 @@ export default function InstantCharging() {
       // Slot mới phải nằm ngay sau slot cuối cùng đang được chọn
       const lastSelected = currentSelected[currentSelected.length - 1];
       const lastIndexInAll = allSlots.findIndex(
-        (s) => s.id === lastSelected.id
+        (s) => s.id === lastSelected.id,
       );
       const clickedIndexInAll = allSlots.findIndex(
-        (s) => s.id === clickedSlot.id
+        (s) => s.id === clickedSlot.id,
       );
 
       if (clickedIndexInAll === lastIndexInAll + 1) {
@@ -269,7 +270,7 @@ export default function InstantCharging() {
           [pointId]: [...currentSelected, clickedSlot],
         }));
       } else {
-        alert("Vui lòng chọn các khung giờ liên tiếp nhau.");
+        showWarning("Vui lòng chọn các khung giờ liên tiếp nhau.");
       }
     }
   };
@@ -295,9 +296,10 @@ export default function InstantCharging() {
     };
 
     if (
-      !window.confirm(
-        `Xác nhận kích hoạt sạc tại Trụ ${point?.pointNumber}?\nThời gian: ${startTime} - ${endTime}`
-      )
+      !(await showConfirm(
+        `Xác nhận kích hoạt sạc tại Trụ ${point?.pointNumber}?\nThời gian: ${startTime} - ${endTime}`,
+        "Xác nhận kích hoạt sạc",
+      ))
     ) {
       return;
     }
@@ -344,16 +346,16 @@ export default function InstantCharging() {
           // Lưu pointNumber riêng để dễ truy xuất
           sessionStorage.setItem(
             `session_${sessionId}_pointNumber`,
-            pointNumber
+            pointNumber,
           );
           console.log(
-            `✅ Saved pointNumber=${pointNumber} for session #${sessionId}`
+            `✅ Saved pointNumber=${pointNumber} for session #${sessionId}`,
           );
 
           // Lưu cả full session data nếu cần
           sessionStorage.setItem(
             `session_${sessionId}_data`,
-            JSON.stringify(sessionData)
+            JSON.stringify(sessionData),
           );
         }
       } catch (err) {
@@ -404,7 +406,7 @@ export default function InstantCharging() {
         <h1
           style={{
             margin: 0,
-            color: "#00BFA6",
+            color: "#16a34a",
             display: "flex",
             alignItems: "center",
             gap: "10px",
@@ -427,7 +429,7 @@ export default function InstantCharging() {
           >
             {connectorTypes.map((type) => {
               const tariff = tariffs.find(
-                (t) => t.connectorTypeId === type.connectorTypeId
+                (t) => t.connectorTypeId === type.connectorTypeId,
               );
               return (
                 <div
@@ -444,7 +446,7 @@ export default function InstantCharging() {
                     transition: "all 0.2s",
                   }}
                   onMouseOver={(e) => {
-                    e.currentTarget.style.borderColor = "#00BFA6";
+                    e.currentTarget.style.borderColor = "#16a34a";
                     e.currentTarget.style.transform = "translateY(-2px)";
                   }}
                   onMouseOut={(e) => {
@@ -454,7 +456,7 @@ export default function InstantCharging() {
                 >
                   <FaPlug
                     size={30}
-                    color="#00BFA6"
+                    color="#16a34a"
                     style={{ marginBottom: "10px" }}
                   />
                   <div style={{ fontWeight: "bold", fontSize: "16px" }}>
@@ -517,16 +519,42 @@ export default function InstantCharging() {
             onClick={() => setStep(1)}
             style={{
               marginBottom: "20px",
-              padding: "8px 15px",
-              border: "none",
-              background: "#e0f2f1",
-              color: "#00796b",
-              borderRadius: "5px",
+              padding: "8px 18px",
+              border: "2px solid #16a34a",
+              background: "#f0fdf4",
+              color: "#15803d",
+              borderRadius: "8px",
               cursor: "pointer",
               display: "flex",
               alignItems: "center",
-              gap: "5px",
+              gap: "6px",
               fontWeight: "bold",
+              fontSize: "14px",
+              transition: "all 0.2s ease",
+              boxShadow: "0 2px 6px rgba(22,163,74,0.12)",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = "#16a34a";
+              e.currentTarget.style.color = "#fff";
+              e.currentTarget.style.boxShadow =
+                "0 4px 12px rgba(22,163,74,0.35)";
+              e.currentTarget.style.transform = "translateX(-3px)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = "#f0fdf4";
+              e.currentTarget.style.color = "#15803d";
+              e.currentTarget.style.boxShadow =
+                "0 2px 6px rgba(22,163,74,0.12)";
+              e.currentTarget.style.transform = "translateX(0)";
+            }}
+            onMouseDown={(e) => {
+              e.currentTarget.style.transform = "translateX(-1px) scale(0.97)";
+              e.currentTarget.style.boxShadow = "0 1px 4px rgba(22,163,74,0.2)";
+            }}
+            onMouseUp={(e) => {
+              e.currentTarget.style.transform = "translateX(-3px)";
+              e.currentTarget.style.boxShadow =
+                "0 4px 12px rgba(22,163,74,0.35)";
             }}
           >
             <FaChevronLeft /> Chọn loại cổng khác
@@ -590,12 +618,12 @@ export default function InstantCharging() {
                       >
                         <div
                           style={{
-                            background: "#e0f7fa",
+                            background: "#f0fdf4",
                             padding: "10px",
                             borderRadius: "50%",
                           }}
                         >
-                          <FaBolt size={20} color="#00bcd4" />
+                          <FaBolt size={20} color="#16a34a" />
                         </div>
                         <div>
                           <h3 style={{ margin: 0, color: "#2c3e50" }}>
@@ -691,7 +719,7 @@ export default function InstantCharging() {
                                   String(slot.status).toLowerCase() ===
                                   "available";
                                 const isSelected = currentSelection.some(
-                                  (s) => s.id === slot.id
+                                  (s) => s.id === slot.id,
                                 );
                                 const isFirst = idx === 0; // Slot gần nhất
 
@@ -703,15 +731,15 @@ export default function InstantCharging() {
                                     }
                                     style={{
                                       border: isSelected
-                                        ? "2px solid #00BFA6"
+                                        ? "2px solid #16a34a"
                                         : "1px solid #ddd",
                                       borderRadius: "8px",
                                       padding: "10px",
                                       background: isSelected
-                                        ? "#e0f2f1"
+                                        ? "#f0fdf4"
                                         : isAvail
-                                        ? "white"
-                                        : "#fcfcfc",
+                                          ? "white"
+                                          : "#fcfcfc",
                                       position: "relative",
                                       cursor: isAvail
                                         ? "pointer"
@@ -744,10 +772,10 @@ export default function InstantCharging() {
                                         fontWeight: "bold",
                                         fontSize: "14px",
                                         color: isSelected
-                                          ? "#00695c"
+                                          ? "#15803d"
                                           : isAvail
-                                          ? "#333"
-                                          : "#999",
+                                            ? "#333"
+                                            : "#999",
                                         textAlign: "center",
                                       }}
                                     >
@@ -819,7 +847,7 @@ export default function InstantCharging() {
                                   <span
                                     style={{
                                       fontWeight: "bold",
-                                      color: "#00BFA6",
+                                      color: "#16a34a",
                                     }}
                                   >
                                     {currentSelection[0].startTime} ➜{" "}
@@ -842,7 +870,7 @@ export default function InstantCharging() {
                                   style={{
                                     background: submitting
                                       ? "#ccc"
-                                      : "linear-gradient(135deg, #00BFA6 0%, #00897B 100%)",
+                                      : "linear-gradient(135deg, #16a34a 0%, #15803d 100%)",
                                     color: "white",
                                     border: "none",
                                     borderRadius: "8px",
@@ -854,7 +882,7 @@ export default function InstantCharging() {
                                       : "pointer",
                                     boxShadow: submitting
                                       ? "none"
-                                      : "0 4px 6px rgba(0,191,166,0.3)",
+                                      : "0 4px 6px rgba(22,163,74,0.3)",
                                     display: "flex",
                                     alignItems: "center",
                                     gap: "8px",

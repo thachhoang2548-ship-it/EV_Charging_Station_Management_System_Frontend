@@ -8,6 +8,7 @@ import paths from '../../path/paths.jsx';
 import Header from '../../components/admin/Header.jsx';
 import AddPolicyForm from '../../components/admin/AddPolicyForm.jsx';
 import './ManagementUser.css';
+import { showDeleteConfirm } from '../../utils/alertUtils.js';
 
 export default function Policy() {
   const navigator = useNavigate();
@@ -53,7 +54,7 @@ export default function Policy() {
   };
 
   const handleDeletePolicy = async (policyId) => {
-    const confirmDelete = window.confirm('Bạn có chắc chắn muốn xóa điều khoản này?');
+    const confirmDelete = await showDeleteConfirm('điều khoản này');
     if (!confirmDelete) return;
     
     try {

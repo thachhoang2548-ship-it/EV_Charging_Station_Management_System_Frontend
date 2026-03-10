@@ -9,6 +9,7 @@ import {getAllChargingPoints} from '../../api/chargingPointApi.js';
 import { updateChargingPointStatus} from '../../api/chargingPointApi.js';
 import AddChargingPointForm from '../../components/admin/AddChargingPointForm.jsx';
 import UpdateChargingPointForm from '../../components/admin/UpdateChargingPointForm.jsx';
+import { showConfirm } from '../../utils/alertUtils.js';
 
 const statusChargingPoint = {
     available: 'AVAILABLE', 
@@ -79,7 +80,7 @@ export default function ManagementChargingPoint() {
   };
 
   const handleStatusChargingPoint = async (chargingPointId, newStatus) => {
-    const confirmChange = window.confirm(`Bạn có chắc chắn muốn thay đổi trạng thái trụ sạc này ?`);
+    const confirmChange = await showConfirm('Bạn có chắc chắn muốn thay đổi trạng thái trụ sạc này?', 'Xác nhận thay đổi trạng thái');
     if (!confirmChange) return;
 
     try {

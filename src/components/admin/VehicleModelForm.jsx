@@ -163,7 +163,7 @@ export default function VehicleModelForm({ onClose, model }) {
 
       const result = await updateVehicleModelApi(
         vehicleModelReady.modelId,
-        modelData
+        modelData,
       );
       if (result.success) {
         toast.success("Cập nhật mô hình xe thành công!");
@@ -232,193 +232,244 @@ export default function VehicleModelForm({ onClose, model }) {
   };
 
   return (
-    <Form
-      noValidate
-      onSubmit={vehicleModelReady ? handleUpdate : handleSubmit}
-      className="add-staff-form"
-    >
-      <img src={carIcon} alt="Add Vehicle Model" className="staff-icon" />{" "}
-      <br />
-      <Row className="mb-3">
-        <Form.Group as={Col} controlId="brand">
-          <Form.Label>Tên hãng</Form.Label>
-          <Form.Control
-            type="text"
-            placeholder="Nhập tên hãng"
-            name="brand"
-            value={
-              formData.brand ||
-              (vehicleModelReady ? vehicleModelReady.brand : "")
-            }
-            onChange={handleChange}
-            onBlur={handleBlur}
-            isInvalid={!!formErrors.brand}
-            required
-          />
-          <Form.Control.Feedback type="invalid">
-            {formErrors.brand}
-          </Form.Control.Feedback>
-        </Form.Group>
-
-        <Form.Group as={Col} controlId="model">
-          <Form.Label>Loại mô hình</Form.Label>
-          <Form.Control
-            type="text"
-            placeholder="Tên loại xe"
-            name="model"
-            value={
-              formData.model ||
-              (vehicleModelReady ? vehicleModelReady.model : "")
-            }
-            onChange={handleChange}
-            onBlur={handleBlur}
-            isInvalid={!!formErrors.model}
-            required
-          />
-          <Form.Control.Feedback type="invalid">
-            {formErrors.model}
-          </Form.Control.Feedback>
-        </Form.Group>
-      </Row>
-      <Row className="mb-3">
-        <Form.Group as={Col} controlId="batteryCapacityKWh">
-          <Form.Label>Dung tích pin (kWh)</Form.Label>
-          <Form.Control
-            type="number"
-            placeholder="nhập dung lượng pin (kWh) "
-            name="batteryCapacityKWh"
-            value={
-              formData.batteryCapacityKWh ||
-              (vehicleModelReady ? vehicleModelReady.batteryCapacityKWh : "")
-            }
-            onChange={handleChange}
-            onBlur={handleBlur}
-            isInvalid={!!formErrors.batteryCapacityKWh}
-            required
-          />
-          <Form.Control.Feedback type="invalid">
-            {formErrors.batteryCapacityKWh}
-          </Form.Control.Feedback>
-        </Form.Group>
-
-        <Form.Group as={Col} controlId="year">
-          <Form.Label>Năm sản xuất</Form.Label>
-          <Form.Control
-            type="text"
-            placeholder="VD: 2020"
-            name="year"
-            value={
-              formData.year || (vehicleModelReady ? vehicleModelReady.year : "")
-            }
-            onChange={handleChange}
-            onBlur={handleBlur}
-            isInvalid={!!formErrors.year}
-            required
-          />
-          <Form.Control.Feedback type="invalid">
-            {formErrors.year}
-          </Form.Control.Feedback>
-        </Form.Group>
-      </Row>
-      <Row className="mb-3">
-        <Form.Group className="mb-3" controlId="imageUrl">
-          <Form.Label>Ảnh đại diện</Form.Label>
-          <Form.Control
-            type="file"
-            placeholder="chọn ảnh cho model này"
-            name="imageUrl"
-            onChange={handleFileChange}
-            onBlur={handleBlur}
-            isInvalid={!!formErrors.imageUrl}
-            required={!!vehicleModelReady}
-          />
-          <Form.Control.Feedback type="invalid">
-            {formErrors.imageUrl}
-          </Form.Control.Feedback>
-        </Form.Group>
-
-        {vehicleModelReady && vehicleModelReady.imageUrl && (
-          <div className="mb-3">
-            <Form.Label>Ảnh hiện tại:</Form.Label>
-            <img
-              style={{ display: "inline", height: "100px" }}
-              src={vehicleModelReady.imageUrl}
-              alt="Current Vehicle Model"
-              className="img-fluid"
-            />
-          </div>
-        )}
-      </Row>
-      <Row className="mb-3">
-        <Form.Group className="mb-3" controlId="connectorTypeId">
-          <Form.Label>Loại cổng sạc tương ứng</Form.Label>
-          <Form.Select
-            name="connectorTypeId"
-            value={formData.connectorTypeId}
-            onChange={handleChange}
-            onBlur={handleBlur}
-            isInvalid={!!formErrors.connectorTypeId}
-            required
-          >
-            <option value="" disabled>
-              Chọn cổng sạc...
-            </option>
-            {connectorTypes.map(
-              (type) =>
-                !type.isDeprecated && (
-                  <option
-                    key={type.connectorTypeId}
-                    value={type.connectorTypeId}
-                  >
-                    {type.displayName}
-                  </option>
-                )
-            )}
-          </Form.Select>
-          <Form.Control.Feedback type="invalid">
-            {formErrors.connectorTypeId}
-          </Form.Control.Feedback>
-        </Form.Group>
-
-        <Form.Group className="mb-3" controlId="status">
-          <Form.Label>Trạng thái</Form.Label>
-          <Form.Select
-            name="status"
-            value={formData.status}
-            onChange={handleChange}
-            onBlur={handleBlur}
-            isInvalid={!!formErrors.status}
-            required
-          >
-            <option value="" disabled>
-              Chọn trạng thái ban đầu...
-            </option>
-            <option value="ACTIVE">Hoạt động </option>
-            <option value="INACTIVE">Không hoạt động </option>
-          </Form.Select>
-          <Form.Control.Feedback type="invalid">
-            {formErrors.status}
-          </Form.Control.Feedback>
-        </Form.Group>
-      </Row>
-      {apiError && (
-        <Alert variant="danger" className="mt-3">
-          {apiError}
-        </Alert>
-      )}
-      <div className="form-button-group mt-3">
-        <Button variant="primary" type="submit" className="me-2">
-          {vehicleModelReady ? "Cập nhật" : "Tạo mới"}
-        </Button>
-        <Button
-          variant="primary"
-          type="button"
-          className="me-2"
-          onClick={onClose}
+    <div className="form-overlay">
+      <div className="form-container">
+        <Form
+          noValidate
+          onSubmit={vehicleModelReady ? handleUpdate : handleSubmit}
+          className="add-staff-form"
         >
-          Trở về
-        </Button>
+          {/* Header với icon */}
+          <div className="form-header">
+            <img src={carIcon} alt="Vehicle Model" className="staff-icon" />
+            <h4 className="form-title">
+              {vehicleModelReady
+                ? "Cập nhật thông tin mẫu xe"
+                : "Thêm mẫu xe mới"}
+            </h4>
+          </div>
+
+          {/* Thông tin xe */}
+          <div className="form-section">
+            <h6 className="section-title">🚗 Thông tin xe</h6>
+            <Row className="mb-3">
+              <Form.Group as={Col} md={6} controlId="brand">
+                <Form.Label>Tên hãng</Form.Label>
+                <Form.Control
+                  type="text"
+                  placeholder="VD: VinFast, Tesla, BMW"
+                  name="brand"
+                  value={
+                    formData.brand ||
+                    (vehicleModelReady ? vehicleModelReady.brand : "")
+                  }
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  isInvalid={!!formErrors.brand}
+                  required
+                />
+                <Form.Control.Feedback type="invalid">
+                  {formErrors.brand}
+                </Form.Control.Feedback>
+              </Form.Group>
+
+              <Form.Group as={Col} md={6} controlId="model">
+                <Form.Label>Loại mô hình</Form.Label>
+                <Form.Control
+                  type="text"
+                  placeholder="VD: VF8, Model 3, i4"
+                  name="model"
+                  value={
+                    formData.model ||
+                    (vehicleModelReady ? vehicleModelReady.model : "")
+                  }
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  isInvalid={!!formErrors.model}
+                  required
+                />
+                <Form.Control.Feedback type="invalid">
+                  {formErrors.model}
+                </Form.Control.Feedback>
+              </Form.Group>
+            </Row>
+
+            <Form.Group className="mb-3" controlId="year">
+              <Form.Label>Năm sản xuất</Form.Label>
+              <Form.Control
+                type="number"
+                placeholder="VD: 2024"
+                name="year"
+                value={
+                  formData.year ||
+                  (vehicleModelReady ? vehicleModelReady.year : "")
+                }
+                onChange={handleChange}
+                onBlur={handleBlur}
+                isInvalid={!!formErrors.year}
+                min="1500"
+                max="2100"
+                required
+              />
+              <Form.Control.Feedback type="invalid">
+                {formErrors.year}
+              </Form.Control.Feedback>
+            </Form.Group>
+          </div>
+
+          {/* Thông số kỹ thuật */}
+          <div className="form-section">
+            <h6 className="section-title">⚙️ Thông số kỹ thuật</h6>
+            <Row className="mb-3">
+              <Form.Group as={Col} md={6} controlId="batteryCapacityKWh">
+                <Form.Label>Dung tích pin (kWh)</Form.Label>
+                <Form.Control
+                  type="number"
+                  placeholder="VD: 87.7"
+                  name="batteryCapacityKWh"
+                  value={
+                    formData.batteryCapacityKWh ||
+                    (vehicleModelReady
+                      ? vehicleModelReady.batteryCapacityKWh
+                      : "")
+                  }
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  isInvalid={!!formErrors.batteryCapacityKWh}
+                  min="30"
+                  max="120"
+                  step="0.1"
+                  required
+                />
+                <Form.Control.Feedback type="invalid">
+                  {formErrors.batteryCapacityKWh}
+                </Form.Control.Feedback>
+              </Form.Group>
+
+              <Form.Group as={Col} md={6} controlId="connectorTypeId">
+                <Form.Label>Loại cổng sạc</Form.Label>
+                <Form.Select
+                  name="connectorTypeId"
+                  value={formData.connectorTypeId}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  isInvalid={!!formErrors.connectorTypeId}
+                  required
+                >
+                  <option value="">Chọn cổng sạc...</option>
+                  {connectorTypes.map(
+                    (type) =>
+                      !type.isDeprecated && (
+                        <option
+                          key={type.connectorTypeId}
+                          value={type.connectorTypeId}
+                        >
+                          {type.displayName}
+                        </option>
+                      ),
+                  )}
+                </Form.Select>
+                <Form.Control.Feedback type="invalid">
+                  {formErrors.connectorTypeId}
+                </Form.Control.Feedback>
+              </Form.Group>
+            </Row>
+          </div>
+
+          {/* Hình ảnh */}
+          <div className="form-section">
+            <h6 className="section-title">📷 Hình ảnh</h6>
+            <Form.Group className="mb-3" controlId="imageUrl">
+              <Form.Label>Ảnh đại diện</Form.Label>
+              <Form.Control
+                type="file"
+                accept="image/*"
+                name="imageUrl"
+                onChange={handleFileChange}
+                onBlur={handleBlur}
+                isInvalid={!!formErrors.imageUrl}
+                required={!vehicleModelReady}
+              />
+              <Form.Control.Feedback type="invalid">
+                {formErrors.imageUrl}
+              </Form.Control.Feedback>
+              <Form.Text className="text-muted">
+                Tải lên ảnh của mẫu xe (JPG, PNG, tối đa 5MB)
+              </Form.Text>
+            </Form.Group>
+
+            {vehicleModelReady && vehicleModelReady.imageUrl && (
+              <div className="mb-3">
+                <Form.Label>Ảnh hiện tại:</Form.Label>
+                <div
+                  style={{
+                    padding: "10px",
+                    backgroundColor: "#f8f9fa",
+                    borderRadius: "8px",
+                    textAlign: "center",
+                  }}
+                >
+                  <img
+                    style={{
+                      maxHeight: "150px",
+                      maxWidth: "100%",
+                      objectFit: "contain",
+                      borderRadius: "8px",
+                    }}
+                    src={vehicleModelReady.imageUrl}
+                    alt="Current Vehicle Model"
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Trạng thái */}
+          <div className="form-section">
+            <h6 className="section-title">⚡ Trạng thái</h6>
+            <Form.Group className="mb-3" controlId="status">
+              <Form.Label>Trạng thái hoạt động</Form.Label>
+              <Form.Select
+                name="status"
+                value={formData.status}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                isInvalid={!!formErrors.status}
+                required
+              >
+                <option value="">Chọn trạng thái...</option>
+                <option value="ACTIVE">✅ Hoạt động</option>
+                <option value="INACTIVE">❌ Không hoạt động</option>
+              </Form.Select>
+              <Form.Control.Feedback type="invalid">
+                {formErrors.status}
+              </Form.Control.Feedback>
+            </Form.Group>
+          </div>
+
+          {/* Alert for API errors */}
+          {apiError && (
+            <Alert variant="danger" className="mt-3">
+              {apiError}
+            </Alert>
+          )}
+
+          {/* Action buttons */}
+          <div className="form-button-group">
+            <Button variant="success" type="submit" className="btn-submit">
+              {vehicleModelReady ? "💾 Cập nhật" : "➕ Tạo mới"}
+            </Button>
+            <Button
+              variant="outline-secondary"
+              type="button"
+              className="btn-cancel"
+              onClick={onClose}
+            >
+              ← Trở về
+            </Button>
+          </div>
+        </Form>
       </div>
-    </Form>
+    </div>
   );
 }
