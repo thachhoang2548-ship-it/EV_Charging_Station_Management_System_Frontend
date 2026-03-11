@@ -1,0 +1,192 @@
+/* ============================================
+   CircularChargingProgress — ccp- prefix
+   Brand: #16a34a (primary green)
+   ============================================ */
+
+.ccp-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 32px 24px;
+  background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 40%, #f8fafc 100%);
+  border-radius: 20px;
+  border: 1px solid #bbf7d0;
+  box-shadow: 0 4px 24px rgba(22, 163, 74, 0.08);
+  max-width: 400px;
+  margin: 0 auto;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Decorative glow behind circle */
+.ccp-wrapper::before {
+  content: "";
+  position: absolute;
+  top: 30%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 220px;
+  height: 220px;
+  background: radial-gradient(circle, rgba(22, 163, 74, 0.08) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+/* ── SVG Container ── */
+.ccp-svg-container {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.ccp-svg {
+  transform: rotate(-90deg);
+  filter: drop-shadow(0 4px 12px rgba(22, 163, 74, 0.15));
+}
+
+.ccp-track {
+  transition: stroke 0.3s ease;
+}
+
+.ccp-progress {
+  stroke-linecap: round;
+  transition:
+    stroke-dashoffset 0.8s cubic-bezier(0.4, 0, 0.2, 1),
+    stroke 0.3s ease;
+}
+
+/* ── Center Text ── */
+.ccp-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+.ccp-percentage {
+  font-size: 44px;
+  font-weight: 800;
+  line-height: 1;
+  margin-bottom: 4px;
+  letter-spacing: -1px;
+}
+
+.ccp-percentage-unit {
+  font-size: 24px;
+  font-weight: 600;
+  opacity: 0.7;
+}
+
+.ccp-label {
+  font-size: 0.78rem;
+  color: #64748b;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+
+/* ── Status Badge ── */
+.ccp-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  padding: 8px 20px;
+  border-radius: 20px;
+  margin-top: 4px;
+}
+
+.ccp-status--charging {
+  background: rgba(22, 163, 74, 0.1);
+  color: #16a34a;
+}
+
+.ccp-status--complete {
+  background: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
+}
+
+.ccp-status--idle {
+  background: rgba(100, 116, 139, 0.08);
+  color: #64748b;
+}
+
+/* ── Stats Row ── */
+.ccp-stats {
+  display: flex;
+  gap: 24px;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #e2e8f0;
+  width: 100%;
+  justify-content: center;
+}
+
+.ccp-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.ccp-stat-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 2px;
+}
+
+.ccp-stat-value {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.ccp-stat-label {
+  font-size: 0.72rem;
+  color: #94a3b8;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ── Pulse animation for charging icon ── */
+@keyframes ccp-pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.08); opacity: 0.8; }
+}
+
+.ccp-charging-icon {
+  animation: ccp-pulse 2s ease-in-out infinite;
+  color: #16a34a;
+}
+
+/* ── Glow ring animation while charging ── */
+@keyframes ccp-glow {
+  0%, 100% { filter: drop-shadow(0 4px 12px rgba(22, 163, 74, 0.15)); }
+  50% { filter: drop-shadow(0 4px 20px rgba(22, 163, 74, 0.35)); }
+}
+
+.ccp-svg--charging {
+  animation: ccp-glow 2s ease-in-out infinite;
+}
+
+/* ── Responsive ── */
+@media (max-width: 480px) {
+  .ccp-wrapper {
+    padding: 24px 16px;
+    max-width: 100%;
+  }
+
+  .ccp-percentage {
+    font-size: 36px;
+  }
+
+  .ccp-stats {
+    gap: 16px;
+  }
+}
