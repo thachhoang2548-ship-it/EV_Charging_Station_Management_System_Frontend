@@ -1,6 +1,6 @@
 import "./login.css";
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useLogin } from "../../hooks/useAuth";
@@ -18,6 +18,7 @@ const Login = () => {
 
   const { login, loading } = useLogin();
   const navigate = useNavigate();
+  const location = useLocation();
   const dispatch = useDispatch();
 
   // Xử lý token từ Google OAuth redirect
@@ -104,18 +105,20 @@ const Login = () => {
         window.history.replaceState({}, document.title, "/");
 
         // Redirect dựa vào role sau khi Redux đã update (tăng delay)
+        const oauthRedirect = sessionStorage.getItem("oauth_redirect");
+        sessionStorage.removeItem("oauth_redirect");
         setTimeout(() => {
           console.log("🚀 Navigating to role-based page:", role);
           if (role?.toUpperCase().includes("ADMIN")) {
-            window.location.href = "/admin"; // Force reload để Redux được pick up
+            window.location.href = "/admin";
           } else if (role?.toUpperCase().includes("STAFF")) {
             window.location.href = "/staff";
           } else if (role?.toUpperCase().includes("DRIVER")) {
-            window.location.href = "/guide";
+            window.location.href = oauthRedirect || "/guide";
           } else {
             window.location.href = "/";
           }
-        }, 1000); // Tăng từ 500ms lên 1000ms
+        }, 1000);
       } catch (error) {
         console.error("❌ Error parsing token:", error);
         toast.dismiss(); // Xóa toast cũ
@@ -228,10 +231,14 @@ const Login = () => {
               <button
                 type="button"
                 className="auth-social-btn google"
-                onClick={() =>
-                  (window.location.href =
-                    "http://localhost:8080/oauth2/authorization/google")
-                }
+                onClick={() => {
+                  const from = location.state?.from?.pathname;
+                  if (from) {
+                    sessionStorage.setItem("oauth_redirect", from);
+                  }
+                  window.location.href =
+                    "http://localhost:8080/oauth2/authorization/google";
+                }}
               >
                 G
               </button>

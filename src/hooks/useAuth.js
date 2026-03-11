@@ -4,7 +4,7 @@ import { setAuthData, clearAuthData } from "../utils/authUtils";
 import { useDispatch } from "react-redux";
 import { loginSuccess } from "../redux/slices/authSlice.js";
 import { stationAPI } from "../api/stationApi.js";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 import { logout as logoutAction } from "../redux/slices/authSlice.js";
 
@@ -25,6 +25,7 @@ const validateConfirmPassword = (password, confirmPassword) => {
 // Custom hook đăng nhập
 export const useLogin = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
 
@@ -96,7 +97,8 @@ export const useLogin = () => {
             } else if (roleName === "STAFF") {
               navigate("/staff", { replace: true });
             } else if (roleName === "DRIVER") {
-              navigate("/guide", { replace: true });
+              const redirectTo = location.state?.from?.pathname || "/guide";
+              navigate(redirectTo, { replace: true });
             }
           }, 2000);
         }
