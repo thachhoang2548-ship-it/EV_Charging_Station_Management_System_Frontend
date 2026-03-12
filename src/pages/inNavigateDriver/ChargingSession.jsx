@@ -81,7 +81,7 @@ const extractPowerKW = (session, bookingId) => {
     );
 };
 
-// ✅ FIX: map invoiceId đúng cách (không dùng biến invoiceId "trôi nổi")
+// ✅ FIX: map invoiceId đúng cách
 const syncSessionFromBackend = (backendData, currentState = {}) => {
     const resolvedInvoiceId =
         backendData?.invoiceId ??
@@ -94,7 +94,6 @@ const syncSessionFromBackend = (backendData, currentState = {}) => {
         ...currentState,
         ...backendData,
 
-        // ✅ keep invoiceId
         invoiceId: resolvedInvoiceId,
 
         status: backendData.status ?? currentState.status,
@@ -112,16 +111,157 @@ const syncSessionFromBackend = (backendData, currentState = {}) => {
     };
 };
 
-// Responsive styles
+// ========== RESPONSIVE CSS (inject once) ==========
 const styleSheet = document.createElement("style");
 styleSheet.textContent = `
-  @media (max-width: 768px) {
-    .charging-session-container { padding: 10px !important; }
-    .battery-progress-circle { width: 180px !important; height: 180px !important; }
-    .battery-progress-circle svg { width: 180px !important; height: 180px !important; }
-    .battery-progress-circle .center-text { font-size: 36px !important; }
-    .info-card-grid { grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)) !important; }
-    .quick-info-grid { grid-template-columns: 1fr !important; }
+  :root{
+    --brand: #00BFA6;
+    --blue: #2196f3;
+    --red: #f44336;
+    --text: #222;
+    --muted: #666;
+    --card: #ffffff;
+    --bg: #f6f7f9;
+    --border: #e9ecef;
+    --shadow: 0 2px 12px rgba(0,0,0,0.06);
+  }
+
+  .cs-wrap{ max-width: 1200px; margin: 0 auto; padding: 16px; }
+  .cs-title{
+    color: var(--brand);
+    margin: 0 0 16px;
+    font-size: clamp(20px, 3vw, 28px);
+    font-weight: 800;
+    letter-spacing: -0.2px;
+  }
+
+  .cs-card{
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    box-shadow: var(--shadow);
+    padding: 16px;
+  }
+
+  .cs-subtitle{
+    margin: 0 0 12px;
+    font-size: clamp(16px, 2.4vw, 20px);
+    font-weight: 800;
+    color: #333;
+  }
+
+  .cs-section{ margin-bottom: 16px; }
+  .cs-row{ display: grid; grid-template-columns: 1fr; gap: 10px; }
+
+  .cs-pill{
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 12px;
+    border-radius: 999px;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  .cs-badge{
+    margin-top: 10px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    font-weight: 800;
+  }
+  .cs-badge--soc{
+    background: rgba(0, 191, 166, 0.08);
+    border: 1px solid rgba(0, 191, 166, 0.25);
+    color: #007f6f;
+  }
+  .cs-badge--full{
+    background: rgba(255, 152, 0, 0.12);
+    border: 1px solid rgba(255, 152, 0, 0.35);
+    color: #b26a00;
+  }
+
+  .cs-quick{
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+  }
+  .cs-quickItem{
+    background: #f8f9fa;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 12px;
+    min-width: 0;
+  }
+  .cs-quickLabel{
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--muted);
+    font-size: 13px;
+    margin-bottom: 6px;
+  }
+  .cs-quickValue{
+    font-weight: 800;
+    color: #333;
+    font-size: 16px;
+    word-break: break-word;
+  }
+
+  .cs-infoGrid{
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .cs-actions{
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 16px;
+  }
+
+  .cs-btn{
+    appearance: none;
+    border: none;
+    border-radius: 10px;
+    padding: 12px 16px;
+    font-weight: 800;
+    cursor: pointer;
+    font-size: 15px;
+    line-height: 1;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    flex: 0 0 auto;
+  }
+
+  .cs-btn--primary{ background: var(--brand); color: #fff; }
+  .cs-btn--danger{ background: var(--red); color: #fff; }
+  .cs-btn:disabled{ background: #cfcfcf; cursor: not-allowed; }
+
+  @media (hover: hover) and (pointer: fine){
+    .cs-infoCard:hover{
+      transform: translateY(-3px);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+    }
+  }
+
+  @media (max-width: 992px){
+    .cs-quick{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .cs-infoGrid{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+
+  @media (max-width: 600px){
+    .cs-wrap{ padding: 12px; }
+    .cs-card{ padding: 12px; border-radius: 12px; }
+    .cs-quick{ grid-template-columns: 1fr; }
+    .cs-infoGrid{ grid-template-columns: 1fr; }
+    .cs-actions{ flex-direction: column; }
+    .cs-btn{ width: 100%; }
   }
 `;
 if (!document.head.querySelector("style[data-charging-session-styles]")) {
@@ -129,7 +269,7 @@ if (!document.head.querySelector("style[data-charging-session-styles]")) {
     document.head.appendChild(styleSheet);
 }
 
-// Battery Progress Circle
+// ========== UI COMPONENTS ==========
 const BatteryProgressCircle = memo(function BatteryProgressCircle({
                                                                       initialSoc,
                                                                       energyKWh,
@@ -154,10 +294,7 @@ const BatteryProgressCircle = memo(function BatteryProgressCircle({
         const interval = setInterval(() => {
             setAnimatedSoc((prev) => {
                 const next = prev + step;
-                if (
-                    (diff > 0 && next >= currentSoc) ||
-                    (diff < 0 && next <= currentSoc)
-                ) {
+                if ((diff > 0 && next >= currentSoc) || (diff < 0 && next <= currentSoc)) {
                     clearInterval(interval);
                     return currentSoc;
                 }
@@ -167,7 +304,8 @@ const BatteryProgressCircle = memo(function BatteryProgressCircle({
         return () => clearInterval(interval);
     }, [currentSoc, animatedSoc]);
 
-    const size = 240;
+    // responsive size (simple)
+    const size = Math.round(Math.min(260, Math.max(180, window.innerWidth * 0.55)));
     const strokeWidth = 16;
     const radius = (size - strokeWidth) / 2;
     const circumference = 2 * Math.PI * radius;
@@ -183,26 +321,25 @@ const BatteryProgressCircle = memo(function BatteryProgressCircle({
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
-                padding: "30px 20px",
+                padding: "18px 14px",
                 background: "linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)",
-                borderRadius: "20px",
+                borderRadius: "18px",
                 boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
-                margin: "0 auto 30px",
-                maxWidth: "400px",
+                margin: "0 auto 18px",
+                maxWidth: "420px",
             }}
         >
             <div
                 style={{
-                    fontSize: "48px",
-                    marginBottom: "15px",
-                    animation:
-                        isCharging && !isComplete ? "pulse 2s ease-in-out infinite" : "none",
+                    fontSize: "44px",
+                    marginBottom: "10px",
+                    animation: isCharging && !isComplete ? "pulse 2s ease-in-out infinite" : "none",
                 }}
             >
                 🔋
             </div>
 
-            <div style={{ position: "relative", marginBottom: "20px" }}>
+            <div style={{ position: "relative", marginBottom: "14px" }}>
                 <svg
                     width={size}
                     height={size}
@@ -243,24 +380,25 @@ const BatteryProgressCircle = memo(function BatteryProgressCircle({
                         left: "50%",
                         transform: "translate(-50%, -50%)",
                         textAlign: "center",
+                        width: "100%",
                     }}
                 >
                     <div
                         style={{
-                            fontSize: "48px",
-                            fontWeight: "800",
+                            fontSize: "clamp(34px, 7vw, 48px)",
+                            fontWeight: "900",
                             color: progressColor,
                             lineHeight: "1",
-                            marginBottom: "5px",
+                            marginBottom: "4px",
                         }}
                     >
                         {animatedSoc.toFixed(0)}%
                     </div>
                     <div
                         style={{
-                            fontSize: "13px",
+                            fontSize: "12px",
                             color: "#666",
-                            fontWeight: "500",
+                            fontWeight: "600",
                             textTransform: "uppercase",
                             letterSpacing: "0.5px",
                         }}
@@ -273,80 +411,51 @@ const BatteryProgressCircle = memo(function BatteryProgressCircle({
             <div
                 style={{
                     textAlign: "center",
-                    fontSize: "15px",
+                    fontSize: "14px",
                     color: isComplete ? "#2196f3" : isCharging ? "#00BFA6" : "#666",
-                    fontWeight: "600",
-                    padding: "10px 20px",
+                    fontWeight: "700",
+                    padding: "10px 14px",
                     background: isComplete
                         ? "rgba(33, 150, 243, 0.1)"
                         : isCharging
                             ? "rgba(0, 191, 166, 0.1)"
                             : "rgba(0, 0, 0, 0.05)",
-                    borderRadius: "20px",
+                    borderRadius: "999px",
                 }}
             >
-                {isComplete
-                    ? "✅ Pin đã đầy 100%"
-                    : isCharging
-                        ? "⚡ Đang sạc..."
-                        : "Dung lượng pin (ước tính)"}
+                {isComplete ? "✅ Pin đã đầy 100%" : isCharging ? "⚡ Đang sạc..." : "Dung lượng pin (ước tính)"}
             </div>
 
             <style>{`
         @keyframes pulse {
           0%, 100% { transform: scale(1); opacity: 1; }
-          50% { transform: scale(1.1); opacity: 0.8; }
+          50% { transform: scale(1.08); opacity: 0.85; }
         }
       `}</style>
         </div>
     );
 });
 
-const InfoCard = memo(function InfoCard({
-                                            icon,
-                                            label,
-                                            value,
-                                            color = "#00BFA6",
-                                            unit = "",
-                                        }) {
+const InfoCard = memo(function InfoCard({ icon, label, value, color = "#00BFA6", unit = "" }) {
     return (
         <div
+            className="cs-infoCard"
             style={{
                 background: "white",
-                padding: "20px",
+                padding: "14px",
                 borderRadius: "12px",
                 boxShadow: "0 2px 12px rgba(0,0,0,0.06)",
                 textAlign: "center",
                 border: `2px solid ${color}15`,
                 transition: "transform 0.2s ease, box-shadow 0.2s ease",
-            }}
-            onMouseEnter={(e) => {
-                e.currentTarget.style.transform = "translateY(-3px)";
-                e.currentTarget.style.boxShadow = "0 4px 20px rgba(0,0,0,0.12)";
-            }}
-            onMouseLeave={(e) => {
-                e.currentTarget.style.transform = "translateY(0)";
-                e.currentTarget.style.boxShadow = "0 2px 12px rgba(0,0,0,0.06)";
+                minWidth: 0,
             }}
         >
-            <div style={{ fontSize: "32px", marginBottom: "8px" }}>{icon}</div>
-            <div
-                style={{
-                    fontSize: "13px",
-                    color: "#666",
-                    marginBottom: "8px",
-                    fontWeight: "500",
-                }}
-            >
-                {label}
-            </div>
-            <div style={{ fontSize: "24px", fontWeight: "700", color }}>
+            <div style={{ fontSize: "28px", marginBottom: "6px" }}>{icon}</div>
+            <div style={{ fontSize: "12px", color: "#666", marginBottom: "6px", fontWeight: "600" }}>{label}</div>
+            <div style={{ fontSize: "22px", fontWeight: "900", color, wordBreak: "break-word" }}>
                 {value}
-                {unit && (
-                    <span style={{ fontSize: "16px", fontWeight: "500", marginLeft: "4px" }}>
-            {unit}
-          </span>
-                )}
+                {unit && <span style={{ fontSize: "14px", fontWeight: "700", marginLeft: "4px" }}>{unit}</span>}
             </div>
         </div>
     );
@@ -386,13 +495,16 @@ export default function ChargingSession() {
 
     const qrStorageKey = (id) => (id ? `qr_booking_${id}` : null);
 
+    // ---- derived stable keys (để fix polling) ----
+    const sessionId = currentSession?.sessionId ?? null;
+    const sessionStatusUpper = String(currentSession?.status || "").toUpperCase();
+    const isInProgress = sessionStatusUpper === "IN_PROGRESS";
+
     useEffect(() => {
-        const capacity = getBatteryCapacity();
-        setBatteryCapacity(capacity);
+        setBatteryCapacity(getBatteryCapacity());
     }, []);
 
-    const getSimulationKey = (sessionId) =>
-        sessionId ? `chargingSession_simulation_${sessionId}` : null;
+    const getSimulationKey = (sid) => (sid ? `chargingSession_simulation_${sid}` : null);
 
     const saveSimState = useCallback((session) => {
         if (!session || !session.sessionId) return;
@@ -416,10 +528,10 @@ export default function ChargingSession() {
     }, []);
 
     const clearSimState = useCallback(
-        (sessionId) => {
-            if (!sessionId) return;
+        (sid) => {
+            if (!sid) return;
             try {
-                const key = getSimulationKey(sessionId);
+                const key = getSimulationKey(sid);
                 if (key) localStorage.removeItem(key);
 
                 if (currentSession?.bookingId) {
@@ -430,9 +542,10 @@ export default function ChargingSession() {
                 // ignore
             }
         },
-        [currentSession]
+        [currentSession?.bookingId] // ✅ tránh phụ thuộc object currentSession
     );
 
+    // ✅ Restore QR (tránh chạy mỗi giây): chỉ phụ thuộc bookingId / session bookingId, không phụ thuộc object currentSession
     useEffect(() => {
         if (qrUrl) return;
 
@@ -458,9 +571,7 @@ export default function ChargingSession() {
             }
 
             try {
-                const keys = Object.keys(sessionStorage).filter(
-                    (k) => k && k.startsWith("qr_booking_")
-                );
+                const keys = Object.keys(sessionStorage).filter((k) => k && k.startsWith("qr_booking_"));
                 if (keys.length === 1) {
                     const s = sessionStorage.getItem(keys[0]);
                     if (s) setQrUrl(s);
@@ -471,7 +582,13 @@ export default function ChargingSession() {
         };
 
         attemptRestore();
-    }, [booking, bookingIdFromParams, qrUrl, currentSession]);
+    }, [
+        bookingIdFromParams,
+        booking?.bookingId,
+        booking?.id,
+        currentSession?.bookingId, // ✅ chỉ lấy field cần
+        qrUrl,
+    ]);
 
     useEffect(() => {
         if (!isAuthenticated()) {
@@ -498,9 +615,7 @@ export default function ChargingSession() {
             }
             const session = response.data ?? response;
 
-            // ✅ FIX: lấy invoiceId và nhét vào state
-            const resolvedInvoiceId =
-                session?.invoiceId ?? session?.invoice?.invoiceId ?? null;
+            const resolvedInvoiceId = session?.invoiceId ?? session?.invoice?.invoiceId ?? null;
 
             const power = extractPowerKW(session, session.bookingId);
             const pointNumber =
@@ -517,15 +632,13 @@ export default function ChargingSession() {
             });
         } catch (error) {
             console.error("Lỗi khi lấy phiên sạc hiện tại:", error);
-            toast.error("Không thể lấy thông tin phiên sạc", {
-                position: "top-center",
-            });
+            toast.error("Không thể lấy thông tin phiên sạc", { position: "top-center" });
         } finally {
             setLoading(false);
         }
     };
 
-    // ✅ Toast báo pin đầu vào (SOC ban đầu) đúng 1 lần mỗi session
+    // ✅ Toast báo pin đầu vào đúng 1 lần mỗi session
     useEffect(() => {
         const sid = currentSession?.sessionId ?? null;
         const initialSoc = currentSession?.initialSoc;
@@ -538,22 +651,19 @@ export default function ChargingSession() {
 
         if (!initialSocToastShownRef.current.shown) {
             initialSocToastShownRef.current.shown = true;
-            toast.info(`🔋 Pin đầu vào: ${initialSoc}%`, {
-                position: "top-center",
-                autoClose: 2500,
-            });
+            toast.info(`🔋 Pin đầu vào: ${initialSoc}%`, { position: "top-center", autoClose: 2500 });
         }
     }, [currentSession?.sessionId, currentSession?.initialSoc]);
 
-    // Poll power
+    // ✅ Poll power (FIX: không phụ thuộc currentSession object)
     useEffect(() => {
-        if (!currentSession || currentSession.status !== "IN_PROGRESS") return;
+        if (!sessionId || !isInProgress) return;
 
         const pollPowerInterval = setInterval(async () => {
             try {
                 const response = await stationAPI.getCurrentChargingSession();
                 const updatedSession = response.data ?? response;
-                const newPower = updatedSession.chargingPoint?.maxPowerKW;
+                const newPower = updatedSession?.chargingPoint?.maxPowerKW;
 
                 if (newPower && newPower !== currentPower) {
                     setCurrentPower(newPower);
@@ -564,18 +674,18 @@ export default function ChargingSession() {
         }, POWER_POLLING_INTERVAL);
 
         return () => clearInterval(pollPowerInterval);
-    }, [currentSession, currentPower]);
+    }, [sessionId, isInProgress, currentPower]);
 
-    // Energy polling
+    // ✅ Energy polling (FIX: không phụ thuộc currentSession object => hết spam request)
     useEffect(() => {
-        if (!currentSession || currentSession.status !== "IN_PROGRESS") return;
+        if (!sessionId || !isInProgress) return;
 
         const doSync = async () => {
             try {
                 const response = await stationAPI.getCurrentChargingSession();
                 const backendSession = response.data ?? response;
 
-                if (!backendSession || backendSession.status !== "IN_PROGRESS") return;
+                if (!backendSession || String(backendSession.status || "").toUpperCase() !== "IN_PROGRESS") return;
 
                 const startTime = new Date(backendSession.startTime);
                 const now = new Date();
@@ -601,9 +711,8 @@ export default function ChargingSession() {
                 const backendEnergy = round2((deltaSoc / 100.0) * capacity);
 
                 setCurrentSession((prev) => {
-                    if (!prev || prev.status !== "IN_PROGRESS") return prev;
+                    if (!prev || String(prev.status || "").toUpperCase() !== "IN_PROGRESS") return prev;
 
-                    // ✅ keep invoiceId khi poll energy
                     const inv =
                         prev.invoiceId ??
                         backendSession?.invoiceId ??
@@ -628,7 +737,7 @@ export default function ChargingSession() {
         doSync();
         const pollEnergyInterval = setInterval(doSync, ENERGY_POLLING_INTERVAL);
         return () => clearInterval(pollEnergyInterval);
-    }, [currentSession, currentPower, batteryCapacity]);
+    }, [sessionId, isInProgress, currentPower, batteryCapacity]);
 
     // Poll sessions status
     useEffect(() => {
@@ -662,7 +771,6 @@ export default function ChargingSession() {
                     }
 
                     setCurrentSession((prev) => {
-                        // ✅ keep invoiceId when replacing session
                         const inv =
                             inProgressSession?.invoiceId ??
                             inProgressSession?.invoice?.invoiceId ??
@@ -670,8 +778,7 @@ export default function ChargingSession() {
                             null;
 
                         if (!prev) return { ...inProgressSession, invoiceId: inv };
-                        if (prev.sessionId !== inProgressSession.sessionId)
-                            return { ...inProgressSession, invoiceId: inv };
+                        if (prev.sessionId !== inProgressSession.sessionId) return { ...inProgressSession, invoiceId: inv };
                         return prev;
                     });
                     return;
@@ -686,17 +793,13 @@ export default function ChargingSession() {
 
                     const status = String(found.status || "").toUpperCase();
                     if (status === "COMPLETED" || status === "FINISHED" || status === "STOPPED") {
-                        const inv =
-                            found?.invoiceId ??
-                            found?.invoice?.invoiceId ??
-                            prev?.invoiceId ??
-                            null;
+                        const inv = found?.invoiceId ?? found?.invoice?.invoiceId ?? prev?.invoiceId ?? null;
 
                         return {
                             ...found,
                             virtualSoc: found.finalSoc ?? prev.virtualSoc,
                             pointNumber: prev.pointNumber || found.pointNumber,
-                            invoiceId: inv, // ✅ keep invoiceId
+                            invoiceId: inv,
                         };
                     }
 
@@ -715,28 +818,34 @@ export default function ChargingSession() {
         };
     }, []);
 
-    // Virtual SOC smoothing
+    // ✅ Virtual SOC smoothing (FIX: không phụ thuộc currentSession object)
     useEffect(() => {
-        if (!currentSession || currentSession.status !== "IN_PROGRESS") {
-            if (currentSession?.sessionId) clearSimState(currentSession.sessionId);
+        if (!sessionId) return;
+
+        if (!isInProgress) {
+            clearSimState(sessionId);
             return;
+        }
+
+        const startTime = currentSession?.startTime;
+        const initialSoc = currentSession?.initialSoc ?? 20;
+
+        if (!startTime) return;
+
+        if (currentSession?.virtualSoc == null) {
+            setCurrentSession((prev) => (prev ? { ...prev, virtualSoc: initialSoc } : prev));
         }
 
         const capacity = batteryCapacity;
         const efficiency = CHARGING_EFFICIENCY;
-        const initialSoc = currentSession.initialSoc ?? 20;
-
-        if (currentSession.virtualSoc == null) {
-            setCurrentSession((prev) => (prev ? { ...prev, virtualSoc: initialSoc } : prev));
-        }
 
         const virtualChargeInterval = setInterval(() => {
             setCurrentSession((prev) => {
-                if (!prev || prev.status !== "IN_PROGRESS") return prev;
+                if (!prev || String(prev.status || "").toUpperCase() !== "IN_PROGRESS") return prev;
 
-                const startTime = new Date(prev.startTime);
                 const now = new Date();
-                const durationMinutes = (now - startTime) / (1000 * 60);
+                const st = new Date(prev.startTime);
+                const durationMinutes = (now - st) / (1000 * 60);
 
                 const { finalSOC } = calculateChargingMetrics({
                     startTime: prev.startTime,
@@ -774,7 +883,17 @@ export default function ChargingSession() {
         }, 1000);
 
         return () => clearInterval(virtualChargeInterval);
-    }, [currentSession, currentPower, clearSimState, saveSimState, lastEnergySync, batteryCapacity]);
+    }, [
+        sessionId,
+        isInProgress,
+        currentSession?.startTime,
+        currentSession?.initialSoc,
+        currentPower,
+        batteryCapacity,
+        saveSimState,
+        clearSimState,
+        lastEnergySync,
+    ]);
 
     // Auto redirect only when ended
     useEffect(() => {
@@ -812,7 +931,6 @@ export default function ChargingSession() {
             }
 
             setTimeout(() => {
-                // ✅ invoiceId đã được giữ trong currentSession rồi
                 navigate(paths.payment, { state: { sessionResult: currentSession } });
             }, 1500);
         }
@@ -820,7 +938,7 @@ export default function ChargingSession() {
 
     // Auto-stop when booking time expires
     useEffect(() => {
-        if (!currentSession || currentSession.status !== "IN_PROGRESS") return;
+        if (!currentSession || String(currentSession.status || "").toUpperCase() !== "IN_PROGRESS") return;
         if (!currentSession.windowEnd) return;
 
         const checkExpiry = setInterval(() => {
@@ -881,10 +999,7 @@ export default function ChargingSession() {
 
             try {
                 const key = qrStorageKey(
-                    booking?.bookingId ??
-                    bookingIdFromParams ??
-                    sessionResult?.bookingId ??
-                    currentSession?.bookingId
+                    booking?.bookingId ?? bookingIdFromParams ?? sessionResult?.bookingId ?? currentSession?.bookingId
                 );
                 if (key) sessionStorage.removeItem(key);
             } catch (e) {
@@ -923,7 +1038,7 @@ export default function ChargingSession() {
     // Remove persisted QR when in progress
     useEffect(() => {
         if (!currentSession) return;
-        if (currentSession.status === "IN_PROGRESS") {
+        if (String(currentSession.status || "").toUpperCase() === "IN_PROGRESS") {
             try {
                 const id = booking?.bookingId ?? bookingIdFromParams ?? currentSession.bookingId;
                 const key = qrStorageKey(id);
@@ -933,7 +1048,7 @@ export default function ChargingSession() {
                 // ignore
             }
         }
-    }, [currentSession, booking, bookingIdFromParams]);
+    }, [currentSession?.status, currentSession?.bookingId, booking?.bookingId, bookingIdFromParams]);
 
     // Cleanup blob URL
     useEffect(() => {
@@ -990,149 +1105,129 @@ export default function ChargingSession() {
         }
     };
 
-    const isFull100 =
-        (currentSession?.virtualSoc ?? 0) >= 100 &&
-        String(currentSession?.status || "").toUpperCase() === "IN_PROGRESS";
+    const isFull100 = (currentSession?.virtualSoc ?? 0) >= 100 && isInProgress;
 
     return (
-        <div className="charging-session-container" style={{ padding: "20px", maxWidth: "1200px", margin: "0 auto" }}>
-            <h1 style={{ color: "#00BFA6", marginBottom: "30px" }}>Phiên sạc hiện tại</h1>
+        <div className="cs-wrap">
+            <h1 className="cs-title">Phiên sạc hiện tại</h1>
 
             {loading ? (
-                <p>Đang tải thông tin phiên sạc...</p>
-            ) : qrUrl && (!currentSession || currentSession.status !== "IN_PROGRESS") ? (
-                <div style={{ background: "white", padding: "20px", borderRadius: "12px", boxShadow: "0 2px 8px rgba(0,0,0,0.1)", textAlign: "center" }}>
-                    <h2 style={{ color: "#333", marginBottom: "15px" }}>Mã QR đặt chỗ</h2>
+                <div className="cs-card">
+                    <p style={{ margin: 0, color: "#444", fontWeight: 700 }}>Đang tải thông tin phiên sạc...</p>
+                </div>
+            ) : qrUrl && (!currentSession || !isInProgress) ? (
+                <div className="cs-card">
+                    <h2 className="cs-subtitle">Mã QR đặt chỗ</h2>
 
                     {bookingLoading ? (
-                        <p>Đang tải thông tin booking...</p>
+                        <p style={{ margin: 0, color: "#444", fontWeight: 700 }}>Đang tải thông tin booking...</p>
                     ) : (
                         <>
                             {qrUrl ? (
                                 <div style={{ textAlign: "center", marginTop: 12 }}>
-                                    <img src={qrUrl} alt="QR Code" style={{ maxWidth: "320px", width: "100%", height: "auto" }} />
-                                    <div style={{ marginTop: 12 }}>
-                                        <button onClick={handleDownload} style={{ padding: "10px 18px", borderRadius: 8, background: "#00BFA6", color: "white", border: "none" }}>
+                                    <img
+                                        src={qrUrl}
+                                        alt="QR Code"
+                                        style={{
+                                            maxWidth: "320px",
+                                            width: "100%",
+                                            height: "auto",
+                                            borderRadius: 12,
+                                            border: "1px solid #e9ecef",
+                                            background: "#fff",
+                                        }}
+                                    />
+                                    <div className="cs-actions" style={{ justifyContent: "center" }}>
+                                        <button onClick={handleDownload} className="cs-btn cs-btn--primary">
                                             Tải mã QR
+                                        </button>
+                                        <button
+                                            onClick={restoreAnyQr}
+                                            className="cs-btn"
+                                            style={{ background: "#1976d2", color: "#fff" }}
+                                        >
+                                            Khôi phục QR
                                         </button>
                                     </div>
                                 </div>
                             ) : (
                                 <div style={{ marginTop: 12 }}>
-                                    <p>QR chưa có. Vui lòng xác nhận booking trước.</p>
-                                    <div style={{ marginTop: 8 }}>
-                                        <button onClick={restoreAnyQr} style={{ padding: "8px 12px", borderRadius: 8, background: "#1976d2", color: "white", border: "none" }}>
-                                            Khôi phục QR
-                                        </button>
-                                    </div>
+                                    <p style={{ margin: "0 0 10px", color: "#555", fontWeight: 700 }}>
+                                        QR chưa có. Vui lòng xác nhận booking trước.
+                                    </p>
+                                    <button
+                                        onClick={restoreAnyQr}
+                                        className="cs-btn"
+                                        style={{ background: "#1976d2", color: "#fff" }}
+                                    >
+                                        Khôi phục QR
+                                    </button>
                                 </div>
                             )}
                         </>
                     )}
                 </div>
             ) : currentSession ? (
-                <div style={{ background: "white", padding: "20px", borderRadius: "12px", boxShadow: "0 2px 8px rgba(0,0,0,0.1)" }}>
-                    <h2 style={{ color: "#333", marginBottom: "15px" }}>⚡ Thông tin phiên sạc</h2>
+                <div className="cs-card">
+                    <h2 className="cs-subtitle">⚡ Thông tin phiên sạc</h2>
 
-                    <div style={{ marginBottom: "20px" }}>
-                        <p style={{ marginBottom: "10px" }}>
-                            <strong>Booking ID:</strong> {currentSession.bookingId ?? "-"}
-                        </p>
-
-                        {/* Optional debug invoiceId */}
-                        {currentSession.invoiceId != null && (
-                            <p style={{ marginBottom: "10px" }}>
-                                <strong>Invoice ID:</strong> {currentSession.invoiceId}
+                    <div className="cs-section">
+                        <div className="cs-row">
+                            <p style={{ margin: 0 }}>
+                                <strong>Booking ID:</strong> {currentSession.bookingId ?? "-"}
                             </p>
-                        )}
 
-                        <p style={{ marginBottom: "10px" }}>
-                            <strong>Trạng thái:</strong>{" "}
-                            <span
-                                style={{
-                                    padding: "4px 12px",
-                                    borderRadius: "20px",
-                                    background: statusColors[currentSession.status] || "#9e9e9e",
-                                    color: "white",
-                                    fontSize: "14px",
-                                    fontWeight: "600",
-                                }}
-                            >
-                {currentSession.status === "IN_PROGRESS"
-                    ? "Đang sạc"
-                    : currentSession.status === "COMPLETED"
-                        ? "Hoàn thành"
-                        : currentSession.status === "FAILED"
-                            ? "Thất bại"
-                            : currentSession.status ?? "-"}
-              </span>
-                        </p>
+                            {currentSession.invoiceId != null && (
+                                <p style={{ margin: 0 }}>
+                                    <strong>Invoice ID:</strong> {currentSession.invoiceId}
+                                </p>
+                            )}
+
+                            <p style={{ margin: 0 }}>
+                                <strong>Trạng thái:</strong>{" "}
+                                <span
+                                    className="cs-pill"
+                                    style={{ background: statusColors[currentSession.status] || "#9e9e9e", marginLeft: 8 }}
+                                >
+                  {sessionStatusUpper === "IN_PROGRESS"
+                      ? "Đang sạc"
+                      : sessionStatusUpper === "COMPLETED"
+                          ? "Hoàn thành"
+                          : sessionStatusUpper === "FAILED"
+                              ? "Thất bại"
+                              : currentSession.status ?? "-"}
+                </span>
+                            </p>
+                        </div>
 
                         {currentSession?.initialSoc != null && (
-                            <div
-                                style={{
-                                    marginTop: 10,
-                                    padding: "10px 14px",
-                                    borderRadius: 10,
-                                    background: "rgba(0, 191, 166, 0.08)",
-                                    border: "1px solid rgba(0, 191, 166, 0.25)",
-                                    color: "#007f6f",
-                                    fontWeight: 700,
-                                }}
-                            >
+                            <div className="cs-badge cs-badge--soc">
                                 🔰 Pin đầu vào (SOC ban đầu): <b>{currentSession.initialSoc}%</b>
                             </div>
                         )}
 
                         {isFull100 && (
-                            <div
-                                style={{
-                                    marginTop: 10,
-                                    padding: "12px 14px",
-                                    borderRadius: 10,
-                                    background: "rgba(255, 152, 0, 0.12)",
-                                    border: "1px solid rgba(255, 152, 0, 0.35)",
-                                    color: "#b26a00",
-                                    fontWeight: 700,
-                                }}
-                            >
-                                ⚠️ Pin đã đầy 100%. Phiên sạc vẫn đang chạy để tính <b>phí thời gian sau khi đầy</b>. Hãy bấm <b>Dừng phiên sạc</b> để kết thúc và thanh toán.
+                            <div className="cs-badge cs-badge--full">
+                                ⚠️ Pin đã đầy 100%. Phiên sạc vẫn đang chạy để tính <b>phí thời gian sau khi đầy</b>. Hãy bấm{" "}
+                                <b>Dừng phiên sạc</b> để kết thúc và thanh toán.
                             </div>
                         )}
                     </div>
 
-                    <div
-                        className="quick-info-grid"
-                        style={{
-                            display: "grid",
-                            gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
-                            gap: "15px",
-                            marginBottom: "25px",
-                        }}
-                    >
-                        <div style={{ background: "#f8f9fa", padding: "15px", borderRadius: "10px", border: "1px solid #e0e0e0" }}>
-                            <div style={{ fontSize: "14px", color: "#666", marginBottom: "8px", display: "flex", alignItems: "center", gap: "6px" }}>
-                                🚗 Thông tin xe
-                            </div>
-                            <div style={{ fontSize: "18px", fontWeight: "600", color: "#333" }}>
-                                {currentSession.vehiclePlate ?? "-"}
-                            </div>
+                    <div className="cs-quick cs-section">
+                        <div className="cs-quickItem">
+                            <div className="cs-quickLabel">🚗 Thông tin xe</div>
+                            <div className="cs-quickValue">{currentSession.vehiclePlate ?? "-"}</div>
                         </div>
 
-                        <div style={{ background: "#f8f9fa", padding: "15px", borderRadius: "10px", border: "1px solid #e0e0e0" }}>
-                            <div style={{ fontSize: "14px", color: "#666", marginBottom: "8px", display: "flex", alignItems: "center", gap: "6px" }}>
-                                🏢 Thông tin trạm
-                            </div>
-                            <div style={{ fontSize: "18px", fontWeight: "600", color: "#333" }}>
-                                {currentSession.stationName ?? "-"}
-                            </div>
+                        <div className="cs-quickItem">
+                            <div className="cs-quickLabel">🏢 Thông tin trạm</div>
+                            <div className="cs-quickValue">{currentSession.stationName ?? "-"}</div>
                         </div>
 
-                        <div style={{ background: "#f8f9fa", padding: "15px", borderRadius: "10px", border: "1px solid #e0e0e0" }}>
-                            <div style={{ fontSize: "14px", color: "#666", marginBottom: "8px", display: "flex", alignItems: "center", gap: "6px" }}>
-                                ⏰ Bắt đầu
-                            </div>
-                            <div style={{ fontSize: "16px", fontWeight: "600", color: "#333" }}>
+                        <div className="cs-quickItem">
+                            <div className="cs-quickLabel">⏰ Bắt đầu</div>
+                            <div className="cs-quickValue">
                                 {currentSession.startTime
                                     ? new Date(currentSession.startTime).toLocaleString("vi-VN", {
                                         hour: "2-digit",
@@ -1150,66 +1245,47 @@ export default function ChargingSession() {
                             initialSoc={currentSession.initialSoc}
                             energyKWh={currentSession.energyKWh ?? 0}
                             capacity={batteryCapacity}
-                            isCharging={String(currentSession.status || "").toUpperCase() === "IN_PROGRESS"}
+                            isCharging={isInProgress}
                             virtualSoc={currentSession.virtualSoc}
                         />
                     )}
 
-                    <div
-                        className="info-card-grid"
-                        style={{
-                            display: "grid",
-                            gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))",
-                            gap: "15px",
-                            marginBottom: "30px",
-                        }}
-                    >
+                    <div className="cs-infoGrid cs-section">
                         <InfoCard icon="🔰" label="Pin đầu vào" value={currentSession.initialSoc ?? 0} unit="%" color="#00BFA6" />
-                        <InfoCard icon="⚡" label="Năng lượng đã sạc" value={(currentSession.energyKWh ?? 0).toFixed(2)} unit="kWh" color="#4caf50" />
-                        <InfoCard icon="⏱️" label="Thời lượng" value={(currentSession.durationMinutes ?? 0).toFixed(0)} unit="phút" color="#2196f3" />
+                        <InfoCard
+                            icon="⚡"
+                            label="Năng lượng đã sạc"
+                            value={(currentSession.energyKWh ?? 0).toFixed(2)}
+                            unit="kWh"
+                            color="#4caf50"
+                        />
+                        <InfoCard
+                            icon="⏱️"
+                            label="Thời lượng"
+                            value={(currentSession.durationMinutes ?? 0).toFixed(0)}
+                            unit="phút"
+                            color="#2196f3"
+                        />
                         <InfoCard icon="⚡" label="Công suất sạc" value={currentPower.toFixed(1)} unit="kW" color="#9c27b0" />
                     </div>
 
-                    <div style={{ marginTop: "30px", display: "flex", gap: "15px" }}>
-                        <button
-                            onClick={fetchCurrentSession}
-                            style={{
-                                padding: "12px 24px",
-                                background: "#00BFA6",
-                                color: "white",
-                                border: "none",
-                                borderRadius: "8px",
-                                fontSize: "16px",
-                                fontWeight: "600",
-                                cursor: "pointer",
-                            }}
-                        >
+                    <div className="cs-actions">
+                        <button onClick={fetchCurrentSession} className="cs-btn cs-btn--primary">
                             🔄 Làm mới
                         </button>
 
-                        {String(currentSession.status || "").toUpperCase() === "IN_PROGRESS" && (
-                            <button
-                                onClick={handleStopSession}
-                                disabled={stopping}
-                                style={{
-                                    padding: "12px 24px",
-                                    background: stopping ? "#ccc" : "#f44336",
-                                    color: "white",
-                                    border: "none",
-                                    borderRadius: "8px",
-                                    fontSize: "16px",
-                                    fontWeight: "600",
-                                    cursor: stopping ? "not-allowed" : "pointer",
-                                }}
-                            >
+                        {isInProgress && (
+                            <button onClick={handleStopSession} disabled={stopping} className="cs-btn cs-btn--danger">
                                 {stopping ? "Đang dừng..." : "🛑 Dừng phiên sạc"}
                             </button>
                         )}
                     </div>
                 </div>
             ) : (
-                <div style={{ background: "#f5f5f5", padding: "20px", borderRadius: "12px", textAlign: "center" }}>
-                    <p style={{ color: "#666" }}>Không có phiên sạc nào đang hoạt động</p>
+                <div className="cs-card" style={{ background: "#f5f5f5" }}>
+                    <p style={{ color: "#666", margin: 0, fontWeight: 700, textAlign: "center" }}>
+                        Không có phiên sạc nào đang hoạt động
+                    </p>
                 </div>
             )}
         </div>
