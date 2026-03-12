@@ -13,6 +13,7 @@ export default function DriverLayout() {
     paths.about,
     paths.login,
     paths.register,
+    paths.verify,
     paths.forgotPassword,
     paths.resetPassword,
     paths.rules,
