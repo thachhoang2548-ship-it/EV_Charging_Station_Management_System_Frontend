@@ -122,224 +122,67 @@ const syncSessionFromBackend = (backendData, currentState = {}) => {
 
 
 
-// Battery Progress Circle
-const BatteryProgressCircle = memo(function BatteryProgressCircle({
-                                                                      initialSoc,
-                                                                      energyKWh,
-                                                                      capacity,
-                                                                      isCharging,
-                                                                      virtualSoc,
-                                                                  }) {
-    const deltaPercent = (energyKWh / capacity) * 100;
-    const calculatedSoc = Math.min(initialSoc + deltaPercent, 100);
+// ========== SESSION PROGRESS BAR (replaces old BatteryProgressCircle) ==========
+const SessionProgressBar = memo(function SessionProgressBar({
+    initialSoc,
+    energyKWh,
+    capacity,
+    isCharging,
+    virtualSoc,
+}) {
+    const safeCapacity = capacity || 60;
+    const safeInitialSoc = initialSoc ?? 0;
+    const safeEnergy = energyKWh ?? 0;
+
+    const deltaPercent = (safeEnergy / safeCapacity) * 100;
+    const calculatedSoc = Math.min(safeInitialSoc + deltaPercent, 100);
     const currentSoc = virtualSoc ?? calculatedSoc;
     const isComplete = currentSoc >= 100;
-
-    const [animatedSoc, setAnimatedSoc] = useState(currentSoc);
-
-    useEffect(() => {
-        const diff = currentSoc - animatedSoc;
-        if (Math.abs(diff) < 0.1) {
-            setAnimatedSoc(currentSoc);
-            return;
-        }
-        const step = diff / 20;
-        const interval = setInterval(() => {
-            setAnimatedSoc((prev) => {
-                const next = prev + step;
-                if (
-                    (diff > 0 && next >= currentSoc) ||
-                    (diff < 0 && next <= currentSoc)
-                ) {
-                    clearInterval(interval);
-                    return currentSoc;
-                }
-                return next;
-            });
-        }, 50);
-        return () => clearInterval(interval);
-    }, [currentSoc, animatedSoc]);
-
-    const size = 240;
-    const strokeWidth = 16;
-    const radius = (size - strokeWidth) / 2;
-    const circumference = 2 * Math.PI * radius;
-    const offset = circumference - (animatedSoc / 100) * circumference;
-
-    const progressColor = isComplete ? "#2196f3" : "#00BFA6";
-    const trackColor = "#e0e0e0";
+    const displaySoc = Math.round(Math.min(Math.max(currentSoc, 0), 100));
 
     return (
-        <div
-            className="battery-progress-circle"
-            style={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                padding: "30px 20px",
-                background: "linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)",
-                borderRadius: "20px",
-                boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
-                margin: "0 auto 30px",
-                maxWidth: "400px",
-            }}
-        >
-            <div
-                style={{
-                    fontSize: "48px",
-                    marginBottom: "15px",
-                    animation:
-                        isCharging && !isComplete ? "pulse 2s ease-in-out infinite" : "none",
-                }}
-            >
-                🔋
-            </div>
-
-            <div style={{ position: "relative", marginBottom: "20px" }}>
-                <svg
-                    width={size}
-                    height={size}
-                    style={{
-                        transform: "rotate(-90deg)",
-                        filter: "drop-shadow(0 2px 8px rgba(0,191,166,0.3))",
-                    }}
-                >
-                    <circle
-                        cx={size / 2}
-                        cy={size / 2}
-                        r={radius}
-                        stroke={trackColor}
-                        strokeWidth={strokeWidth}
-                        fill="none"
-                    />
-                    <circle
-                        cx={size / 2}
-                        cy={size / 2}
-                        r={radius}
-                        stroke={progressColor}
-                        strokeWidth={strokeWidth}
-                        fill="none"
-                        strokeDasharray={circumference}
-                        strokeDashoffset={offset}
-                        strokeLinecap="round"
-                        style={{
-                            transition:
-                                "stroke-dashoffset 0.8s cubic-bezier(0.4, 0, 0.2, 1), stroke 0.3s ease",
-                        }}
-                    />
-                </svg>
-
-                <div
-                    style={{
-                        position: "absolute",
-                        top: "50%",
-                        left: "50%",
-                        transform: "translate(-50%, -50%)",
-                        textAlign: "center",
-                    }}
-                >
-                    <div
-                        style={{
-                            fontSize: "48px",
-                            fontWeight: "800",
-                            color: progressColor,
-                            lineHeight: "1",
-                            marginBottom: "5px",
-                        }}
-                    >
-                        {animatedSoc.toFixed(0)}%
-                    </div>
-                    <div
-                        style={{
-                            fontSize: "13px",
-                            color: "#666",
-                            fontWeight: "500",
-                            textTransform: "uppercase",
-                            letterSpacing: "0.5px",
-                        }}
-                    >
-                        Pin hiện tại
-                    </div>
+        <div className="cs-progress" role="progressbar" aria-valuenow={displaySoc} aria-valuemin={0} aria-valuemax={100}>
+            <div className="cs-progress-top">
+                <div className="cs-progress-info">
+                    {isCharging && !isComplete
+                        ? <BatteryCharging size={18} className="cs-pulse" />
+                        : <Battery size={18} />}
+                    <span>{isComplete ? "Pin đã đầy" : isCharging ? "Đang sạc..." : "Dung lượng pin"}</span>
                 </div>
+                <div className="cs-progress-pct">{displaySoc}%</div>
             </div>
-
-            <div
-                style={{
-                    textAlign: "center",
-                    fontSize: "15px",
-                    color: isComplete ? "#2196f3" : isCharging ? "#00BFA6" : "#666",
-                    fontWeight: "600",
-                    padding: "10px 20px",
-                    background: isComplete
-                        ? "rgba(33, 150, 243, 0.1)"
-                        : isCharging
-                            ? "rgba(0, 191, 166, 0.1)"
-                            : "rgba(0, 0, 0, 0.05)",
-                    borderRadius: "20px",
-                }}
-            >
-                {isComplete
-                    ? "✅ Pin đã đầy 100%"
-                    : isCharging
-                        ? "⚡ Đang sạc..."
-                        : "Dung lượng pin (ước tính)"}
+            <div className="cs-progress-track">
+                <div
+                    className={`cs-progress-fill${isComplete ? " cs-progress-complete" : ""}`}
+                    style={{ width: `${displaySoc}%` }}
+                />
             </div>
-
-            <style>{`
-        @keyframes pulse {
-          0%, 100% { transform: scale(1); opacity: 1; }
-          50% { transform: scale(1.1); opacity: 0.8; }
-        }
-      `}</style>
+            <div className="cs-progress-range">
+                <span>{safeInitialSoc}% (ban đầu)</span>
+                <span>100%</span>
+            </div>
         </div>
     );
 });
 
-const InfoCard = memo(function InfoCard({
-                                            icon,
-                                            label,
-                                            value,
-                                            color = "#00BFA6",
-                                            unit = "",
-                                        }) {
+// ========== STAT CARD (replaces old InfoCard) ==========
+const StatCard = memo(function StatCard({
+    icon: Icon,
+    label = "—",
+    value,
+    unit = "",
+    color = "green",
+}) {
+    const displayValue = value ?? "—";
     return (
-        <div
-            style={{
-                background: "white",
-                padding: "20px",
-                borderRadius: "12px",
-                boxShadow: "0 2px 12px rgba(0,0,0,0.06)",
-                textAlign: "center",
-                border: `2px solid ${color}15`,
-                transition: "transform 0.2s ease, box-shadow 0.2s ease",
-            }}
-            onMouseEnter={(e) => {
-                e.currentTarget.style.transform = "translateY(-3px)";
-                e.currentTarget.style.boxShadow = "0 4px 20px rgba(0,0,0,0.12)";
-            }}
-            onMouseLeave={(e) => {
-                e.currentTarget.style.transform = "translateY(0)";
-                e.currentTarget.style.boxShadow = "0 2px 12px rgba(0,0,0,0.06)";
-            }}
-        >
-            <div style={{ fontSize: "32px", marginBottom: "8px" }}>{icon}</div>
-            <div
-                style={{
-                    fontSize: "13px",
-                    color: "#666",
-                    marginBottom: "8px",
-                    fontWeight: "500",
-                }}
-            >
-                {label}
+        <div className="cs-stat-card">
+            <div className={`cs-stat-icon cs-stat-${color}`}>
+                {Icon ? <Icon size={18} /> : null}
             </div>
-            <div style={{ fontSize: "24px", fontWeight: "700", color }}>
-                {value}
-                {unit && (
-                    <span style={{ fontSize: "16px", fontWeight: "500", marginLeft: "4px" }}>
-            {unit}
-          </span>
-                )}
+            <div className="cs-stat-label">{label}</div>
+            <div className="cs-stat-value">
+                {displayValue}
+                {unit && <span className="cs-stat-unit">{unit}</span>}
             </div>
         </div>
     );
@@ -351,7 +194,7 @@ export default function ChargingSession() {
     const params = useParams();
 
     const [currentSession, setCurrentSession] = useState(null);
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
     const [stopping, setStopping] = useState(false);
     const [autoRedirected, setAutoRedirected] = useState(false);
     const [currentPower, setCurrentPower] = useState(0);
@@ -1090,7 +933,7 @@ export default function ChargingSession() {
                         <StatCard icon={Battery} label="Pin đầu vào" value={currentSession.initialSoc ?? 0} unit="%" color="green" />
                         <StatCard icon={Zap} label="Năng lượng đã sạc" value={(currentSession.energyKWh ?? 0).toFixed(2)} unit="kWh" color="emerald" />
                         <StatCard icon={Clock} label="Thời lượng" value={(currentSession.durationMinutes ?? 0).toFixed(0)} unit="phút" color="blue" />
-                        <StatCard icon={Gauge} label="Công suất sạc" value={currentPower.toFixed(1)} unit="kW" color="purple" />
+                        <StatCard icon={Gauge} label="Công suất sạc" value={(currentPower ?? 0).toFixed(1)} unit="kW" color="purple" />
                     </div>
 
                     {/* Actions */}

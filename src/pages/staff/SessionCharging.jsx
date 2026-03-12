@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import Nav from "react-bootstrap/Nav";
@@ -10,6 +10,7 @@ import paths from "../../path/paths.jsx";
 import { stationAPI } from "../../api/stationApi.js";
 import { staffStopSessionApi } from "../../api/staffApi.js";
 import { showConfirm } from '../../utils/alertUtils.js';
+import LiveSessionDrawer from "../../components/staff/LiveSessionDrawer.jsx";
 
 const POLL_MS = 50000; // 5 minutes
 
@@ -22,6 +23,21 @@ export default function SessionCharging() {
   const [activeTab, setActiveTab] = useState("ongoing");
   const pollingRef = useRef(null);
   const isFetchingRef = useRef(false);
+
+  // ── Live Session Drawer state ──
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [monitorSessionId, setMonitorSessionId] = useState(null);
+
+  const openMonitor = useCallback((sessionId, e) => {
+    e?.stopPropagation();
+    setMonitorSessionId(sessionId);
+    setDrawerOpen(true);
+  }, []);
+
+  const closeMonitor = useCallback(() => {
+    setDrawerOpen(false);
+    setMonitorSessionId(null);
+  }, []);
 
   const loadSessionsForStation = async (sid) => {
     if (!sid) return;
@@ -406,6 +422,7 @@ export default function SessionCharging() {
                         <td>
                           <ActionMenu
                             actions={[
+                              { label: "👁 Theo dõi", type: "info", onClick: (e) => openMonitor(sessionId, e) },
                               { label: "⏹ Dừng phiên", type: "danger", onClick: (e) => handleStopSession(sessionId, e) },
                             ]}
                           />
@@ -508,6 +525,13 @@ export default function SessionCharging() {
             ))}
         </div>
       </div>
+
+      {/* Live Session Drawer */}
+      <LiveSessionDrawer
+        isOpen={drawerOpen}
+        sessionId={monitorSessionId}
+        onClose={closeMonitor}
+      />
     </div>
   );
 }
