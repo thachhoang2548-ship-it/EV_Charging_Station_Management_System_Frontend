@@ -1,239 +1,275 @@
-.payment-success-container {
+/* ============================================================
+   PaymentSuccess.css — Payment Success Page (Redesigned)
+   Green brand #16a34a — prefix: ps-
+   ============================================================ */
+
+/* ── PAGE ── */
+.ps-page {
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  padding: 20px;
+  padding: 24px 16px;
+  background: linear-gradient(180deg, #f0fdf4 0%, #f8fafc 50%, #fff 100%);
+  font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
 }
 
-.payment-success-card {
-  background: white;
+/* ── CARD ── */
+.ps-card {
+  width: 100%;
+  max-width: 480px;
+  background: #fff;
   border-radius: 20px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-  padding: 50px;
-  max-width: 600px;
-  width: 100%;
-  text-align: center;
-  animation: slideUp 0.6s ease-out;
+  box-shadow: 0 8px 40px rgba(22,163,74,0.08), 0 2px 8px rgba(0,0,0,0.04);
+  overflow: hidden;
+  animation: ps-slideUp 0.5s ease-out;
+}
+@keyframes ps-slideUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Success Icon Animation */
-.success-icon-wrapper {
-  margin-bottom: 30px;
-}
-
-.success-icon {
-  width: 120px;
-  height: 120px;
-  margin: 0 auto;
-  position: relative;
-}
-
-.checkmark {
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  display: block;
-  stroke-width: 3;
-  stroke: #4caf50;
-  stroke-miterlimit: 10;
-  box-shadow: inset 0 0 0 #4caf50;
-  animation: fill 0.4s ease-in-out 0.4s forwards,
-    scale 0.3s ease-in-out 0.9s both;
-}
-
-.checkmark-circle {
-  stroke-dasharray: 166;
-  stroke-dashoffset: 166;
-  stroke-width: 3;
-  stroke-miterlimit: 10;
-  stroke: #4caf50;
-  fill: none;
-  animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
-}
-
-.checkmark-check {
-  transform-origin: 50% 50%;
-  stroke-dasharray: 48;
-  stroke-dashoffset: 48;
-  stroke-width: 3;
-  animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards;
-}
-
-@keyframes stroke {
-  100% {
-    stroke-dashoffset: 0;
-  }
-}
-
-@keyframes scale {
-  0%,
-  100% {
-    transform: none;
-  }
-  50% {
-    transform: scale3d(1.1, 1.1, 1);
-  }
-}
-
-@keyframes fill {
-  100% {
-    box-shadow: inset 0 0 0 60px #4caf50;
-  }
-}
-
-/* Title */
-.success-title {
-  font-size: 32px;
-  font-weight: 700;
-  color: #1a1a1a;
-  margin: 0 0 10px 0;
-}
-
-.success-subtitle {
-  font-size: 16px;
-  color: #666;
-  margin: 0 0 40px 0;
-}
-
-/* Payment Info Grid */
-.payment-info-grid {
-  background: #f8f9fa;
-  border-radius: 12px;
-  padding: 30px;
-  margin-bottom: 30px;
-  text-align: left;
-}
-
-.info-item {
+/* ── HEADER (green gradient) ── */
+.ps-header {
+  background: linear-gradient(135deg, #16a34a 0%, #15803d 40%, #166534 100%);
+  padding: 40px 24px 32px;
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
   align-items: center;
-  padding: 12px 0;
-  border-bottom: 1px solid #e0e0e0;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.ps-header::before,
+.ps-header::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.08;
+  background: #fff;
+}
+.ps-header::before { width: 180px; height: 180px; top: -50px; right: -30px; }
+.ps-header::after  { width: 120px; height: 120px; bottom: -40px; left: 20px; }
+
+/* ── CHECK ICON ── */
+.ps-icon-ring {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+  animation: ps-pop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s both;
+}
+@keyframes ps-pop {
+  from { transform: scale(0); }
+  to   { transform: scale(1); }
+}
+.ps-icon-inner {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #16a34a;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
 }
 
-.info-item:last-child {
-  border-bottom: none;
+/* ── HEADER TEXT ── */
+.ps-title {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #fff;
+  margin: 0 0 6px;
 }
-
-.info-label {
-  font-size: 14px;
-  color: #666;
+.ps-subtitle {
+  font-size: 0.84rem;
+  color: rgba(255,255,255,0.8);
+  margin: 0;
   font-weight: 500;
 }
 
-.info-value {
-  font-size: 14px;
-  color: #1a1a1a;
+/* ── BODY ── */
+.ps-body {
+  padding: 24px;
+}
+
+/* ── AMOUNT HIGHLIGHT ── */
+.ps-amount-card {
+  text-align: center;
+  padding: 20px;
+  background: #f0fdf4;
+  border-radius: 14px;
+  border: 1px solid #dcfce7;
+  margin-bottom: 20px;
+}
+.ps-amount-label {
+  font-size: 0.76rem;
+  color: #64748b;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+.ps-amount-value {
+  font-size: 1.6rem;
+  font-weight: 900;
+  color: #166534;
+}
+.ps-amount-currency {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #16a34a;
+  margin-left: 4px;
+}
+
+/* ── INFO ROWS ── */
+.ps-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin-bottom: 20px;
+}
+.ps-info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid #f8fafc;
+}
+.ps-info-row:last-child { border-bottom: none; }
+.ps-info-label {
+  font-size: 0.82rem;
+  color: #64748b;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.ps-info-value {
+  font-size: 0.84rem;
+  color: #1e293b;
   font-weight: 600;
   text-align: right;
-  max-width: 60%;
-  word-break: break-word;
 }
 
-.info-value.amount {
-  color: #4caf50;
-  font-size: 18px;
-  font-weight: 700;
+/* ── COUNTDOWN ── */
+.ps-countdown {
+  text-align: center;
+  padding: 12px 0;
+  margin-bottom: 16px;
+}
+.ps-countdown-text {
+  font-size: 0.8rem;
+  color: #94a3b8;
+  font-weight: 500;
+}
+.ps-countdown-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #f0fdf4;
+  color: #16a34a;
+  font-weight: 800;
+  font-size: 0.82rem;
+  margin: 0 4px;
+  border: 1.5px solid #dcfce7;
 }
 
-/* Action Buttons */
-.action-buttons {
-  display: flex;
-  gap: 15px;
-  margin-bottom: 30px;
-}
-
-.btn-primary,
-.btn-secondary {
-  flex: 1;
+/* ── BUTTONS ── */
+.ps-btn-primary {
+  width: 100%;
   padding: 14px 24px;
-  border-radius: 10px;
-  font-size: 15px;
-  font-weight: 600;
+  background: linear-gradient(135deg, #16a34a, #15803d);
   border: none;
+  border-radius: 12px;
+  color: #fff;
+  font-size: 0.92rem;
+  font-weight: 700;
   cursor: pointer;
-  transition: all 0.3s ease;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 14px rgba(22,163,74,0.25);
+  font-family: inherit;
+  margin-bottom: 10px;
 }
-
-.btn-primary {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-}
-
-.btn-primary:hover {
+.ps-btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 6px 20px rgba(22,163,74,0.35);
+}
+.ps-btn-secondary {
+  width: 100%;
+  padding: 12px 20px;
+  background: #fff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 12px;
+  color: #64748b;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 0.25s ease;
+  font-family: inherit;
+}
+.ps-btn-secondary:hover {
+  border-color: #cbd5e1;
+  background: #f8fafc;
 }
 
-.btn-secondary {
-  background: white;
-  color: #667eea;
-  border: 2px solid #667eea;
+/* ── FOOTER NOTE ── */
+.ps-footer-note {
+  text-align: center;
+  padding: 16px 24px;
+  border-top: 1px solid #f1f5f9;
+  font-size: 0.76rem;
+  color: #94a3b8;
+  font-weight: 500;
 }
 
-.btn-secondary:hover {
-  background: #667eea;
-  color: white;
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+/* ── LOADING ── */
+.ps-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 60px 24px;
+}
+.ps-spinner {
+  width: 36px;
+  height: 36px;
+  border: 4px solid #e2e8f0;
+  border-top-color: #16a34a;
+  border-radius: 50%;
+  animation: ps-spin 0.8s linear infinite;
+}
+@keyframes ps-spin {
+  to { transform: rotate(360deg); }
+}
+.ps-loading-text {
+  font-size: 0.85rem;
+  color: #94a3b8;
+  font-weight: 500;
 }
 
-/* Receipt Section */
-.receipt-section {
-  padding-top: 20px;
-  border-top: 1px solid #e0e0e0;
-}
-
-.receipt-text {
-  font-size: 14px;
-  color: #999;
-  margin: 0;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .payment-success-card {
-    padding: 30px 20px;
-  }
-
-  .success-title {
-    font-size: 24px;
-  }
-
-  .action-buttons {
-    flex-direction: column;
-  }
-
-  .payment-info-grid {
-    padding: 20px;
-  }
-
-  .info-item {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
-  }
-
-  .info-value {
-    max-width: 100%;
-    text-align: left;
-  }
+/* ── RESPONSIVE ── */
+@media (max-width: 480px) {
+  .ps-page { padding: 12px 8px; }
+  .ps-header { padding: 32px 20px 24px; }
+  .ps-title { font-size: 1.15rem; }
+  .ps-amount-value { font-size: 1.35rem; }
+  .ps-body { padding: 20px 16px; }
 }
