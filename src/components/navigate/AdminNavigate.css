@@ -20,6 +20,13 @@
   padding: 18px 16px;
   background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
   flex-shrink: 0;
+  text-decoration: none;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.navBrand:hover {
+  opacity: 0.88;
 }
 
 .navBrandIcon {
@@ -194,29 +201,55 @@
   gap: 6px;
 }
 
+/* Footer icon containers (for lucide-react icons) */
+.navFooterIcon {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.18s ease;
+}
+
+.navFooterIconGreen {
+  background: #f0fdf4;
+  color: #16a34a;
+}
+
+.navFooterIconRed {
+  background: #fef2f2;
+  color: #ef4444;
+}
+
 /* Home button in Driver sidebar footer */
 .navHomeBtn {
   width: 100%;
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 10px;
-  padding: 9px 12px;
+  padding: 9px 10px;
   border-radius: 8px;
   font-size: 13px;
   font-weight: 600;
   color: #16a34a;
-  background: #f0fdf4;
-  border: 1.5px solid #bbf7d0;
+  background: transparent;
+  border: none;
   text-decoration: none;
   transition: all 0.18s ease;
 }
 
 .navHomeBtn:hover {
-  background: #dcfce7;
-  border-color: #16a34a;
+  background: #f0fdf4;
   color: #15803d;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 10px rgba(22, 163, 74, 0.15);
+}
+
+.navHomeBtn:hover .navFooterIconGreen {
+  background: #16a34a;
+  color: #fff;
+  box-shadow: 0 4px 10px rgba(22, 163, 74, 0.25);
 }
 
 .navLogoutBtn {
@@ -224,14 +257,14 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  padding: 10px 12px;
+  gap: 10px;
+  padding: 9px 10px;
   background: transparent;
-  color: #ef4444;
-  border: 1.5px solid #fecaca;
+  color: #64748b;
+  border: none;
   border-radius: 8px;
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 500;
   cursor: pointer;
   transition: all 0.18s ease;
   font-family: inherit;
@@ -239,12 +272,16 @@
 
 .navLogoutBtn:hover:not(:disabled) {
   background: #fef2f2;
-  border-color: #ef4444;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 10px rgba(239, 68, 68, 0.15);
+  color: #ef4444;
 }
 
-.navLogoutBtn:active { transform: translateY(0); }
+.navLogoutBtn:hover:not(:disabled) .navFooterIconRed {
+  background: #ef4444;
+  color: #fff;
+  box-shadow: 0 4px 10px rgba(239, 68, 68, 0.2);
+}
+
+.navLogoutBtn:active { transform: scale(0.98); }
 
 .navLogoutBtn:disabled {
   opacity: 0.55;

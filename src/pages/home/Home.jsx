@@ -170,7 +170,7 @@ const Home = () => {
       <section className="tev-about-section">
         <div className="tev-container">
           <h2 className="tev-about-title">
-            Trạm EV - Được xây dựng từ thực tế,
+            EV Charge - Được xây dựng từ thực tế,
             <br />
             dành cho cộng đồng
           </h2>

@@ -1,13 +1,23 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import apiClient from "../../api/apiUrls.js";
 import paths from "../../path/paths.jsx";
+import {
+  CircleCheck, Receipt, CreditCard, Clock,
+  Hash, Building2, ArrowRight, Home
+} from "lucide-react";
 import "./PaymentSuccess.css";
+
+const AUTO_REDIRECT_SECONDS = 8;
 
 export default function PaymentSuccess() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const [loading, setLoading] = useState(true);
+  const [countdown, setCountdown] = useState(AUTO_REDIRECT_SECONDS);
+  const countdownRef = useRef(null);
+
   const [paymentInfo, setPaymentInfo] = useState({
     transactionId: "",
     amount: "",
@@ -18,10 +28,21 @@ export default function PaymentSuccess() {
     responseCode: "",
   });
 
+  // ── Format VNPay date (YYYYMMDDHHmmss → DD/MM/YYYY HH:mm) ──
+  const formatPayDate = (dateStr) => {
+    if (!dateStr || dateStr.length !== 14) return dateStr || "";
+    const y = dateStr.substring(0, 4);
+    const m = dateStr.substring(4, 6);
+    const d = dateStr.substring(6, 8);
+    const h = dateStr.substring(8, 10);
+    const min = dateStr.substring(10, 12);
+    return `${d}/${m}/${y} ${h}:${min}`;
+  };
+
+  // ── Fetch payment info ──
   useEffect(() => {
     const fetchPaymentInfo = async () => {
       try {
-        // Get payment info from URL params
         const invoiceIdParam = searchParams.get("invoiceId");
         const transactionIdParam = searchParams.get("transactionId");
         const transactionNo = searchParams.get("vnp_TransactionNo");
@@ -29,96 +50,48 @@ export default function PaymentSuccess() {
         const payDate = searchParams.get("vnp_PayDate");
         const responseCode = searchParams.get("vnp_ResponseCode");
 
-        // Debug: Log all URL params
-        console.log("=== VNPay Payment Success Params ===");
-        console.log("invoiceId:", invoiceIdParam);
-        console.log("transactionId:", transactionIdParam);
-        console.log("transactionNo:", transactionNo);
-        console.log("bankCode:", bankCode);
-        console.log("payDate:", payDate);
-        console.log("responseCode:", responseCode);
-
-        // Check if payment is successful
+        // Check if payment failed
         if (responseCode && responseCode !== "00") {
           toast.error("Thanh toán thất bại!");
-          navigate(paths.paymentFailed + `?vnp_ResponseCode=${responseCode}`);
+          navigate(paths.paymentFailed + `?vnp_ResponseCode=${responseCode}`, { replace: true });
           return;
         }
 
-        // Fetch transaction details from backend
         let finalAmount = "0";
         let finalOrderInfo = "";
         let finalTransactionId = transactionIdParam || "";
 
-        // 💾 Lấy thông tin thanh toán từ sessionStorage (được lưu từ Payment.jsx)
-        const pendingPaymentStr = sessionStorage.getItem("pendingPayment");
-        if (pendingPaymentStr) {
+        // 1) Try sessionStorage first
+        const pendingStr = sessionStorage.getItem("pendingPayment");
+        if (pendingStr) {
           try {
-            const pendingPayment = JSON.parse(pendingPaymentStr);
-            console.log("Pending payment from sessionStorage:", pendingPayment);
-
-            // Sử dụng số tiền từ sessionStorage
-            if (pendingPayment.amount) {
-              finalAmount = pendingPayment.amount.toLocaleString("vi-VN");
-              finalOrderInfo =
-                pendingPayment.orderInfo || `Hóa đơn #${invoiceIdParam}`;
-              console.log("Using amount from sessionStorage:", finalAmount);
+            const pending = JSON.parse(pendingStr);
+            if (pending.amount) {
+              finalAmount = pending.amount.toLocaleString("vi-VN");
+              finalOrderInfo = pending.orderInfo || `Hóa đơn #${invoiceIdParam}`;
             }
-
-            // Xóa thông tin sau khi đã sử dụng
             sessionStorage.removeItem("pendingPayment");
-          } catch (e) {
-            console.error("Error parsing pendingPayment:", e);
-          }
+          } catch (e) { /* ignore */ }
         }
 
-        // Fallback: Nếu không có trong sessionStorage, thử lấy từ API
+        // 2) Fallback: fetch from API
         if (finalAmount === "0" && transactionIdParam) {
           try {
-            console.log("Fetching transactions...");
-            const txResponse = await apiClient.get(`/api/driver/transactions`);
-            const transactions = txResponse.data || [];
-            console.log("All transactions:", transactions);
-            console.log(
-              "Looking for transactionId:",
-              parseInt(transactionIdParam)
-            );
-
-            const transaction = transactions.find(
-              (t) => t.transactionId === parseInt(transactionIdParam)
-            );
-
-            console.log("Found transaction:", transaction);
-
-            if (transaction) {
-              finalAmount = transaction.amount.toLocaleString("vi-VN");
-              finalOrderInfo =
-                transaction.description || `Hóa đơn #${invoiceIdParam}`;
-              console.log("Final amount from API:", finalAmount);
-              console.log("Final orderInfo:", finalOrderInfo);
-            } else {
-              console.warn(
-                "Transaction not found, trying to get from invoice..."
-              );
-              // Fallback: try to get invoice info
-              if (invoiceIdParam) {
-                try {
-                  const invoiceResponse = await apiClient.get(
-                    `/api/invoices/${invoiceIdParam}`
-                  );
-                  if (invoiceResponse.data) {
-                    finalAmount =
-                      invoiceResponse.data.amount.toLocaleString("vi-VN");
-                    finalOrderInfo = `Hóa đơn #${invoiceIdParam}`;
-                    console.log("Got amount from invoice:", finalAmount);
-                  }
-                } catch (invoiceError) {
-                  console.error("Error fetching invoice:", invoiceError);
-                }
+            const txRes = await apiClient.get(`/api/driver/transactions`);
+            const txs = txRes.data || [];
+            const tx = txs.find(t => t.transactionId === parseInt(transactionIdParam));
+            if (tx) {
+              finalAmount = tx.amount.toLocaleString("vi-VN");
+              finalOrderInfo = tx.description || `Hóa đơn #${invoiceIdParam}`;
+            } else if (invoiceIdParam) {
+              const invRes = await apiClient.get(`/api/invoices/${invoiceIdParam}`);
+              if (invRes.data) {
+                finalAmount = invRes.data.amount.toLocaleString("vi-VN");
+                finalOrderInfo = `Hóa đơn #${invoiceIdParam}`;
               }
             }
-          } catch (error) {
-            console.error("Error fetching transaction:", error);
+          } catch (err) {
+            console.error("Error fetching transaction:", err);
           }
         }
 
@@ -132,133 +105,146 @@ export default function PaymentSuccess() {
           responseCode: responseCode || "",
         });
 
-        // Show success toast
         toast.success("Thanh toán thành công!", { position: "top-center" });
       } catch (error) {
         console.error("Error in fetchPaymentInfo:", error);
         toast.error("Có lỗi khi tải thông tin thanh toán");
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchPaymentInfo();
   }, [searchParams, navigate]);
 
-  const formatPayDate = (dateStr) => {
-    // Format: YYYYMMDDHHmmss -> DD/MM/YYYY HH:mm:ss
-    if (dateStr.length !== 14) return dateStr;
+  // ── Auto-redirect countdown ──
+  useEffect(() => {
+    if (loading) return;
 
-    const year = dateStr.substring(0, 4);
-    const month = dateStr.substring(4, 6);
-    const day = dateStr.substring(6, 8);
-    const hour = dateStr.substring(8, 10);
-    const minute = dateStr.substring(10, 12);
-    const second = dateStr.substring(12, 14);
+    countdownRef.current = setInterval(() => {
+      setCountdown(prev => {
+        if (prev <= 1) {
+          clearInterval(countdownRef.current);
+          navigate(paths.transactionHistory, { replace: true });
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
 
-    return `${day}/${month}/${year} ${hour}:${minute}:${second}`;
+    return () => {
+      if (countdownRef.current) clearInterval(countdownRef.current);
+    };
+  }, [loading, navigate]);
+
+  // ── Navigation handlers ──
+  const goToTransactions = () => {
+    if (countdownRef.current) clearInterval(countdownRef.current);
+    navigate(paths.transactionHistory, { replace: true });
   };
 
-  const handleGoToTransactionHistory = () => {
-    navigate(paths.transactionHistory);
+  const goToHome = () => {
+    if (countdownRef.current) clearInterval(countdownRef.current);
+    navigate(paths.home, { replace: true });
   };
 
-  const handleGoToHome = () => {
-    navigate(paths.home);
-  };
-
-  return (
-    <div className="payment-success-container">
-      <div className="payment-success-card">
-        {/* Success Icon */}
-        <div className="success-icon-wrapper">
-          <div className="success-icon">
-            <svg viewBox="0 0 52 52" className="checkmark">
-              <circle
-                cx="26"
-                cy="26"
-                r="25"
-                fill="none"
-                className="checkmark-circle"
-              />
-              <path
-                fill="none"
-                d="M14.1 27.2l7.1 7.2 16.7-16.8"
-                className="checkmark-check"
-              />
-            </svg>
+  // ── Loading state ──
+  if (loading) {
+    return (
+      <div className="ps-page">
+        <div className="ps-card">
+          <div className="ps-loading">
+            <div className="ps-spinner" />
+            <span className="ps-loading-text">Đang xác nhận thanh toán...</span>
           </div>
         </div>
+      </div>
+    );
+  }
 
-        {/* Title */}
-        <h1 className="success-title">Thanh Toán Thành Công!</h1>
-        <p className="success-subtitle">
-          Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi
-        </p>
-
-        {/* Payment Info */}
-        <div className="payment-info-grid">
-          {paymentInfo.transactionId && (
-            <div className="info-item">
-              <span className="info-label">Mã giao dịch:</span>
-              <span className="info-value">{paymentInfo.transactionId}</span>
+  return (
+    <div className="ps-page">
+      <div className="ps-card">
+        {/* ── Header ── */}
+        <div className="ps-header">
+          <div className="ps-icon-ring">
+            <div className="ps-icon-inner">
+              <CircleCheck size={28} strokeWidth={2.5} />
             </div>
-          )}
-
-          {paymentInfo.amount !== "" && (
-            <div className="info-item">
-              <span className="info-label">Số tiền:</span>
-              <span className="info-value amount">
-                {paymentInfo.amount} VND
-              </span>
-            </div>
-          )}
-
-          {paymentInfo.orderInfo && (
-            <div className="info-item">
-              <span className="info-label">Nội dung:</span>
-              <span className="info-value">{paymentInfo.orderInfo}</span>
-            </div>
-          )}
-
-          {paymentInfo.transactionNo && (
-            <div className="info-item">
-              <span className="info-label">Mã giao dịch VNPay:</span>
-              <span className="info-value">{paymentInfo.transactionNo}</span>
-            </div>
-          )}
-
-          {paymentInfo.bankCode && (
-            <div className="info-item">
-              <span className="info-label">Ngân hàng:</span>
-              <span className="info-value">{paymentInfo.bankCode}</span>
-            </div>
-          )}
-
-          {paymentInfo.payDate && (
-            <div className="info-item">
-              <span className="info-label">Thời gian:</span>
-              <span className="info-value">{paymentInfo.payDate}</span>
-            </div>
-          )}
+          </div>
+          <h1 className="ps-title">Thanh toán thành công!</h1>
+          <p className="ps-subtitle">Cảm ơn bạn đã sử dụng dịch vụ EVCharge</p>
         </div>
 
-        {/* Actions */}
-        <div className="action-buttons">
-          <button
-            className="btn-primary"
-            onClick={handleGoToTransactionHistory}
-          >
-            📊 Xem Lịch Sử Giao Dịch
+        {/* ── Body ── */}
+        <div className="ps-body">
+          {/* Amount highlight */}
+          {paymentInfo.amount && paymentInfo.amount !== "0" && (
+            <div className="ps-amount-card">
+              <div className="ps-amount-label">Số tiền thanh toán</div>
+              <div className="ps-amount-value">
+                {paymentInfo.amount}
+                <span className="ps-amount-currency">VND</span>
+              </div>
+            </div>
+          )}
+
+          {/* Info rows */}
+          <div className="ps-info">
+            {paymentInfo.transactionId && (
+              <div className="ps-info-row">
+                <span className="ps-info-label"><Hash size={14} /> Mã giao dịch</span>
+                <span className="ps-info-value">{paymentInfo.transactionId}</span>
+              </div>
+            )}
+            {paymentInfo.orderInfo && (
+              <div className="ps-info-row">
+                <span className="ps-info-label"><Receipt size={14} /> Nội dung</span>
+                <span className="ps-info-value">{paymentInfo.orderInfo}</span>
+              </div>
+            )}
+            {paymentInfo.transactionNo && (
+              <div className="ps-info-row">
+                <span className="ps-info-label"><CreditCard size={14} /> Mã VNPay</span>
+                <span className="ps-info-value">{paymentInfo.transactionNo}</span>
+              </div>
+            )}
+            {paymentInfo.bankCode && (
+              <div className="ps-info-row">
+                <span className="ps-info-label"><Building2 size={14} /> Ngân hàng</span>
+                <span className="ps-info-value">{paymentInfo.bankCode}</span>
+              </div>
+            )}
+            {paymentInfo.payDate && (
+              <div className="ps-info-row">
+                <span className="ps-info-label"><Clock size={14} /> Thời gian</span>
+                <span className="ps-info-value">{paymentInfo.payDate}</span>
+              </div>
+            )}
+          </div>
+
+          {/* Countdown */}
+          <div className="ps-countdown">
+            <span className="ps-countdown-text">
+              Tự động chuyển hướng sau <span className="ps-countdown-num">{countdown}</span> giây
+            </span>
+          </div>
+
+          {/* Buttons */}
+          <button className="ps-btn-primary" onClick={goToTransactions}>
+            <Receipt size={16} />
+            Xem lịch sử giao dịch
+            <ArrowRight size={16} />
           </button>
-          <button className="btn-secondary" onClick={handleGoToHome}>
-            🏠 Về Trang Chủ
+          <button className="ps-btn-secondary" onClick={goToHome}>
+            <Home size={16} />
+            Về trang chủ
           </button>
         </div>
 
-        {/* Download Receipt */}
-        <div className="receipt-section">
-          <p className="receipt-text">
-            Biên lai thanh toán đã được lưu vào lịch sử giao dịch
-          </p>
+        {/* Footer */}
+        <div className="ps-footer-note">
+          Biên lai thanh toán đã được lưu vào lịch sử giao dịch của bạn
         </div>
       </div>
     </div>
