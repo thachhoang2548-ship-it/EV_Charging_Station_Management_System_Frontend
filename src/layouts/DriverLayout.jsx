@@ -2,6 +2,7 @@ import AppNavigation from "../components/navigate/DriverNavigate.jsx";
 import { useState, useEffect } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import HomeNavbar from "../components/HomeNavbar/HomeNavbar.jsx";
+import ErrorBoundary from "../components/ErrorBoundary.jsx";
 import paths from "../path/paths.jsx";
 import "./DriverLayout.css";
 
@@ -31,7 +32,9 @@ export default function DriverLayout() {
         </header>
 
         <main className="driver-layout-main">
-          <Outlet />
+          <ErrorBoundary>
+            <Outlet />
+          </ErrorBoundary>
         </main>
       </div>
     );
@@ -42,7 +45,9 @@ export default function DriverLayout() {
     return (
       <div className="driver-layout-mobile">
         <main className="driver-layout-main">
-          <Outlet />
+          <ErrorBoundary>
+            <Outlet />
+          </ErrorBoundary>
         </main>
 
         <footer className="driver-layout-footer">
@@ -70,7 +75,9 @@ export default function DriverLayout() {
       <div className="driver-layout-auth">
         <HomeNavbar />
         <main className="driver-layout-auth-main">
-          <Outlet />
+          <ErrorBoundary>
+            <Outlet />
+          </ErrorBoundary>
         </main>
       </div>
     );

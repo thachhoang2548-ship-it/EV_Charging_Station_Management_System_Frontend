@@ -1,0 +1,272 @@
+/* ============================================================
+   LiveChargingMonitor.css — Shared live session monitor
+   Green brand #16a34a — prefix: lcm-
+   ============================================================ */
+
+/* ── WRAPPER ── */
+.lcm-monitor {
+  font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+/* ── HEADER ── */
+.lcm-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 0;
+  margin-bottom: 16px;
+  border-bottom: 1px solid #f1f5f9;
+}
+.lcm-header-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #16a34a, #22c55e);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  flex-shrink: 0;
+}
+.lcm-header-info {
+  flex: 1;
+  min-width: 0;
+}
+.lcm-station-name {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0 0 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.lcm-session-id {
+  font-size: 0.76rem;
+  color: #94a3b8;
+  font-weight: 500;
+}
+.lcm-status-badge {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  white-space: nowrap;
+  flex-shrink: 0;
+  background: rgba(22,163,74,0.12);
+  color: #16a34a;
+  animation: lcm-pulse 2s ease-in-out infinite;
+}
+@keyframes lcm-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.65; }
+}
+
+/* ── PROGRESS BAR ── */
+.lcm-progress {
+  padding: 20px 0;
+}
+.lcm-progress-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.lcm-progress-info {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: #334155;
+}
+.lcm-progress-pct {
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: #166534;
+}
+.lcm-progress-track {
+  width: 100%;
+  height: 14px;
+  background: #e2e8f0;
+  border-radius: 10px;
+  overflow: hidden;
+}
+.lcm-progress-fill {
+  height: 100%;
+  border-radius: 10px;
+  background: linear-gradient(90deg, #16a34a, #22c55e);
+  transition: width 1s ease;
+  position: relative;
+}
+.lcm-progress-fill::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 10px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  animation: lcm-shimmer 2s ease-in-out infinite;
+}
+@keyframes lcm-shimmer {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+.lcm-progress-complete {
+  background: linear-gradient(90deg, #16a34a, #15803d) !important;
+}
+.lcm-progress-complete::after { display: none; }
+.lcm-progress-range {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 6px;
+  font-size: 0.72rem;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+/* ── STAT GRID ── */
+.lcm-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 16px;
+}
+.lcm-stat-card {
+  background: #f8fafc;
+  border-radius: 14px;
+  padding: 14px 16px;
+  border: 1px solid #f1f5f9;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.lcm-stat-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(0,0,0,0.06);
+}
+.lcm-stat-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  margin-bottom: 8px;
+}
+.lcm-stat-green  { background: linear-gradient(135deg, #16a34a, #22c55e); }
+.lcm-stat-blue   { background: linear-gradient(135deg, #2563eb, #3b82f6); }
+.lcm-stat-orange { background: linear-gradient(135deg, #ea580c, #f97316); }
+.lcm-stat-amber  { background: linear-gradient(135deg, #d97706, #f59e0b); }
+.lcm-stat-label {
+  font-size: 0.74rem;
+  color: #94a3b8;
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+.lcm-stat-value {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #1e293b;
+}
+.lcm-stat-unit {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #64748b;
+  margin-left: 3px;
+}
+
+/* ── META ROWS ── */
+.lcm-meta {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #f1f5f9;
+}
+.lcm-meta-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #f8fafc;
+}
+.lcm-meta-row:last-child { border-bottom: none; }
+.lcm-meta-label {
+  font-size: 0.8rem;
+  color: #64748b;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.lcm-meta-value {
+  font-size: 0.84rem;
+  color: #1e293b;
+  font-weight: 600;
+}
+
+/* ── LOADING ── */
+.lcm-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+  gap: 14px;
+}
+.lcm-spinner {
+  width: 36px;
+  height: 36px;
+  border: 4px solid #e2e8f0;
+  border-top-color: #16a34a;
+  border-radius: 50%;
+  animation: lcm-spin 0.8s linear infinite;
+}
+@keyframes lcm-spin {
+  to { transform: rotate(360deg); }
+}
+.lcm-loading-text {
+  font-size: 0.85rem;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+/* ── ERROR ── */
+.lcm-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 24px;
+  text-align: center;
+  gap: 12px;
+}
+.lcm-error-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: #fef2f2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ef4444;
+}
+.lcm-error-text {
+  font-size: 0.88rem;
+  color: #64748b;
+  font-weight: 500;
+}
+
+/* ── LIVE DOT ── */
+.lcm-live-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #16a34a;
+  margin-right: 6px;
+  animation: lcm-pulse 1.5s ease-in-out infinite;
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 480px) {
+  .lcm-stats { grid-template-columns: 1fr; }
+  .lcm-progress-pct { font-size: 1.2rem; }
+  .lcm-stat-value { font-size: 1rem; }
+}
