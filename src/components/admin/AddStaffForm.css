@@ -278,3 +278,30 @@
     width: 100%;
   }
 }
+
+/* ===== FIX: Table bên trong modal ===== */
+/* Override sticky top: 90px (dùng cho header trang) → top: 0 khi trong modal */
+.form-container .custom-table thead th {
+  position: sticky;
+  top: 0 !important;
+  z-index: 10;
+  white-space: nowrap;
+}
+
+/* Tất cả td trong modal không xuống dòng, tự rộng theo nội dung */
+.form-container .custom-table tbody td {
+  white-space: nowrap;
+}
+
+/* Bảng dùng table-layout: auto để cột tự co giãn theo nội dung */
+.form-container .custom-table {
+  table-layout: auto;
+  width: max-content;
+  min-width: 100%;
+}
+
+/* Wrapper cho phép scroll ngang */
+.form-container .form-section > div {
+  overflow-x: auto;
+  max-width: 100%;
+}
