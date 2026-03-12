@@ -1,77 +1,120 @@
 /* ============================================================
-   HEADER — Admin / Staff page header
-   Green theme matching homepage
+   HEADER — Admin / Staff / Driver page header
+   Green theme #16a34a
    ============================================================ */
 
 .header-section {
-  height: 68px;
+  height: 64px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 28px;
+  padding: 0 24px;
   background: #ffffff;
   border-bottom: 1px solid #e2e8f0;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
-  margin-bottom: 0;
-  animation: headerSlideDown 0.4s ease-out;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
   flex-shrink: 0;
+  animation: headerSlideDown 0.4s ease-out;
 }
 
 @keyframes headerSlideDown {
-  from { opacity: 0; transform: translateY(-12px); }
+  from { opacity: 0; transform: translateY(-8px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
 .header-left {
   display: flex;
   align-items: center;
-  gap: 12px;
 }
 
-.header-left img {
-  width: 36px;
-  height: 36px;
-  object-fit: contain;
-  filter: invert(39%) sepia(98%) saturate(400%) hue-rotate(100deg) brightness(90%);
-  transition: transform 0.3s ease;
-}
-
-.header-left img:hover {
-  transform: scale(1.1) rotate(5deg);
-}
-
+/* ── Right: User widget ── */
 .header-right {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 12px;
   margin-left: auto;
 }
 
-.header-right img {
-  width: 32px;
-  height: 32px;
-  object-fit: contain;
-  border-radius: 50%;
-  border: 2px solid #e2e8f0;
+/* Change password button */
+.hdr-change-pw {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  border: 1.5px solid #e2e8f0;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #64748b;
   cursor: pointer;
   transition: all 0.2s ease;
-  padding: 2px;
 }
-
-.header-right img:hover {
+.hdr-change-pw:hover {
   border-color: #16a34a;
-  transform: scale(1.08);
-  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.15);
-}
-
-.header-section h1 {
-  color: #1e293b;
-  margin: 0;
-  font-size: 15px;
-  font-weight: 500;
-  letter-spacing: 0.1px;
-}
-
-.header-section h1 strong {
   color: #16a34a;
+  background: #f0fdf4;
+}
+
+/* ── User widget (avatar + text) ── */
+.hdr-user-widget {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 5px 14px 5px 5px;
+  background: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 50px;
+  transition: border-color 0.2s;
+}
+
+/* Avatar image */
+.hdr-avatar-img {
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #dcfce7;
+  flex-shrink: 0;
+}
+
+/* Fallback: initial letter */
+.hdr-avatar-initial {
+  border-radius: 50%;
+  background: linear-gradient(135deg, #16a34a, #15803d);
+  color: #ffffff;
+  font-weight: 800;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(22,163,74,0.2);
+}
+
+/* User text */
+.hdr-user-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  line-height: 1.2;
+}
+.hdr-user-name {
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: #1e293b;
+  white-space: nowrap;
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.hdr-user-role {
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: #16a34a;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+/* ══ RESPONSIVE ══ */
+@media (max-width: 480px) {
+  .header-section { padding: 0 14px; }
+  .hdr-user-text { display: none; }
+  .hdr-user-widget { padding: 4px; border-radius: 50%; }
 }
