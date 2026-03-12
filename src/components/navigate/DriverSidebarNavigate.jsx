@@ -1,9 +1,9 @@
-import { NavLink, useLocation, useNavigate } from "react-router-dom";
+import { NavLink, Link, useLocation, useNavigate } from "react-router-dom";
 import { useLogout } from "../../hooks/useAuth.js";
 import paths from "../../path/paths.jsx";
-import "./AdminNavigate.css"; // Dùng lại CSS giống Admin/Staff
+import "./AdminNavigate.css";
 
-// Icons — dùng lại từ admin/staff
+// Icons
 import dashboardIcon from "../../assets/icon/admin/ad_dashboard.png";
 import stationIcon   from "../../assets/icon/admin/ad_charging-station.png";
 import chargingIcon  from "../../assets/icon/admin/charger_ad.png";
@@ -12,6 +12,7 @@ import transactionIcon from "../../assets/icon/staff/payment-method.png";
 import notifIcon     from "../../assets/icon/admin/statistic.png";
 import profileIcon   from "../../assets/icon/admin/manage_user.png";
 import EVLogoIcon from "../logo/EVLogoIcon.jsx";
+import { LogOut } from "lucide-react";
 
 const NAV_ITEMS = [
   { path: paths.guide,           icon: dashboardIcon,   label: "Hướng dẫn sử dụng" },
@@ -35,14 +36,14 @@ export default function DriverSidebarNavigate() {
 
   return (
     <div className="navContainer">
-      {/* ── Brand Header ── */}
-      <div className="navBrand">
+      {/* ── Brand Header — clickable, links to Home ── */}
+      <Link to={paths.home} className="navBrand" title="Về trang chủ">
         <div className="navBrandIcon"><EVLogoIcon className="navBrandIconSvg" strokeWidth={2.5} /></div>
         <div className="navBrandText">
           <span className="navBrandName">EV<span>Charge</span></span>
           <span className="navBrandRole">Driver Portal</span>
         </div>
-      </div>
+      </Link>
 
       <div className="navDivider" />
 
@@ -66,23 +67,18 @@ export default function DriverSidebarNavigate() {
         })}
       </div>
 
-      {/* ── Footer / Logout ── */}
+      {/* ── Footer ── */}
       <div className="navFooter">
-        <NavLink
-          to={paths.home}
-          className="navItem navHomeBtn"
-          title="Về trang chủ"
-          end
-        >
-          <span className="navIcon">🏠</span>
-          <span className="navLabel">Trang chủ</span>
-        </NavLink>
         <button
           className="navLogoutBtn"
           onClick={handleLogout}
           disabled={loading}
+          title="Đăng xuất"
         >
-          {loading ? "Đang đăng xuất..." : "🚪 Đăng xuất"}
+          <span className="navFooterIcon navFooterIconRed">
+            <LogOut size={16} />
+          </span>
+          <span className="navLabel">{loading ? "Đang đăng xuất..." : "Đăng xuất"}</span>
         </button>
       </div>
     </div>

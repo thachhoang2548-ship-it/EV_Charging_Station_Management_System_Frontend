@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState, useCallback } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 import apiClient from "../../api/apiUrls.js";
+import paths from "../../path/paths.jsx";
 import {
   Receipt, MapPin, Clock, Zap, Battery, CreditCard,
   Wallet, Landmark, CircleCheck, AlertTriangle, Gift, Check, Home
@@ -463,7 +464,9 @@ export default function Payment() {
 
         setTimeout(() => {
           setPaymentCompleted(true);
-          navigate("/");
+          const params = new URLSearchParams();
+          if (invoiceId) params.set("invoiceId", invoiceId);
+          navigate(`${paths.paymentSuccess}?${params.toString()}`, { replace: true });
         }, 1500);
 
         return;

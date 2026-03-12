@@ -1,5 +1,7 @@
 /* ============================================================
-   HOME NAVBAR — Extracted from Home.css
+   HOME NAVBAR — Redesigned
+   3-part flex: Logo | Center Nav | Auth/User
+   Green theme #16a34a
    ============================================================ */
 
 .tev-nav {
@@ -8,12 +10,13 @@
   left: 0;
   right: 0;
   z-index: 999;
-  font-family: 'Inter', 'SVN-Gilroy', 'Segoe UI', sans-serif;
+  font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
   font-size: 16px;
   line-height: 1.5;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(12px);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.07);
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
   height: 64px;
 }
 
@@ -24,10 +27,9 @@
   height: 100%;
   display: flex;
   align-items: center;
-  gap: 40px;
 }
 
-/* Logo */
+/* ══════════════ LEFT: LOGO ══════════════ */
 .tev-logo {
   display: flex;
   align-items: center;
@@ -35,7 +37,9 @@
   cursor: pointer;
   flex-shrink: 0;
   text-decoration: none;
+  transition: opacity 0.2s;
 }
+.tev-logo:hover { opacity: 0.85; }
 .tev-logo-icon {
   width: 36px;
   height: 36px;
@@ -44,7 +48,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
+  color: #fff;
 }
 .tev-logo-icon svg { width: 20px; height: 20px; }
 .tev-logo-text {
@@ -55,17 +59,18 @@
 }
 .tev-logo-text span { color: #16a34a; }
 
-/* Nav links */
+/* ══════════════ CENTER: NAV LINKS ══════════════ */
 .tev-nav-links {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 4px;
   flex: 1;
 }
 .tev-nav-link {
-  padding: 8px 14px;
+  padding: 8px 16px;
   border-radius: 8px;
-  font-size: 0.92rem;
+  font-size: 0.9rem;
   font-weight: 500;
   color: #475569;
   text-decoration: none;
@@ -73,99 +78,263 @@
   cursor: pointer;
   background: none;
   border: none;
+  white-space: nowrap;
 }
-.tev-nav-link:hover,
+.tev-nav-link:hover { background: #f0fdf4; color: #16a34a; }
 .tev-nav-link.active {
   background: #f0fdf4;
   color: #16a34a;
+  font-weight: 600;
 }
 
-/* Nav action buttons */
+/* Mobile-only actions (hidden on desktop) */
+.tev-nav-mobile-actions { display: none; }
+
+/* ══════════════ RIGHT: AUTH / USER ══════════════ */
 .tev-nav-actions {
   display: flex;
   align-items: center;
   gap: 10px;
   flex-shrink: 0;
 }
+
+/* Guest buttons */
 .tev-btn-ghost {
-  padding: 9px 18px;
+  padding: 8px 18px;
   background: transparent;
   border: none;
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   font-weight: 600;
   color: #475569;
   cursor: pointer;
   border-radius: 8px;
   transition: all 0.2s;
+  white-space: nowrap;
+  font-family: inherit;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
 }
 .tev-btn-ghost:hover { background: #f8fafc; color: #1e293b; }
 
 .tev-btn-primary {
-  padding: 9px 20px;
+  padding: 8px 20px;
   background: #16a34a;
   border: none;
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   font-weight: 600;
   color: #fff;
   cursor: pointer;
   border-radius: 8px;
   transition: all 0.2s;
   white-space: nowrap;
+  font-family: inherit;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
 }
 .tev-btn-primary:hover {
   background: #15803d;
   transform: translateY(-1px);
-  box-shadow: 0 4px 14px rgba(22, 163, 74, 0.35);
+  box-shadow: 0 4px 14px rgba(22, 163, 74, 0.3);
 }
 
-/* ============================================================
-   RESPONSIVE
-   ============================================================ */
+/* ══════════════ USER DROPDOWN MENU ══════════════ */
+.tev-user-menu {
+  position: relative;
+}
+.tev-user-trigger {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 12px 5px 5px;
+  background: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+.tev-user-trigger:hover,
+.tev-user-trigger.open {
+  border-color: #16a34a;
+  background: #f0fdf4;
+}
+.tev-user-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #dcfce7;
+}
+.tev-user-name {
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: #1e293b;
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.tev-chevron {
+  color: #94a3b8;
+  transition: transform 0.25s ease;
+  flex-shrink: 0;
+}
+.tev-chevron.rotated { transform: rotate(180deg); }
 
-/* Hamburger button — hidden on desktop */
+/* Dropdown panel */
+.tev-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 260px;
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.1), 0 2px 8px rgba(0,0,0,0.04);
+  border: 1px solid #f1f5f9;
+  padding: 6px;
+  animation: tevDropIn 0.2s ease-out;
+  z-index: 1000;
+}
+@keyframes tevDropIn {
+  from { opacity: 0; transform: translateY(-8px) scale(0.96); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.tev-dropdown-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 12px 10px;
+}
+.tev-dropdown-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #dcfce7;
+}
+.tev-dropdown-name {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #1e293b;
+}
+.tev-dropdown-role {
+  font-size: 0.72rem;
+  color: #16a34a;
+  font-weight: 600;
+  background: #f0fdf4;
+  padding: 1px 8px;
+  border-radius: 10px;
+  display: inline-block;
+  margin-top: 2px;
+}
+.tev-dropdown-divider {
+  height: 1px;
+  background: #f1f5f9;
+  margin: 4px 8px;
+}
+
+/* Dropdown items */
+.tev-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 12px;
+  background: transparent;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.84rem;
+  font-weight: 500;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: inherit;
+  text-align: left;
+}
+.tev-dropdown-item:hover {
+  background: #f8fafc;
+  color: #1e293b;
+}
+.tev-dropdown-item.highlight {
+  color: #16a34a;
+  font-weight: 600;
+}
+.tev-dropdown-item.highlight:hover {
+  background: #f0fdf4;
+  color: #15803d;
+}
+.tev-dropdown-item.logout {
+  color: #ef4444;
+}
+.tev-dropdown-item.logout:hover {
+  background: #fef2f2;
+  color: #dc2626;
+}
+.tev-dropdown-item:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* ══════════════ HAMBURGER (mobile only) ══════════════ */
 .tev-hamburger {
   display: none;
-  flex-direction: column;
+  align-items: center;
   justify-content: center;
-  gap: 5px;
   width: 36px;
   height: 36px;
   background: transparent;
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  border: 1px solid #e2e8f0;
   border-radius: 8px;
   cursor: pointer;
-  padding: 7px 8px;
+  padding: 0;
   transition: border-color 0.2s;
   flex-shrink: 0;
+  color: #374151;
 }
-.tev-hamburger:hover { border-color: #16a34a; }
-.tev-hamburger span {
-  display: block;
+.tev-hamburger:hover { border-color: #16a34a; color: #16a34a; }
+
+/* Mobile logout button */
+.tev-mobile-logout {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
   width: 100%;
-  height: 2px;
-  background: #374151;
-  border-radius: 2px;
-  transition: transform 0.25s ease, opacity 0.25s ease;
-  transform-origin: center;
+  padding: 11px 20px;
+  border: 1.5px solid #fecaca;
+  border-radius: 10px;
+  background: transparent;
+  color: #ef4444;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.2s;
+  margin-top: 4px;
 }
-/* X animation when open */
-.tev-hamburger.active span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
-.tev-hamburger.active span:nth-child(2) { opacity: 0; transform: scaleX(0); }
-.tev-hamburger.active span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+.tev-mobile-logout:hover { background: #fef2f2; }
+.tev-mobile-logout:disabled { opacity: 0.55; cursor: not-allowed; }
 
-/* Mobile action buttons inside dropdown — hidden on desktop */
-.tev-nav-mobile-actions { display: none; }
-
+/* ══════════════ RESPONSIVE ══════════════ */
 @media (max-width: 900px) {
   .tev-nav-links { gap: 0; }
   .tev-nav-link { padding: 7px 10px; font-size: 0.85rem; }
+  .tev-user-name { display: none; }
+  .tev-chevron { display: none; }
+  .tev-user-trigger { padding: 4px; border-radius: 50%; }
 }
 
 @media (max-width: 768px) {
-  /* Show hamburger, hide desktop action buttons */
+  /* Show hamburger */
   .tev-hamburger { display: flex; }
+
+  /* Hide desktop buttons & user menu on mobile */
   .tev-nav-actions .tev-btn-ghost,
-  .tev-nav-actions .tev-btn-primary { display: none; }
+  .tev-nav-actions .tev-btn-primary,
+  .tev-nav-actions .tev-user-menu { display: none; }
 
   /* Dropdown nav */
   .tev-nav-links {
@@ -203,7 +372,7 @@
   }
   .tev-nav-link:last-of-type { border-bottom: none; }
 
-  /* Action buttons inside dropdown */
+  /* Mobile actions */
   .tev-nav-mobile-actions {
     display: flex;
     flex-direction: column;
@@ -216,12 +385,10 @@
   .tev-nav-mobile-actions .tev-btn-primary {
     width: 100%;
     text-align: center;
+    justify-content: center;
     padding: 11px 20px;
     font-size: 0.95rem;
     border-radius: 10px;
-    cursor: pointer;
-    border: none;
-    font-weight: 600;
   }
   .tev-nav-mobile-actions .tev-btn-ghost {
     background: #f1f5f9;
@@ -235,10 +402,8 @@
   .tev-nav-mobile-actions .tev-btn-primary:hover { background: #15803d; }
 }
 
-/* Backdrop overlay when menu is open */
-.tev-nav-backdrop {
-  display: none;
-}
+/* Backdrop */
+.tev-nav-backdrop { display: none; }
 @media (max-width: 768px) {
   .tev-nav-backdrop {
     display: block;
