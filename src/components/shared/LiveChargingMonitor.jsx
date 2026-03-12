@@ -66,31 +66,12 @@ const extractPower = (session) => {
 };
 
 // ── Sub-component: Progress Bar ──
-const ProgressBar = memo(function ProgressBar({ initialSoc = 0, virtualSoc = 0, isCharging }) {
+const ProgressBar = memo(function ProgressBar({ virtualSoc = 0 }) {
   const displaySoc = Math.round(Math.min(Math.max(virtualSoc, 0), 100));
-  const isComplete = displaySoc >= 100;
 
   return (
-    <div className="lcm-progress" role="progressbar" aria-valuenow={displaySoc} aria-valuemin={0} aria-valuemax={100}>
-      <div className="lcm-progress-top">
-        <div className="lcm-progress-info">
-          {isCharging && !isComplete
-            ? <BatteryCharging size={18} />
-            : <Battery size={18} />}
-          <span>{isComplete ? "Pin đã đầy" : isCharging ? "Đang sạc..." : "Dung lượng"}</span>
-        </div>
-        <div className="lcm-progress-pct">{displaySoc}%</div>
-      </div>
-      <div className="lcm-progress-track">
-        <div
-          className={`lcm-progress-fill${isComplete ? " lcm-progress-complete" : ""}`}
-          style={{ width: `${displaySoc}%` }}
-        />
-      </div>
-      <div className="lcm-progress-range">
-        <span>{initialSoc}% (ban đầu)</span>
-        <span>100%</span>
-      </div>
+    <div style={{ display: "flex", justifyContent: "center", width: "100%", padding: "10px 0" }}>
+      <MagSafeProgress percentage={displaySoc} />
     </div>
   );
 });

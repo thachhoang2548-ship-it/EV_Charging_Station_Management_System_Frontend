@@ -13,6 +13,7 @@ import {
     PlugZap, Zap, Clock, Gauge, Battery, BatteryCharging,
     MapPin, Car, CircleStop, RefreshCw, Search, Download, QrCode
 } from "lucide-react";
+import MagSafeProgress from "../../components/shared/MagSafeProgress.jsx";
 
 /**
  * FIX for new billing logic:
@@ -122,45 +123,15 @@ const syncSessionFromBackend = (backendData, currentState = {}) => {
 
 
 
-// ========== SESSION PROGRESS BAR (replaces old BatteryProgressCircle) ==========
+// ========== SESSION PROGRESS BAR (MagSafe Style) ==========
 const SessionProgressBar = memo(function SessionProgressBar({
-    initialSoc,
-    energyKWh,
-    capacity,
-    isCharging,
-    virtualSoc,
+    virtualSoc = 0,
 }) {
-    const safeCapacity = capacity || 60;
-    const safeInitialSoc = initialSoc ?? 0;
-    const safeEnergy = energyKWh ?? 0;
-
-    const deltaPercent = (safeEnergy / safeCapacity) * 100;
-    const calculatedSoc = Math.min(safeInitialSoc + deltaPercent, 100);
-    const currentSoc = virtualSoc ?? calculatedSoc;
-    const isComplete = currentSoc >= 100;
-    const displaySoc = Math.round(Math.min(Math.max(currentSoc, 0), 100));
+    const displaySoc = Math.round(Math.min(Math.max(virtualSoc, 0), 100));
 
     return (
-        <div className="cs-progress" role="progressbar" aria-valuenow={displaySoc} aria-valuemin={0} aria-valuemax={100}>
-            <div className="cs-progress-top">
-                <div className="cs-progress-info">
-                    {isCharging && !isComplete
-                        ? <BatteryCharging size={18} className="cs-pulse" />
-                        : <Battery size={18} />}
-                    <span>{isComplete ? "Pin đã đầy" : isCharging ? "Đang sạc..." : "Dung lượng pin"}</span>
-                </div>
-                <div className="cs-progress-pct">{displaySoc}%</div>
-            </div>
-            <div className="cs-progress-track">
-                <div
-                    className={`cs-progress-fill${isComplete ? " cs-progress-complete" : ""}`}
-                    style={{ width: `${displaySoc}%` }}
-                />
-            </div>
-            <div className="cs-progress-range">
-                <span>{safeInitialSoc}% (ban đầu)</span>
-                <span>100%</span>
-            </div>
+        <div style={{ display: "flex", justifyContent: "center", width: "100%", padding: "10px 0" }}>
+            <MagSafeProgress percentage={displaySoc} />
         </div>
     );
 });
