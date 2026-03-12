@@ -1,10 +1,21 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { selectIsLoggedIn } from "../../redux/slices/authSlice";
 import paths from "../../path/paths";
 import "./HomeFooter.css";
 
 const HomeFooter = () => {
   const navigate = useNavigate();
+  const isLoggedIn = useSelector(selectIsLoggedIn);
+
+  const handleProtectedNavigate = (targetPath) => {
+    if (isLoggedIn) {
+      navigate(targetPath);
+    } else {
+      navigate(paths.login, { state: { from: { pathname: targetPath } } });
+    }
+  };
 
   return (
     <footer className="tev-footer">
@@ -66,7 +77,7 @@ const HomeFooter = () => {
             <h4>Hỗ trợ</h4>
             <ul className="tev-footer-links">
               <li onClick={() => navigate(paths.rules)}>Quy định & Chính sách</li>
-              <li>Hướng dẫn sử dụng</li>
+              <li onClick={() => handleProtectedNavigate(paths.guide)}>Hướng dẫn sử dụng</li>
               <li>Câu hỏi thường gặp</li>
             </ul>
           </div>
