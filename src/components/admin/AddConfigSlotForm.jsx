@@ -1,3 +1,4 @@
+import React, { useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import { addSlotConfigApi } from '../../api/stationApi.js';
@@ -5,6 +6,7 @@ import {toast} from 'react-toastify';
 import './AddStaffForm.css';
 
 export default function AddConfigSlotForm({handleClose, stationId, slotMinutes}) {
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const date = new Date();
     const dateEnd = new Date();
     dateEnd.setFullYear(dateEnd.getFullYear() + 1);
@@ -30,6 +32,7 @@ export default function AddConfigSlotForm({handleClose, stationId, slotMinutes})
         };
         console.log("Dữ liệu gửi lên API:", dataForm);
         const createSlotConfig = async () => {
+            setIsSubmitting(true);
             try {
                 const response = await addSlotConfigApi(dataForm);
                 if (response.success) {
@@ -41,6 +44,8 @@ export default function AddConfigSlotForm({handleClose, stationId, slotMinutes})
                 
             } catch (error) {
                 console.error("Lỗi khi tạo cấu hình slot:", error);
+            } finally {
+                setIsSubmitting(false);
             }
         };
         createSlotConfig();
@@ -77,10 +82,10 @@ export default function AddConfigSlotForm({handleClose, stationId, slotMinutes})
 
             {/* Buttons */}
             <div className="form-button-group mt-4">
-              <Button variant="success" type="submit" className="btn-submit">
-                Cấu hình
+              <Button variant="success" type="submit" className="btn-submit" disabled={isSubmitting}>
+                {isSubmitting ? "Đang chờ xử lí..." : "Cấu hình"}
               </Button>
-              <Button variant="outline-secondary" type="button" className="btn-cancel" onClick={handleClose}>
+              <Button variant="outline-secondary" type="button" className="btn-cancel" onClick={handleClose} disabled={isSubmitting}>
                 Hủy
               </Button>
             </div>

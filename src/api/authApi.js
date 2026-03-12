@@ -1,6 +1,10 @@
 import apiClient from "./apiUrls.js";
 import handleApiCall from "./callApi.js";
 
+const OTP_REQUEST_TIMEOUT_MS = Number(
+  import.meta.env.VITE_OTP_API_TIMEOUT_MS || 60000
+);
+
 export const loginApi = (phone, password) => {
   return handleApiCall(
     () =>
@@ -23,7 +27,10 @@ export const verifyOtp = (otp, profile) => {
 export const registerApi = (formData) => {
   // Truyền hàm gọi API (callback) và thông báo lỗi mặc định
   return handleApiCall(
-    () => apiClient.post("/api/users/register", formData),
+    () =>
+      apiClient.post("/api/users/register", formData, {
+        timeout: OTP_REQUEST_TIMEOUT_MS,
+      }),
     "Đăng ký thất bại"
   );
 };
@@ -39,7 +46,10 @@ export const logoutApi = () => {
 // Gọi API quên mật khẩu (gửi OTP)
 export const forgotPasswordApi = (email) => {
   return handleApiCall(
-    () => apiClient.post("/api/users/forgot-password", { email }),
+    () =>
+      apiClient.post("/api/users/forgot-password", { email }, {
+        timeout: OTP_REQUEST_TIMEOUT_MS,
+      }),
     "Gửi mã OTP thất bại"
   );
 };
