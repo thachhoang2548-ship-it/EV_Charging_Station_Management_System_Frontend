@@ -35,9 +35,16 @@ const ForgotPassword = () => {
         // Navigate to reset password page with email as state
         navigate("/reset-password", { state: { email } });
       } else {
-        toast.error(
-          response.message || "Không thể gửi mã OTP. Vui lòng thử lại!",
-        );
+        if (response.status === 408) {
+          toast.info(
+            "He thong dang xu ly cham. OTP co the da duoc gui, vui long kiem tra email.",
+          );
+          navigate("/reset-password", { state: { email } });
+        } else {
+          toast.error(
+            response.message || "Không thể gửi mã OTP. Vui lòng thử lại!",
+          );
+        }
       }
     } catch (error) {
       toast.error(error.message || "Có lỗi xảy ra. Vui lòng thử lại!");

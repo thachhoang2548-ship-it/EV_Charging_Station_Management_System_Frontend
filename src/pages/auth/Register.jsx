@@ -134,7 +134,16 @@ const Register = () => {
         }
       } else {
         const errorMessage = response.message || "Đăng ký thất bại!";
-        if (errorMessage.toLowerCase().includes("phone")) {
+        if (response.status === 408) {
+          toast.info(
+            "He thong dang xu ly cham. OTP co the da duoc gui, vui long kiem tra email.",
+            { autoClose: 5000 },
+          );
+          setTimeout(
+            () => navigate("/verify-otp", { state: { registerData } }),
+            1200,
+          );
+        } else if (errorMessage.toLowerCase().includes("phone")) {
           setErrors((prev) => ({
             ...prev,
             phoneNumber: "Số điện thoại đã được sử dụng!",
