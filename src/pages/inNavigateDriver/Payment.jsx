@@ -2,6 +2,12 @@ import React, { useEffect, useMemo, useState, useCallback } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 import apiClient from "../../api/apiUrls.js";
+import {
+  Receipt, MapPin, Clock, Zap, Battery, CreditCard,
+  Wallet, Landmark, CircleCheck, AlertTriangle, Gift, Check, Home
+} from "lucide-react";
+import Header from "../../components/admin/Header.jsx";
+import "../admin/Dashboard.css";
 import "./Payment.css";
 
 const CHARGING_EFFICIENCY = 0.9;
@@ -526,416 +532,291 @@ export default function Payment() {
   const canUsePointsUI = Boolean(invoiceId) && !paymentProcessing;
 
   return (
-      <div className="payment-container">
-        <h1
-            className="payment-header"
-            style={{
-              textAlign: "center",
-              fontSize: "32px",
-              fontWeight: "700",
-              background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-              marginBottom: "30px",
-            }}
-        >
-          💳 Thanh toán phiên sạc
-        </h1>
-
-        <div
-            className="payment-card"
-            style={{
-              background: "white",
-              borderRadius: "16px",
-              boxShadow: "0 10px 40px rgba(0,0,0,0.1)",
-              padding: "30px",
-              maxWidth: "800px",
-              margin: "0 auto",
-            }}
-        >
-          <div
-              className="payment-status"
-              style={{
-                textAlign: "center",
-                padding: "30px",
-                background: "linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%)",
-                borderRadius: "12px",
-                marginBottom: "30px",
-              }}
-          >
-            <div className="status-icon" style={{ fontSize: "64px", marginBottom: "15px" }}>
-              ✅
-            </div>
-            <h2 style={{ color: "#2e7d32", fontSize: "28px", fontWeight: "700", marginBottom: "10px" }}>
-              Phiên sạc hoàn thành!
-            </h2>
-            <p className="status-text" style={{ color: "#558b2f", fontSize: "16px" }}>
-              Vui lòng thanh toán để hoàn tất giao dịch
-            </p>
-          </div>
-
-          <div className="payment-section">
-            <h3 className="section-title">🚗 Thông tin xe</h3>
-            <div className="info-row">
-              <span className="info-label">Biển số xe:</span>
-              <span className="info-value">{session.vehiclePlate ?? "-"}</span>
+      <div className="dashboard-container">
+        <Header />
+        <div className="pay-page">
+          {/* ── HERO ── */}
+          <div className="pay-hero">
+            <div className="pay-hero-content">
+              <div className="pay-hero-icon"><CircleCheck size={44} color="#fff" /></div>
+              <h1 className="pay-hero-title">Phiên sạc hoàn thành!</h1>
+              <p className="pay-hero-sub">Vui lòng thanh toán để hoàn tất giao dịch</p>
             </div>
           </div>
 
-          <div className="payment-section">
-            <h3 className="section-title">🏢 Thông tin trạm</h3>
-            <div className="info-row">
-              <span className="info-label">Trạm sạc:</span>
-              <span className="info-value">{session.stationName ?? "-"}</span>
+          {/* ── TOTAL AMOUNT ── */}
+          <div className="pay-total-card">
+            <div className="pay-total-label">Tổng thanh toán</div>
+            <div className="pay-total-amount">
+              {Number(payableAmount ?? 0).toLocaleString("vi-VN")}
+              <span className="pay-total-currency">{currency}</span>
             </div>
-            <div className="info-row">
-              <span className="info-label">Trụ sạc:</span>
-              <span className="info-value">{session.pointNumber ?? "-"}</span>
+            {discountAmount > 0 && (
+              <div className="pay-total-base">
+                <s>{fmtMoney(baseAmount, currency)}</s>
+                <span className="pay-total-discount-tag">- {fmtMoney(discountAmount, currency)}</span>
+              </div>
+            )}
+          </div>
+
+          {/* ── INVOICE DETAILS ── */}
+          <div className="pay-card">
+            <div className="pay-card-header">
+              <div className="pay-card-header-icon pay-icon-green"><Receipt size={18} /></div>
+              <h3 className="pay-card-title">Chi tiết hóa đơn</h3>
+            </div>
+            <div className="pay-card-body">
+              <div className="pay-row">
+                <span className="pay-row-label"><MapPin size={14} /> Trạm sạc</span>
+                <span className="pay-row-value">{session.stationName ?? "—"}</span>
+              </div>
+              <div className="pay-row">
+                <span className="pay-row-label"><Zap size={14} /> Trụ sạc</span>
+                <span className="pay-row-value">{session.pointNumber ?? "—"}</span>
+              </div>
+              <div className="pay-row">
+                <span className="pay-row-label">🚗 Biển số xe</span>
+                <span className="pay-row-value">{session.vehiclePlate ?? "—"}</span>
+              </div>
+              <div className="pay-row">
+                <span className="pay-row-label"><Clock size={14} /> Bắt đầu</span>
+                <span className="pay-row-value">
+                  {session.startTime ? new Date(session.startTime).toLocaleString("vi-VN") : "—"}
+                </span>
+              </div>
+              <div className="pay-row">
+                <span className="pay-row-label"><Clock size={14} /> Kết thúc</span>
+                <span className="pay-row-value">
+                  {(session.endTime || session.actualEndTime)
+                    ? new Date(session.endTime || session.actualEndTime).toLocaleString("vi-VN")
+                    : "—"}
+                </span>
+              </div>
             </div>
           </div>
 
-          <div className="payment-section">
-            <h3 className="section-title">⏰ Thời gian</h3>
-            <div className="info-row">
-              <span className="info-label">Bắt đầu:</span>
-              <span className="info-value">
-              {session.startTime ? new Date(session.startTime).toLocaleString("vi-VN") : "-"}
-            </span>
+          {/* ── TIME & ENERGY ── */}
+          <div className="pay-card">
+            <div className="pay-card-header">
+              <div className="pay-card-header-icon pay-icon-blue"><Clock size={18} /></div>
+              <h3 className="pay-card-title">Thời gian & Năng lượng</h3>
             </div>
-            <div className="info-row">
-              <span className="info-label">Kết thúc:</span>
-              <span className="info-value">
-              {session.endTime || session.actualEndTime
-                  ? new Date(session.endTime || session.actualEndTime).toLocaleString("vi-VN")
-                  : "-"}
-            </span>
-            </div>
+            <div className="pay-card-body">
+              <div className="pay-row">
+                <span className="pay-row-label"><Clock size={14} /> Tổng thời lượng</span>
+                <span className="pay-row-value blue">{session.durationMinutes ?? 0} phút</span>
+              </div>
 
-            <div className="info-row">
-              <span className="info-label">Tổng thời lượng:</span>
-              <span className="info-value highlight">{session.durationMinutes ?? 0} phút</span>
-            </div>
-
-            {timeSplit && (
+              {timeSplit && (
                 <>
-                  <div className="info-row">
-                    <span className="info-label">Thời gian sạc đầy:</span>
-                    <span className="info-value" style={{ fontWeight: 800, color: "#2c3e50" }}>
-                  {timeSplit.chargingMinutes} phút
-                      {timeSplit.mode === "estimate" && (
-                          <span style={{ marginLeft: 8, opacity: 0.7, fontWeight: 500 }}>(ước tính)</span>
-                      )}
-                </span>
+                  <div className="pay-row">
+                    <span className="pay-row-label"><Battery size={14} /> Thời gian sạc</span>
+                    <span className="pay-row-value green">
+                      {timeSplit.chargingMinutes} phút
+                      {timeSplit.mode === "estimate" && <span style={{ opacity: 0.6, fontWeight: 400, marginLeft: 4 }}>(ước tính)</span>}
+                    </span>
                   </div>
-
-                  <div className="info-row">
-                    <span className="info-label">Thời gian lãng phí:</span>
-                    <span
-                        className="info-value"
-                        style={{
-                          fontWeight: 900,
-                          color: timeSplit.overstayMinutes > 0 ? "#e67e22" : "#2c3e50",
-                        }}
-                    >
-                  {timeSplit.overstayMinutes} phút
-                </span>
-                  </div>
-
                   {timeSplit.overstayMinutes > 0 && (
-                      <div
-                          style={{
-                            marginTop: 10,
-                            padding: "12px 14px",
-                            borderRadius: 10,
-                            background: "rgba(255, 152, 0, 0.12)",
-                            border: "1px solid rgba(255, 152, 0, 0.35)",
-                            color: "#b26a00",
-                            fontWeight: 700,
-                          }}
-                      >
-                        ⚠️ Xe đã cắm sạc sau khi pin đầy. Phần thời gian này có thể bị tính <b>phí thời gian</b>.
+                    <>
+                      <div className="pay-row">
+                        <span className="pay-row-label"><AlertTriangle size={14} /> Thời gian lãng phí</span>
+                        <span className="pay-row-value orange">{timeSplit.overstayMinutes} phút</span>
                       </div>
+                      <div className="pay-overstay-banner">
+                        <AlertTriangle size={16} />
+                        <span>Xe đã cắm sạc sau khi pin đầy. Phần thời gian này có thể tính <b>phí thời gian</b>.</span>
+                      </div>
+                    </>
                   )}
                 </>
-            )}
-          </div>
+              )}
 
-          <div className="payment-section">
-            <h3 className="section-title">⚡ Năng lượng & SOC</h3>
-            <div className="info-row">
-              <span className="info-label">Năng lượng đã sạc:</span>
-              <span className="info-value highlight-green">{Number(session.energyKWh ?? 0).toFixed(2)} kWh</span>
+              <div className="pay-row">
+                <span className="pay-row-label"><Zap size={14} /> Năng lượng đã sạc</span>
+                <span className="pay-row-value green">{Number(session.energyKWh ?? 0).toFixed(2)} kWh</span>
+              </div>
+              {session.initialSoc != null && (
+                <div className="pay-row">
+                  <span className="pay-row-label"><Battery size={14} /> SOC ban đầu</span>
+                  <span className="pay-row-value">{session.initialSoc}%</span>
+                </div>
+              )}
+              {session.finalSoc != null && (
+                <div className="pay-row">
+                  <span className="pay-row-label"><Battery size={14} /> SOC cuối</span>
+                  <span className="pay-row-value green">{session.finalSoc}%</span>
+                </div>
+              )}
             </div>
-            {session.initialSoc != null && (
-                <div className="info-row">
-                  <span className="info-label">SOC ban đầu:</span>
-                  <span className="info-value">{session.initialSoc}%</span>
-                </div>
-            )}
-            {session.finalSoc != null && (
-                <div className="info-row">
-                  <span className="info-label">SOC cuối:</span>
-                  <span className="info-value">{session.finalSoc}%</span>
-                </div>
-            )}
           </div>
 
-          {/* ====== DISCOUNT SECTION ====== */}
-          <div className="payment-section" style={{ marginTop: 10 }}>
-            <h3 className="section-title">🎁 Giảm giá</h3>
-
-            {!invoiceId ? (
-                <div
-                    style={{
-                      padding: "12px 14px",
-                      borderRadius: 10,
-                      background: "rgba(0,0,0,0.04)",
-                      color: "#555",
-                      fontWeight: 600,
-                    }}
-                >
-                  Không tìm thấy <b>invoiceId</b> nên chưa bật giảm giá theo điểm.
+          {/* ── PRICING ── */}
+          <div className="pay-card">
+            <div className="pay-card-header">
+              <div className="pay-card-header-icon pay-icon-orange"><CreditCard size={18} /></div>
+              <h3 className="pay-card-title">Bảng giá áp dụng</h3>
+            </div>
+            <div className="pay-card-body">
+              {session.pricePerKWh != null && session.pricePerKWh > 0 && (
+                <div className="pay-row">
+                  <span className="pay-row-label"><Zap size={14} /> Đơn giá điện năng</span>
+                  <span className="pay-row-value green">
+                    {Number(session.pricePerKWh).toLocaleString("vi-VN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} {currency}/kWh
+                  </span>
                 </div>
-            ) : (
-                <div
-                    style={{
-                      border: "1px solid rgba(102, 126, 234, 0.25)",
-                      borderRadius: 12,
-                      padding: "14px 16px",
-                      background: "rgba(102, 126, 234, 0.06)",
-                    }}
-                >
-                  <div style={{ display: "flex", alignItems: "center", gap: 12, justifyContent: "space-between" }}>
-                    <div>
-                      <div style={{ fontWeight: 900, color: "#2c3e50" }}>
-                        Dùng điểm để giảm giá (1 điểm = 1%, tối đa 100%)
-                      </div>
-                      <div style={{ marginTop: 4, opacity: 0.85 }}>
-                        Điểm hiện có: <b>{pointsAvailable == null ? "—" : pointsAvailable}</b>
+              )}
+              {session.pricePerMin != null && Number(session.pricePerMin) > 0 && (
+                <div className="pay-row">
+                  <span className="pay-row-label"><Clock size={14} /> Đơn giá thời gian</span>
+                  <span className="pay-row-value orange">{Number(session.pricePerMin).toLocaleString("vi-VN")} {currency}/phút</span>
+                </div>
+              )}
+              {timeFeeView != null && timeFeeView > 0 && (
+                <div className="pay-row">
+                  <span className="pay-row-label"><AlertTriangle size={14} /> Phí thời gian lãng phí</span>
+                  <span className="pay-row-value orange">{fmtMoney(timeFeeView, currency)}</span>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* ── LOYALTY / DISCOUNT ── */}
+          <div className="pay-card">
+            <div className="pay-card-header">
+              <div className="pay-card-header-icon pay-icon-purple"><Gift size={18} /></div>
+              <h3 className="pay-card-title">Giảm giá & Điểm thưởng</h3>
+            </div>
+            <div className="pay-card-body">
+              {!invoiceId ? (
+                <div className="pay-row">
+                  <span className="pay-row-label">Không tìm thấy hóa đơn để áp dụng giảm giá</span>
+                </div>
+              ) : (
+                <div className="pay-loyalty-box">
+                  <div className="pay-loyalty-top">
+                    <div className="pay-loyalty-info">
+                      <div className="pay-loyalty-title">Dùng điểm để giảm giá</div>
+                      <div className="pay-loyalty-points">
+                        Điểm hiện có: <b>{pointsAvailable == null ? "—" : pointsAvailable}</b> • 1 điểm = 1%
                       </div>
                     </div>
-
-                    <label style={{ display: "flex", alignItems: "center", gap: 10, fontWeight: 800 }}>
+                    <label className="pay-loyalty-toggle">
                       <input
-                          type="checkbox"
-                          checked={usePoints}
-                          disabled={!canUsePointsUI || discountLoading}
-                          onChange={(e) => setUsePoints(e.target.checked)}
-                          style={{ width: 18, height: 18 }}
+                        type="checkbox"
+                        checked={usePoints}
+                        disabled={!canUsePointsUI || discountLoading}
+                        onChange={(e) => setUsePoints(e.target.checked)}
                       />
-                      {discountLoading ? "Đang tính..." : usePoints ? "Đang áp dụng" : "Không áp dụng"}
+                      <span className="pay-loyalty-slider" />
                     </label>
                   </div>
 
                   {discountPreview && (
-                      <div style={{ marginTop: 12, display: "grid", gap: 8 }}>
-                        <div className="info-row">
-                          <span className="info-label">Giá trước giảm:</span>
-                          <span className="info-value" style={{ fontWeight: 900 }}>
-                      {fmtMoney(discountPreview.baseAmount, currency)}
-                    </span>
-                        </div>
-                        <div className="info-row">
-                          <span className="info-label">Tỉ lệ giảm:</span>
-                          <span className="info-value" style={{ fontWeight: 900, color: "#667eea" }}>
-                      {discountPreview.discountRatePct ?? 0}%
-                    </span>
-                        </div>
-                        <div className="info-row">
-                          <span className="info-label">Giảm:</span>
-                          <span className="info-value" style={{ fontWeight: 900, color: "#27ae60" }}>
-                      - {fmtMoney(discountPreview.discountAmount ?? 0, currency)}
-                    </span>
-                        </div>
-                        <div className="info-row">
-                          <span className="info-label">Điểm sẽ dùng:</span>
-                          <span className="info-value" style={{ fontWeight: 900 }}>
-                      {discountPreview.pointsWillUse ?? 0}
-                    </span>
-                        </div>
+                    <div className="pay-loyalty-detail">
+                      <div className="pay-row">
+                        <span className="pay-row-label">Giá trước giảm</span>
+                        <span className="pay-row-value">{fmtMoney(discountPreview.baseAmount, currency)}</span>
                       </div>
+                      <div className="pay-row">
+                        <span className="pay-row-label">Tỉ lệ giảm</span>
+                        <span className="pay-row-value green">{discountPreview.discountRatePct ?? 0}%</span>
+                      </div>
+                      <div className="pay-row">
+                        <span className="pay-row-label">Tiết kiệm</span>
+                        <span className="pay-row-value green">- {fmtMoney(discountPreview.discountAmount ?? 0, currency)}</span>
+                      </div>
+                      <div className="pay-row">
+                        <span className="pay-row-label">Điểm sẽ dùng</span>
+                        <span className="pay-row-value">{discountPreview.pointsWillUse ?? 0}</span>
+                      </div>
+                    </div>
                   )}
                 </div>
-            )}
-          </div>
-
-          <div className="payment-section payment-summary">
-            <h3 className="section-title">💰 Chi tiết thanh toán</h3>
-
-            {session.pricePerKWh != null && session.pricePerKWh > 0 && (
-                <div className="info-row">
-                  <span className="info-label">💵 Đơn giá điện năng:</span>
-                  <span className="info-value" style={{ fontWeight: "600", color: "#667eea" }}>
-                {Number(session.pricePerKWh).toLocaleString("vi-VN", {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-                })}{" "}
-                    {currency}/kWh
-              </span>
-                </div>
-            )}
-
-            {session.pricePerMin != null && Number(session.pricePerMin) > 0 && (
-                <div className="info-row">
-                  <span className="info-label">⏱️ Đơn giá thời gian:</span>
-                  <span className="info-value" style={{ fontWeight: 700, color: "#e67e22" }}>
-                {Number(session.pricePerMin).toLocaleString("vi-VN")} {currency}/phút
-              </span>
-                </div>
-            )}
-
-            <div className="info-row">
-              <span className="info-label">⚡ Năng lượng tiêu thụ:</span>
-              <span className="info-value" style={{ fontWeight: "600", color: "#27ae60" }}>
-              {Number(session.energyKWh ?? 0).toFixed(2)} kWh
-            </span>
-            </div>
-
-            <div className="info-row">
-              <span className="info-label">⏱️ Tổng thời gian:</span>
-              <span className="info-value">{session.durationMinutes ?? 0} phút</span>
-            </div>
-
-            {timeSplit && timeSplit.overstayMinutes > 0 && (
-                <div className="info-row">
-                  <span className="info-label">⚠️ Thời gian lãng phí:</span>
-                  <span className="info-value" style={{ fontWeight: 800, color: "#e67e22" }}>
-                {timeSplit.overstayMinutes} phút
-              </span>
-                </div>
-            )}
-
-            {timeFeeView != null && timeFeeView > 0 && (
-                <div className="info-row">
-                  <span className="info-label">⚠️ Phí thời gian lãng phí:</span>
-                  <span className="info-value" style={{ fontWeight: 900, color: "#e67e22" }}>
-                {fmtMoney(timeFeeView, currency)}
-              </span>
-                </div>
-            )}
-
-            {discountAmount > 0 && (
-                <div className="info-row">
-                  <span className="info-label">🎁 Giảm giá (điểm):</span>
-                  <span className="info-value" style={{ fontWeight: 900, color: "#27ae60" }}>
-                - {fmtMoney(discountAmount, currency)}
-              </span>
-                </div>
-            )}
-
-            <div style={{ borderTop: "2px dashed #e0e0e0", margin: "15px 0" }} />
-
-            <div
-                className="total-row"
-                style={{
-                  background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-                  padding: "15px 20px",
-                  borderRadius: "10px",
-                  marginTop: "10px",
-                }}
-            >
-              <span style={{ color: "white", fontSize: "18px", fontWeight: "700" }}>💳 Tổng thanh toán:</span>
-              <span style={{ color: "white", fontSize: "24px", fontWeight: "800" }}>
-              {fmtMoney(payableAmount, currency)}
-            </span>
+              )}
             </div>
           </div>
 
+          {/* ── PAYMENT METHODS ── */}
           {!paymentCompleted && (
-              <div
-                  className="payment-section"
-                  style={{
-                    background: "linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)",
-                    padding: "25px",
-                    borderRadius: "12px",
-                    marginTop: "20px",
-                  }}
-              >
-                <h3
-                    className="section-title"
-                    style={{
-                      fontSize: "20px",
-                      fontWeight: "700",
-                      marginBottom: "20px",
-                      color: "#2c3e50",
-                    }}
-                >
-                  💳 Chọn phương thức thanh toán
-                </h3>
-
+            <div className="pay-card">
+              <div className="pay-card-header">
+                <div className="pay-card-header-icon pay-icon-amber"><Wallet size={18} /></div>
+                <h3 className="pay-card-title">Phương thức thanh toán</h3>
+              </div>
+              <div className="pay-card-body">
                 {loadingMethods ? (
-                    <div style={{ textAlign: "center", padding: "40px", color: "#666" }}>
-                      <div style={{ fontSize: "48px", marginBottom: "15px" }}>⏳</div>
-                      <p>Đang tải phương thức thanh toán...</p>
-                    </div>
+                  <div className="pay-loading">
+                    <div className="pay-spinner" />
+                    <span className="pay-loading-text">Đang tải phương thức...</span>
+                  </div>
                 ) : paymentMethods.length === 0 ? (
-                    <div
-                        style={{
-                          textAlign: "center",
-                          padding: "40px",
-                          color: "#f44336",
-                          background: "white",
-                          borderRadius: "8px",
-                        }}
-                    >
-                      <div style={{ fontSize: "48px", marginBottom: "15px" }}>⚠️</div>
-                      <p>Không có phương thức thanh toán khả dụng</p>
-                    </div>
+                  <div className="pay-empty-methods">
+                    <div className="pay-empty-methods-icon"><AlertTriangle size={24} /></div>
+                    <span className="pay-empty-methods-text">Không có phương thức thanh toán khả dụng</span>
+                  </div>
                 ) : (
-                    <div className="method-list" style={{ display: "grid", gap: "12px" }}>
-                      {paymentMethods.map((method) => (
-                          <button
-                              key={method.methodId}
-                              className={`method-btn ${selectedMethod === method.methodId ? "selected" : ""}`}
-                              onClick={() => setSelectedMethod(method.methodId)}
-                              disabled={paymentProcessing}
-                              style={{
-                                padding: "18px 24px",
-                                border: selectedMethod === method.methodId ? "3px solid #667eea" : "2px solid #ddd",
-                                borderRadius: "10px",
-                                background:
-                                    selectedMethod === method.methodId
-                                        ? "linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
-                                        : "white",
-                                color: selectedMethod === method.methodId ? "white" : "#333",
-                                cursor: paymentProcessing ? "not-allowed" : "pointer",
-                                transition: "all 0.3s ease",
-                                textAlign: "left",
-                                fontWeight: "600",
-                                boxShadow:
-                                    selectedMethod === method.methodId
-                                        ? "0 8px 20px rgba(102, 126, 234, 0.4)"
-                                        : "0 2px 8px rgba(0,0,0,0.1)",
-                              }}
-                          >
-                            <div style={{ fontSize: "16px", marginBottom: "5px" }}>
-                              {method.provider === "VNPAY" ? "💳" : "💵"} {method.provider} ({method.methodType})
-                            </div>
+                  <div className="pay-methods-grid">
+                    {paymentMethods.map((method) => {
+                      const isActive = selectedMethod === method.methodId;
+                      const icon = method.provider === "VNPAY"
+                        ? <Wallet size={20} />
+                        : method.methodType === "CASH"
+                          ? <Landmark size={20} />
+                          : <CreditCard size={20} />;
+
+                      return (
+                        <button
+                          key={method.methodId}
+                          className={`pay-method-card${isActive ? " active" : ""}`}
+                          onClick={() => setSelectedMethod(method.methodId)}
+                          disabled={paymentProcessing}
+                        >
+                          <div className="pay-method-icon">{icon}</div>
+                          <div className="pay-method-info">
+                            <div className="pay-method-name">{method.provider} ({method.methodType})</div>
                             {method.accountNo && (
-                                <div style={{ fontSize: "13px", opacity: 0.9 }}>📋 Tài khoản: {method.accountNo}</div>
+                              <div className="pay-method-desc">Tài khoản: {method.accountNo}</div>
                             )}
-                          </button>
-                      ))}
-                    </div>
+                          </div>
+                          <div className="pay-method-check">
+                            {isActive && <Check size={14} />}
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
                 )}
               </div>
+            </div>
           )}
 
-          <div className="payment-actions">
-            {!paymentCompleted ? (
-                <button
-                    className="btn-payment"
-                    onClick={handlePayment}
-                    disabled={paymentProcessing || !selectedMethod || discountLoading}
-                >
-                  {paymentProcessing ? "Đang xử lý..." : discountLoading ? "Đang tính giảm giá..." : "💳 Thanh toán ngay"}
-                </button>
-            ) : (
-                <button className="btn-payment" onClick={() => navigate("/")}>
-                  ✅ Về trang chủ
-                </button>
-            )}
-          </div>
+          {/* ── CTA ── */}
+          {!paymentCompleted ? (
+            <button
+              className="pay-cta"
+              onClick={handlePayment}
+              disabled={paymentProcessing || !selectedMethod || discountLoading}
+            >
+              {paymentProcessing ? (
+                <>
+                  <span className="pay-cta-spinner" />
+                  Đang xử lý...
+                </>
+              ) : discountLoading ? (
+                "Đang tính giảm giá..."
+              ) : (
+                <>
+                  <CreditCard size={20} />
+                  Xác nhận thanh toán • {fmtMoney(payableAmount, currency)}
+                </>
+              )}
+            </button>
+          ) : (
+            <button className="pay-cta pay-cta-secondary" onClick={() => navigate("/")}>
+              <Home size={20} />
+              Về trang chủ
+            </button>
+          )}
         </div>
       </div>
   );
