@@ -4,6 +4,7 @@ import {
   BatteryCharging, Battery, Clock, Zap, Gauge, DollarSign,
   MapPin, Car, AlertTriangle
 } from "lucide-react";
+import MagSafeProgress from "./MagSafeProgress.jsx";
 import "./LiveChargingMonitor.css";
 
 // ── Constants ──
