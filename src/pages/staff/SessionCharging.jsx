@@ -377,7 +377,7 @@ export default function SessionCharging() {
                   </tr>
                 </thead>
                 <tbody>
-                  {ongoing.map((s, idx) => {
+                  {ongoing?.map((s, idx) => {
                     const sessionId = s?.sessionId || `${idx}`;
                     const bookingId = s?.bookingId || null;
                     const cost = s?.cost || 0;
@@ -409,7 +409,7 @@ export default function SessionCharging() {
                     }
 
                     return (
-                      <tr>
+                      <tr key={sessionId}>
                         <td>{sessionId}</td>
                         <td>{pointNumber || "-"}</td>
                         <td>{startTime}</td>
@@ -458,7 +458,7 @@ export default function SessionCharging() {
                   </tr>
                 </thead>
                 <tbody>
-                  {completed.map((s, idx) => {
+                  {completed?.map((s, idx) => {
                     const sessionId = s?.sessionId || `${idx}`;
                     const bookingId = s?.bookingId || null;
                     const cost = s?.cost || 0;
@@ -503,7 +503,7 @@ export default function SessionCharging() {
                     }
 
                     return (
-                      <tr>
+                      <tr key={sessionId}>
                         <td>{sessionId}</td>
                         <td>{pointNumber || "-"}</td>
                         <td>
