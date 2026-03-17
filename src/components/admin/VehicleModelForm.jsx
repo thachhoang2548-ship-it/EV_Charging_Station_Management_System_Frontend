@@ -8,7 +8,7 @@ import "./AddStaffForm.css";
 import { toast } from "react-toastify";
 import carIcon from "../../assets/icon/admin/model_car.png";
 
-import { uploadImageToCloudinary } from "../../utils/uploadImg.js";
+import { uploadImageToS3 } from "../../utils/uploadImg.js";
 import {
   addVehicleModelApi,
   updateVehicleModelApi,
@@ -155,8 +155,8 @@ export default function VehicleModelForm({ onClose, model }) {
       };
 
       if (file) {
-        const uploadData = await uploadImageToCloudinary(file);
-        console.log("Image uploaded successfully từ cloudinary:", uploadData);
+        const uploadData = await uploadImageToS3(file);
+        console.log("Image uploaded successfully lên S3:", uploadData);
         modelData.imageUrl = uploadData.data.secure_url;
         modelData.imagePublicId = uploadData.data.public_id;
       }
@@ -197,21 +197,27 @@ export default function VehicleModelForm({ onClose, model }) {
       return;
     }
 
+    //gửi lên S3
+    let uploadedS3Key = formData.imagePublicId;
+    let uploadedUrl = formData.imageUrl;
+    
+    if (file) {
+      const uploadData = await uploadImageToS3(file);
+      console.log("Image uploaded successfully lên S3:", uploadData);
+      uploadedUrl = uploadData.data.secure_url;
+      uploadedS3Key = uploadData.data.public_id;
+    }
+
     const modelData = {
       brand: formData.brand,
       model: formData.model,
       year: formData.year,
-      imageUrl: formData.imageUrl,
+      imageUrl: uploadedUrl,
       connectorTypeId: formData.connectorTypeId,
       batteryCapacityKWh: formData.batteryCapacityKWh,
       status: formData.status,
-      imagePublicId: formData.imagePublicId,
+      imagePublicId: uploadedS3Key,
     };
-    //gửi lên cloudinary
-    const uploadData = await uploadImageToCloudinary(file);
-    console.log("Image uploaded successfully từ cloudinary:", uploadData);
-    modelData.imageUrl = uploadData.data.secure_url;
-    modelData.imagePublicId = uploadData.data.public_id;
 
     console.log("Submitting model data:", modelData);
 

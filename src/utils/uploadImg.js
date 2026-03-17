@@ -1,46 +1,37 @@
 import { toast } from 'react-toastify';
-import {getUploadSignature} from '../api/uploadApi.js';
-import axios from 'axios';
+import { getPresignedUploadUrl, uploadFileToS3 } from '../api/uploadApi.js';
 
-export const uploadImageToCloudinary = async (file) => {
+export const uploadImageToS3 = async (file, folder = "vehicle_models") => {
   if (!file) {
     toast.error('Đang không có file nào được chọn.');
     throw new Error('No file selected for upload.');
   }
 
   try {
-    const sigData = await getUploadSignature();
+    // 1. Gọi BE để lấy presigned URL
+    const s3Data = await getPresignedUploadUrl({
+      fileName: file.name,
+      contentType: file.type,
+      folder: folder
+    });
 
-    // --- BƯỚC 2: Dùng "vé" upload thẳng lên Cloudinary ---
-    if(sigData.success){
-        console.log('lấy đc data ne: ', sigData.data);
-    }
+    const { presignedUrl, s3Key, publicUrl } = s3Data;
 
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('api_key', sigData.data.api_key);
-    formData.append('timestamp', sigData.data.timestamp);
-    formData.append('signature', sigData.data.signature);
-    
-    // Thêm folder nếu bạn có cấu hình (ví dụ: "vehicle_models")
-    if (sigData.data.folder) {
-      formData.append('folder', sigData.data.folder);
-    }
+    // 2. Upload trực tiếp từ client lên S3
+    await uploadFileToS3(file, presignedUrl);
 
-    const uploadUrl = `https://api.cloudinary.com/v1_1/${sigData.data.cloud_name}/image/upload`;
-
-    // Dùng 'axios' gốc (không cần token) để gọi Cloudinary
-    const uploadResponse = await axios.post(uploadUrl, formData);
-
-    // --- BƯỚC 3: Trả về kết quả ---
-    // uploadResponse.data sẽ là: { public_id: "...", secure_url: "http://..." }
-    return uploadResponse; 
+    // 3. Trả về public object tựa như format Uploading để không phá vỡ logic cũ quá nhiều
+    return {
+      success: true,
+      data: {
+        secure_url: publicUrl,
+        public_id: s3Key
+      }
+    };
 
   } catch (error) {
     console.error('Error during image upload process:', error);
-    if (error.response && error.response.status === 401) {
-        throw new Error('Unauthorized. Could not get upload signature. Please log in.');
-    }
+    toast.error('Không thể upload ảnh, vui lòng thử lại.');
     throw new Error('Image upload failed.');
   }
-};
+};
