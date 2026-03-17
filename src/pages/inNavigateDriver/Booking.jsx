@@ -453,49 +453,62 @@ export default function Booking() {
             </div>
           )}
 
-          {/* Slot grid */}
+          {/* Slot grid as Magnetic Timeline */}
           {loading ? (
             <div className="bk-loading">
               <Clock size={28} style={{ marginBottom: 8, opacity: 0.5 }} />
               <p>Đang tải danh sách khung giờ...</p>
             </div>
           ) : availableSlots.length > 0 ? (
-            <>
-              <div className="bk-slot-grid">
-                {availableSlots.map((slot) => {
-                  const isSelected = isSlotSelected(slot.id);
-                  const isAvailable = String(slot.Status ?? "").toLowerCase() === "available";
-                  const canSelect = selectedSlots.length === 0 || isSlotAdjacent(slot.SlotID, selectedSlots);
-                  const isDisabled =
-                    !isAvailable ||
-                    (!isSelected && selectedSlots.length >= MAX_SLOTS) ||
-                    (!isSelected && selectedSlots.length > 0 && !canSelect);
+            <div className="bk-timeline">
+              {/* Group slots by hour (e.g., "19:00" -> [...slots]) */}
+              {Object.entries(
+                availableSlots.reduce((acc, slot) => {
+                  if (!slot?.StartTime) return acc;
+                  const hour = slot.StartTime.split(":")[0] + ":00";
+                  if (!acc[hour]) acc[hour] = [];
+                  acc[hour].push(slot);
+                  return acc;
+                }, {})
+              ).map(([hourLabel, slotsInHour]) => (
+                <div key={hourLabel} className="bk-hour-group">
+                  <div className="bk-hour-label">{hourLabel}</div>
+                  <div className="bk-hour-slots">
+                    {slotsInHour.map((slot) => {
+                      const isSelected = isSlotSelected(slot.id);
+                      const isAvailable = String(slot.Status ?? "").toLowerCase() === "available";
+                      const canSelect = selectedSlots.length === 0 || isSlotAdjacent(slot.SlotID, selectedSlots);
+                      const isDisabled =
+                        !isAvailable ||
+                        (!isSelected && selectedSlots.length >= MAX_SLOTS) ||
+                        (!isSelected && selectedSlots.length > 0 && !canSelect);
 
-                  return (
-                    <div
-                      key={slot.id || slot.SlotID}
-                      className={`bk-slot${isSelected ? " bk-slot--selected" : ""}${isDisabled ? " bk-slot--disabled" : ""}`}
-                      onClick={() => { if (!isDisabled) handleToggleSlot(slot); }}
-                    >
-                      <div className="bk-slot-check">{isSelected && "✓"}</div>
-                      <p className="bk-slot-time">
-                        <Clock size={14} /> {slot.StartTime} – {slot.EndTime}
-                      </p>
-                      <p className={`bk-slot-status ${isAvailable ? "bk-slot-status--available" : "bk-slot-status--unavailable"}`}>
-                        {isAvailable ? <><CheckCircle2 size={13} /> Còn trống</> : slot.Status}
-                      </p>
-                    </div>
-                  );
-                })}
-              </div>
+                      // Determine if it's connected to neighbors for the "Magnetic merging" effect
+                      const sortedSelectedIds = selectedSlots.map(s => s.SlotID).sort((a,b)=>a-b);
+                      const isFirstSelected = isSelected && slot.SlotID === sortedSelectedIds[0];
+                      const isLastSelected = isSelected && slot.SlotID === sortedSelectedIds[sortedSelectedIds.length - 1];
+                      let mergeClass = "";
+                      if (isSelected && selectedSlots.length > 1) {
+                         if (isFirstSelected) mergeClass = "bk-slot--merged-start";
+                         else if (isLastSelected) mergeClass = "bk-slot--merged-end";
+                         else mergeClass = "bk-slot--merged-middle";
+                      }
 
-              {selectedSlots.length > 0 && (
-                <button className="bk-confirm-btn" onClick={handleConfirmBooking}>
-                  <CalendarCheck size={18} style={{ verticalAlign: "middle", marginRight: 6 }} />
-                  Xác nhận đặt {selectedSlots.length} khung giờ
-                </button>
-              )}
-            </>
+                      return (
+                        <div
+                          key={slot.id || slot.SlotID}
+                          className={`bk-slot ${isSelected ? "bk-slot--selected" : ""} ${isDisabled ? "bk-slot--disabled" : ""} ${mergeClass}`}
+                          onClick={() => { if (!isDisabled) handleToggleSlot(slot); }}
+                        >
+                          <span className="bk-slot-time-text">{slot.StartTime}</span>
+                          {isSelected && <CheckCircle2 size={16} className="bk-slot-check-icon" />}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))}
+            </div>
           ) : (
             <div className="bk-empty">
               <AlertTriangle size={32} />
@@ -536,6 +549,21 @@ export default function Booking() {
                 <p className="bk-summary-empty">Chưa chọn khung giờ nào</p>
               )}
             </div>
+
+            {/* Confirm button inside sidebar */}
+            {selectedSlots.length > 0 && (
+              <button 
+                className="bk-confirm-btn" 
+                onClick={handleConfirmBooking}
+                disabled={_submitting}
+              >
+                {_submitting ? (
+                  <>Đang xử lý...</>
+                ) : (
+                  <>Xác nhận đặt {selectedSlots.length} khung</>
+                )}
+              </button>
+            )}
           </div>
         </aside>
       </div>
