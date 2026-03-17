@@ -25,9 +25,9 @@ export default async function handleApiCall(apiCall, defaultMessage) {
     const errorStatus = error.response?.status || (isTimeoutError ? 408 : undefined);
     const errorMessage =
       (isTimeoutError &&
-        "He thong phan hoi cham. OTP co the da duoc gui, vui long kiem tra email.") ||
+        "Hệ thống phản hồi chậm. OTP có thể đã được gửi, vui lòng kiểm tra email.") ||
       (isNetworkError &&
-        "Khong the ket noi den may chu. Vui long kiem tra mang va thu lai.") ||
+        "Không thể kết nối đến máy chủ. Vui lòng kiểm tra lại kết nối mạng.") ||
       (errorData && (errorData.message || JSON.stringify(errorData))) ||
       defaultMessage;
 
