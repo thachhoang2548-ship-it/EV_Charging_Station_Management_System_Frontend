@@ -10,25 +10,25 @@ export const getUploadSignature = () => {
 };
 
 export async function getPresignedUploadUrl({ fileName, contentType, folder }) {
-  const response = await fetch("http://localhost:8080/api/files/upload-url", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
+  try {
+    const response = await apiClient.post('/api/files/upload-url', {
       fileName,
       contentType,
       folder
-    })
-  });
-
-  if (!response.ok) {
-    throw new Error("Không lấy được URL upload");
+    });
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || "Không lấy được URL upload");
   }
-  return response.json();
 }
 
 export async function uploadFileToS3(file, uploadUrl) {
+
+
+console.log("file.name =", file.name)
+console.log("file.type =", file.type)
+
+  // Dùng trực tiếp fetch để không bị dính Authorization header của apiClient (lỗi S3 Signature)
   const response = await fetch(uploadUrl, {
     method: "PUT",
     headers: {
@@ -38,30 +38,34 @@ export async function uploadFileToS3(file, uploadUrl) {
   });
 
   if (!response.ok) {
+    const errorText = await response.text();
+    console.error("S3 status:", response.status);
+    console.error("S3 error body:", errorText);
     throw new Error("Không upload được file lên S3");
   }
+
 
   return true;
 }
 
 export async function deleteFileFromS3(s3Key) {
-  const response = await fetch(`http://localhost:8080/api/files/delete?s3Key=${encodeURIComponent(s3Key)}`, {
-    method: "DELETE",
-  });
-
-  if (!response.ok) {
-    throw new Error("Không xóa được file");
+  try {
+    const response = await apiClient.delete('/api/files/delete', {
+      params: { s3Key }
+    });
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || "Không xóa được file");
   }
-  return response.text();
 }
 
 export async function getFileUrlFromS3(s3Key) {
-  const response = await fetch(`http://localhost:8080/api/files/url?s3Key=${encodeURIComponent(s3Key)}`, {
-    method: "GET",
-  });
-
-  if (!response.ok) {
-    throw new Error("Không lấy được URL file");
+  try {
+    const response = await apiClient.get('/api/files/url', {
+      params: { s3Key }
+    });
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || "Không lấy được URL file");
   }
-  return response.text();
 }
