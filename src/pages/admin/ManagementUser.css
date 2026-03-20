@@ -156,8 +156,8 @@
 /* Filter Section */
 .filter-section {
   position: sticky;
-  top: -20px;
-  z-index: 200;
+  top: 0;
+  z-index: 220;
   background: #ffffff;
   padding: 0 0 14px 0;
   border-bottom: 2px solid #e2e8f0;
@@ -251,8 +251,8 @@
 /* Sticky thead in management pages */
 .management-user-container .custom-table thead th {
   position: sticky;
-  top: 90px;
-  z-index: 150;
+  top: 56px;
+  z-index: 180;
   background: #f8fafc;
   white-space: nowrap;
   height: 52px;
@@ -324,7 +324,7 @@
 .custom-table tbody tr {
   transition: background-color 0.15s ease;
   border-bottom: 1px solid #cbd5e1;
-  height: 56px;
+  min-height: 56px;
 }
 
 .custom-table tbody tr:nth-child(odd) {
@@ -360,8 +360,9 @@
   display: flex;
   flex-direction: column;
   gap: 6px;
-  align-items: stretch;
-  width: 100%;
+  align-items: center;
+  width: min(140px, 100%);
+  margin: 0 auto;
 }
 
 .btn-delete,
@@ -369,7 +370,7 @@
 .btn-unblock,
 .btn-edit {
   padding: 0 10px;
-  height: 30px;
+  height: 32px;
   width: 100%;
   box-sizing: border-box;
   border: none;
