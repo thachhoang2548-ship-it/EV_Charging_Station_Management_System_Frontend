@@ -64,7 +64,7 @@ const ResetPassword = () => {
       } else {
         toast.error(
           response.message ||
-            "Không thể đặt lại mật khẩu. Vui lòng kiểm tra mã OTP!"
+            "Không thể đặt lại mật khẩu. Vui lòng kiểm tra mã OTP!",
         );
       }
     } catch (error) {
@@ -84,54 +84,6 @@ const ResetPassword = () => {
 
   return (
     <div className="auth-page">
-      <div className="auth-welcome-section">
-        <div className="auth-welcome-content">
-          <h1 className="auth-welcome-title">
-            Đặt lại
-            <br />
-            mật khẩu
-          </h1>
-          <div className="auth-welcome-divider"></div>
-          <p className="auth-welcome-text">
-            Nhập mã OTP đã được gửi đến email <strong>{email}</strong> và mật
-            khẩu mới của bạn.
-          </p>
-          <div className="auth-welcome-icon">
-            <svg
-              viewBox="0 0 100 100"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <circle
-                cx="50"
-                cy="50"
-                r="40"
-                stroke="white"
-                strokeWidth="3"
-                fill="rgba(255,255,255,0.1)"
-              />
-              <rect
-                x="35"
-                y="40"
-                width="30"
-                height="25"
-                rx="3"
-                stroke="white"
-                strokeWidth="3"
-                fill="rgba(255,255,255,0.2)"
-              />
-              <path
-                d="M40 40 L40 32 C40 25 45 20 50 20 C55 20 60 25 60 32 L60 40"
-                stroke="white"
-                strokeWidth="3"
-                fill="none"
-              />
-              <circle cx="50" cy="52" r="3" fill="white" />
-            </svg>
-          </div>
-        </div>
-      </div>
-
       <div className="auth-container">
         <div className="auth-logo">
           <div className="auth-logo-icon auth-logo-bolt">
@@ -139,8 +91,10 @@ const ResetPassword = () => {
           </div>
           <h1 className="auth-title">Đặt Lại Mật Khẩu</h1>
           <p className="auth-subtitle">
-            Nhập <span className="highlight">mã OTP</span> và{" "}
-            <span className="highlight">mật khẩu mới</span>
+            Nhập <span className="highlight">mã OTP</span> đã được gửi tới email
+            <strong className="auth-subtitle-email"> {email} </strong>
+            để xác thực, sau đó tạo{" "}
+            <span className="highlight">mật khẩu mới</span>.
           </p>
         </div>
 
