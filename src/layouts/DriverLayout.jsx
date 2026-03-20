@@ -17,6 +17,8 @@ export default function DriverLayout() {
     paths.verify,
     paths.forgotPassword,
     paths.resetPassword,
+    paths.paymentSuccess,
+    paths.paymentFailed,
     paths.rules,
     paths.stations,
   ];

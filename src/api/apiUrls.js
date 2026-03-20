@@ -1,7 +1,7 @@
 import axios from "axios";
 import { clearAuthData } from "../utils/authUtils.js";
 
-const API_BASE_URL =  "https://api.evcsystem.online";
+const API_BASE_URL = "https://api.evcsystem.online";
 
 // Khởi tạo Axios Instance
 const apiClient = axios.create({
@@ -22,7 +22,7 @@ apiClient.interceptors.request.use(
   },
   (error) => {
     return Promise.reject(error);
-  }
+  },
 );
 
 apiClient.interceptors.response.use(
@@ -42,7 +42,7 @@ apiClient.interceptors.response.use(
     ];
 
     const isPublicEndpoint = publicEndpoints.some((endpoint) =>
-      requestUrl.includes(endpoint)
+      requestUrl.includes(endpoint),
     );
 
     if (status === 401 && !isPublicEndpoint) {
@@ -56,7 +56,7 @@ apiClient.interceptors.response.use(
     }
 
     return Promise.reject(error);
-  }
+  },
 );
 
 export default apiClient;
