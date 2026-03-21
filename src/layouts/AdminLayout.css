@@ -3,31 +3,31 @@
    Màu sắc theo homepage: green primary, white background
    ============================================================ */
 :root {
-  --primary:        #16a34a;
-  --primary-dark:   #15803d;
-  --primary-light:  #f0fdf4;
-  --primary-muted:  rgba(22, 163, 74, 0.12);
-  --primary-glow:   rgba(22, 163, 74, 0.25);
+  --primary: #16a34a;
+  --primary-dark: #15803d;
+  --primary-light: #f0fdf4;
+  --primary-muted: rgba(22, 163, 74, 0.12);
+  --primary-glow: rgba(22, 163, 74, 0.25);
 
-  --bg-main:        #f8fafc;
-  --bg-sidebar:     #ffffff;
-  --bg-card:        #ffffff;
+  --bg-main: #f8fafc;
+  --bg-sidebar: #ffffff;
+  --bg-card: #ffffff;
 
-  --text-main:      #1e293b;
-  --text-sub:       #64748b;
-  --text-muted:     #94a3b8;
+  --text-main: #1e293b;
+  --text-sub: #64748b;
+  --text-muted: #94a3b8;
 
-  --border:         #e2e8f0;
-  --border-light:   #f1f5f9;
+  --border: #e2e8f0;
+  --border-light: #f1f5f9;
 
-  --shadow-xs:  0 1px 2px rgba(0,0,0,0.05);
-  --shadow-sm:  0 1px 4px rgba(0,0,0,0.08);
-  --shadow-md:  0 4px 12px rgba(0,0,0,0.10);
-  --shadow-lg:  0 8px 24px rgba(0,0,0,0.12);
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-sm: 0 1px 4px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
 
   --sidebar-width: 240px;
-  --radius:     12px;
-  --radius-sm:  8px;
+  --radius: 12px;
+  --radius-sm: 8px;
 }
 
 /* Root Layout */
@@ -36,7 +36,7 @@
   height: 100vh;
   overflow: hidden;
   background-color: var(--bg-main);
-  font-family: 'Inter', 'SVN-Gilroy', 'Segoe UI', sans-serif;
+  font-family: "Inter", "SVN-Gilroy", "Segoe UI", sans-serif;
 }
 
 /* Sidebar */
@@ -60,8 +60,12 @@
 }
 
 /* Scrollbar sidebar */
-.admin-sidebar::-webkit-scrollbar { width: 4px; }
-.admin-sidebar::-webkit-scrollbar-track { background: transparent; }
+.admin-sidebar::-webkit-scrollbar {
+  width: 4px;
+}
+.admin-sidebar::-webkit-scrollbar-track {
+  background: transparent;
+}
 .admin-sidebar::-webkit-scrollbar-thumb {
   background: #cbd5e1;
   border-radius: 2px;
@@ -71,14 +75,152 @@
 }
 
 /* Scrollbar main */
-.admin-main::-webkit-scrollbar { width: 6px; }
-.admin-main::-webkit-scrollbar-track { background: transparent; }
+.admin-main::-webkit-scrollbar {
+  width: 6px;
+}
+.admin-main::-webkit-scrollbar-track {
+  background: transparent;
+}
 .admin-main::-webkit-scrollbar-thumb {
   background: #cbd5e1;
   border-radius: 3px;
 }
 .admin-main::-webkit-scrollbar-thumb:hover {
   background: var(--primary);
+}
+
+/* ============================================================
+   MOBILE TOP HEADER
+   ============================================================ */
+.admin-mobile-header {
+  display: none;
+  height: 56px;
+  background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  padding: 0 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 999;
+  gap: 12px;
+}
+
+.admin-mobile-header-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+}
+
+.admin-mobile-header-icon {
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.admin-mobile-header-icon svg {
+  width: 22px;
+  height: 22px;
+  color: #ffffff;
+}
+
+.admin-mobile-header-text-group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.admin-mobile-header-text {
+  font-size: 18px;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: -0.3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.2;
+}
+
+.admin-mobile-header-text strong {
+  color: #bbf7d0;
+}
+
+.admin-mobile-header-role {
+  font-size: 10px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.75);
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.2;
+}
+
+/* ============================================================
+   HAMBURGER BUTTON - Mobile only
+   ============================================================ */
+.admin-hamburger-btn {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  border: 1.5px solid rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  padding: 10px;
+  position: relative;
+  z-index: 999;
+  transition: all 0.3s ease;
+  border-radius: 10px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+.admin-hamburger-btn:hover {
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+}
+
+.hamburger-line {
+  width: 24px;
+  height: 3px;
+  background-color: #1e293b;
+  border-radius: 2px;
+  transition: all 0.3s ease;
+}
+
+/* Active state - khi click hamburger */
+.admin-hamburger-btn.active .hamburger-line {
+  background-color: var(--primary);
+}
+
+/* Hide mobile-only hamburger inside sidebar */
+.admin-hamburger-btn-mobile {
+  display: none !important;
+}
+
+/* ============================================================
+   SIDEBAR OVERLAY - Mobile only
+   ============================================================ */
+.admin-sidebar-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 997;
+  animation: fadeIn 0.3s ease;
 }
 
 /* ============================================================
@@ -106,4 +248,199 @@
   border-color: #15803d !important;
   box-shadow: 0 0 0 0.25rem rgba(22, 163, 74, 0.5) !important;
   color: #ffffff !important;
+}
+
+/* ============================================================
+   RESPONSIVE DESIGN — Mobile First
+   ============================================================ */
+
+/* Desktop (768px+) - Giữ nguyên design gốc */
+@media (min-width: 768px) {
+  .admin-layout {
+    display: flex;
+    flex-direction: row;
+  }
+
+  .admin-mobile-header {
+    display: none !important;
+  }
+
+  .admin-sidebar-desktop {
+    display: flex !important;
+    position: static;
+    width: var(--sidebar-width);
+    transform: translateX(0) !important;
+  }
+
+  .admin-sidebar-mobile {
+    display: none !important;
+  }
+
+  .admin-sidebar-overlay {
+    display: none !important;
+  }
+
+  .admin-hamburger-btn {
+    display: none !important;
+  }
+
+  .admin-main {
+    flex: 1;
+    position: relative;
+  }
+}
+
+/* Tablet & Mobile (< 768px) - Responsive layout */
+@media (max-width: 767px) {
+  .admin-layout {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .admin-mobile-header {
+    display: flex !important;
+  }
+
+  /* Desktop sidebar ẩn trên mobile */
+  .admin-sidebar-desktop {
+    display: none !important;
+  }
+
+  /* Ẩn navBrand trong mobile sidebar */
+  .admin-sidebar-mobile .navBrand,
+  .admin-sidebar-mobile .navDivider {
+    display: none;
+  }
+
+  /* Mobile sidebar - fixed top left, slide từ trái */
+  .admin-sidebar-mobile {
+    display: flex;
+    position: fixed;
+    left: 0;
+    top: 60px;
+    bottom: 0;
+    width: 240px;
+    max-width: 85vw;
+    background-color: var(--bg-sidebar);
+    border-right: 1px solid var(--border);
+    flex-direction: column;
+    z-index: 998;
+    overflow-y: auto;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .admin-sidebar-mobile.open {
+    transform: translateX(0);
+  }
+
+  /* Hamburger button hiện trên mobile */
+  .admin-hamburger-btn {
+    display: flex;
+  }
+
+  /* Overlay khi sidebar mở */
+  .admin-sidebar-overlay {
+    display: block;
+    position: fixed;
+    top: 60px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+  }
+
+  /* Main content adjustment */
+  .admin-main {
+    flex: 1;
+    overflow: auto;
+    width: 100%;
+    padding-top: 0;
+  }
+
+  /* Padding responsive cho mobile */
+  .dashboard-container,
+  .management-user-container,
+  .staff-dashboard {
+    padding: 16px !important;
+  }
+
+  /* KPI Grid - 1 column trên mobile */
+  .kpi-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Charts Grid - 1 column trên mobile */
+  .charts-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Statistics section - 1 column trên mobile */
+  .statistics-section {
+    grid-template-columns: 1fr !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+
+  /* Table scrollable trên mobile */
+  .table-container {
+    overflow-x: auto;
+  }
+
+  .custom-table {
+    font-size: 13px;
+  }
+
+  .custom-table thead th,
+  .custom-table tbody td {
+    padding: 10px 8px;
+  }
+
+  /* Action section responsive */
+  .action-section {
+    flex-direction: column;
+    gap: 12px;
+    height: auto;
+    padding: 16px;
+  }
+
+  .action-section h2 {
+    font-size: 18px;
+  }
+}
+
+/* Extra small devices (320px - 480px) */
+@media (max-width: 480px) {
+  .admin-sidebar-mobile {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .dashboard-container,
+  .management-user-container,
+  .staff-dashboard {
+    padding: 12px !important;
+  }
+
+  .action-section {
+    padding: 12px;
+  }
+
+  .action-section h2 {
+    font-size: 16px;
+  }
+
+  .btn-add-staff {
+    width: 100%;
+    padding: 12px 16px;
+  }
+
+  .stat-card {
+    min-height: 80px;
+    font-size: 12px;
+  }
+
+  .stat-card strong {
+    font-size: 24px;
+  }
 }
