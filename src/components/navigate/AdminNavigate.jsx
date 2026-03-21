@@ -11,23 +11,22 @@ import { NavLink, useLocation } from "react-router-dom";
 import "./AdminNavigate.css";
 import { useNavigate } from "react-router-dom";
 import paths from "../../path/paths.jsx";
-import { useLogout } from '../../hooks/useAuth.js';
+import { useLogout } from "../../hooks/useAuth.js";
 import EVLogoIcon from "../logo/EVLogoIcon.jsx";
 
+export default function AdminNavigate({ onNavClick }) {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { logout, loading } = useLogout();
 
-export default function AdminNavigate() {
-    const location = useLocation();
-    const navigate = useNavigate();
-    const { logout, loading } = useLogout();
+  const handleLogout = async () => {
+    const result = await logout();
+    if (result.success) {
+      navigate(paths.login);
+    }
+  };
 
-    const handleLogout = async () => {
-        const result = await logout();
-        if (result.success) {
-          navigate(paths.login);
-        }
-      };
-
-    const navItems = [
+  const navItems = [
     {
       path: paths.adminDashboard,
       icon: dashBoardIcon,
@@ -76,52 +75,57 @@ export default function AdminNavigate() {
   ];
 
   return (
-      <div className="navContainer">
-        {/* Brand Header */}
-        <div className="navBrand">
-          <div className="navBrandIcon"><EVLogoIcon className="navBrandIconSvg" strokeWidth={2.5} /></div>
-          <div className="navBrandText">
-            <span className="navBrandName">EV<span>Charge</span></span>
-            <span className="navBrandRole">Admin Portal</span>
-          </div>
+    <div className="navContainer">
+      {/* Brand Header */}
+      <div className="navBrand">
+        <div className="navBrandIcon">
+          <EVLogoIcon className="navBrandIconSvg" strokeWidth={2.5} />
         </div>
-
-        <div className="navDivider" />
-
-        {/* Nav Items */}
-        <div className="navItems">
-          {navItems.map((item, index) => {
-            const isHomeActive = item.path === "/" && location.pathname === "/";
-            const isOtherActive =
-              item.path !== "/" && location.pathname === item.path;
-            const isActive = isHomeActive || isOtherActive;
-
-            return (
-              <NavLink
-                key={index}
-                to={item.path}
-                className={`navItem ${isActive ? "navItemActive" : ""}`}
-                title={item.label}
-              >
-                <span className="navIcon">
-                  <img src={item.icon} alt={item.label} />
-                </span>
-                <span className="navLabel">{item.label}</span>
-              </NavLink>
-            );
-          })}
-        </div>
-
-        {/* Footer / Logout */}
-        <div className="navFooter">
-          <button
-            className="navLogoutBtn"
-            onClick={handleLogout}
-            disabled={loading}
-          >
-            {loading ? '⏳ Đang đăng xuất...' : '↩ Đăng xuất'}
-          </button>
+        <div className="navBrandText">
+          <span className="navBrandName">
+            EV<span>Charge</span>
+          </span>
+          <span className="navBrandRole">Admin Portal</span>
         </div>
       </div>
+
+      <div className="navDivider" />
+
+      {/* Nav Items */}
+      <div className="navItems">
+        {navItems.map((item, index) => {
+          const isHomeActive = item.path === "/" && location.pathname === "/";
+          const isOtherActive =
+            item.path !== "/" && location.pathname === item.path;
+          const isActive = isHomeActive || isOtherActive;
+
+          return (
+            <NavLink
+              key={index}
+              to={item.path}
+              className={`navItem ${isActive ? "navItemActive" : ""}`}
+              title={item.label}
+              onClick={() => onNavClick && onNavClick()}
+            >
+              <span className="navIcon">
+                <img src={item.icon} alt={item.label} />
+              </span>
+              <span className="navLabel">{item.label}</span>
+            </NavLink>
+          );
+        })}
+      </div>
+
+      {/* Footer / Logout */}
+      <div className="navFooter">
+        <button
+          className="navLogoutBtn"
+          onClick={handleLogout}
+          disabled={loading}
+        >
+          {loading ? "⏳ Đang đăng xuất..." : "↩ Đăng xuất"}
+        </button>
+      </div>
+    </div>
   );
 }
