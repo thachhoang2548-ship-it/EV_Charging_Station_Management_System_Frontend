@@ -46,8 +46,10 @@ export default function DriverSidebarLayout() {
           <span className="mobile-header-title">EV<span>Charge</span></span>
         </Link>
 
-        {/* Spacer để cân bằng flex */}
-        <div style={{ width: 40 }} />
+        {/* Home icon — quick access to landing page */}
+        <Link to={paths.home} className="mobile-header-home" aria-label="Về trang chủ">
+          <Home size={20} />
+        </Link>
       </header>
 
       {/* ══════════ DRAWER OVERLAY ══════════ */}

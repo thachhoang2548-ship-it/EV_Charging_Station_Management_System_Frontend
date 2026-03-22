@@ -64,6 +64,26 @@
 }
 .mobile-header-title span { color: #bbf7d0; }
 
+/* Home icon on mobile header */
+.mobile-header-home {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255,255,255,0.18);
+  border: none;
+  border-radius: 10px;
+  color: #fff;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.2s;
+  -webkit-tap-highlight-color: transparent;
+}
+.mobile-header-home:active {
+  background: rgba(255,255,255,0.3);
+}
+
 /* ══════════════════════════════════════════════════════════════
    DRAWER OVERLAY
    ══════════════════════════════════════════════════════════════ */

@@ -252,6 +252,50 @@
   box-shadow: 0 4px 10px rgba(22, 163, 74, 0.25);
 }
 
+/* === NÚT VỀ TRANG CHỦ (Secondary - Grey) === */
+.navBackHomeBtn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 9px 10px;
+  background: transparent;
+  color: #64748b;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  font-family: inherit;
+  text-decoration: none;
+}
+
+.navBackHomeBtn:hover {
+  background: #f0fdf4;
+  color: #16a34a;
+}
+
+.navFooterIconHome {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #f1f5f9;
+  color: #64748b;
+  transition: all 0.18s ease;
+  flex-shrink: 0;
+}
+
+.navBackHomeBtn:hover .navFooterIconHome {
+  background: #16a34a;
+  color: #fff;
+  box-shadow: 0 4px 10px rgba(22, 163, 74, 0.25);
+}
+
 .navLogoutBtn {
   width: 100%;
   display: flex;
