@@ -12,7 +12,7 @@ import transactionIcon from "../../assets/icon/staff/payment-method.png";
 import notifIcon     from "../../assets/icon/admin/statistic.png";
 import profileIcon   from "../../assets/icon/admin/manage_user.png";
 import EVLogoIcon from "../logo/EVLogoIcon.jsx";
-import { LogOut } from "lucide-react";
+import { LogOut, Globe } from "lucide-react";
 
 const NAV_ITEMS = [
   { path: paths.guide,           icon: dashboardIcon,   label: "Hướng dẫn sử dụng" },
@@ -70,6 +70,22 @@ export default function DriverSidebarNavigate({ onClose }) {
 
       {/* ── Footer ── */}
       <div className="navFooter">
+        {/* Về trang chủ — Secondary action */}
+        <Link
+          to={paths.home}
+          className="navBackHomeBtn"
+          title="Về trang chủ"
+          onClick={onClose}
+        >
+          <span className="navFooterIcon navFooterIconHome">
+            <Globe size={16} />
+          </span>
+          <span className="navLabel">Về trang chủ</span>
+        </Link>
+
+        <div className="navDivider" style={{ margin: "4px 0" }} />
+
+        {/* Đăng xuất */}
         <button
           className="navLogoutBtn"
           onClick={handleLogout}
