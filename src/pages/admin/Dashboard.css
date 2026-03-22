@@ -272,19 +272,32 @@
 @media (max-width: 767px) and (min-width: 481px) {
   .dashboard-container {
     padding: 16px;
+    padding-bottom: 80px;
   }
 
   .kpi-grid {
     grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
+    gap: 16px; /* Tăng gap giữa cards */
+    margin-bottom: 24px;
+  }
+
+  .kpi-card {
+    margin-bottom: 0; /* gap của grid đã lo */
   }
 
   .charts-grid {
     grid-template-columns: 1fr;
+    gap: 20px; /* Khoảng cách giữa chart cards */
+    margin-bottom: 24px;
+  }
+
+  .chart-placeholder {
+    margin-bottom: 0;
   }
 
   .dashboard-header {
     font-size: 18px;
+    margin-bottom: 20px;
   }
 
   .custom-table {
@@ -295,27 +308,32 @@
   .custom-table tbody td {
     padding: 10px 8px;
   }
+
+  .table-container {
+    margin-top: 24px;
+  }
 }
 
 /* Mobile (max 480px) */
 @media (max-width: 480px) {
   .dashboard-container {
-    padding: 12px;
+    padding: 14px 16px;
+    padding-bottom: 80px;
   }
 
   .dashboard-header {
     font-size: 16px;
-    margin-bottom: 16px;
+    margin-bottom: 20px;
   }
 
   .kpi-grid {
     grid-template-columns: 1fr;
-    gap: 12px;
-    margin-bottom: 16px;
+    gap: 14px; /* Khoảng cách thoáng giữa các KPI card */
+    margin-bottom: 24px;
   }
 
   .kpi-card {
-    padding: 16px 18px;
+    padding: 18px 20px;
     min-height: 90px;
   }
 
@@ -344,10 +362,12 @@
   .table-container {
     padding: 16px;
     overflow-x: auto;
+    -webkit-overflow-scrolling: touch; /* Cuộn mượt trên iOS */
   }
 
   .custom-table {
     font-size: 12px;
+    min-width: 600px; /* Giữ cấu trúc bảng, cho phép cuộn ngang */
   }
 
   .custom-table thead th {

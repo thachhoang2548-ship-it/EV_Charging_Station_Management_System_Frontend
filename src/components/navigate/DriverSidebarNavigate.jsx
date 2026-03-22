@@ -24,7 +24,7 @@ const NAV_ITEMS = [
   { path: paths.profile,         icon: profileIcon,     label: "Hồ sơ"            },
 ];
 
-export default function DriverSidebarNavigate() {
+export default function DriverSidebarNavigate({ onClose }) {
   const location = useLocation();
   const navigate  = useNavigate();
   const { logout, loading } = useLogout();
@@ -37,7 +37,7 @@ export default function DriverSidebarNavigate() {
   return (
     <div className="navContainer">
       {/* ── Brand Header — clickable, links to Home ── */}
-      <Link to={paths.home} className="navBrand" title="Về trang chủ">
+      <Link to={paths.home} className="navBrand" title="Về trang chủ" onClick={onClose}>
         <div className="navBrandIcon"><EVLogoIcon className="navBrandIconSvg" strokeWidth={2.5} /></div>
         <div className="navBrandText">
           <span className="navBrandName">EV<span>Charge</span></span>
@@ -57,6 +57,7 @@ export default function DriverSidebarNavigate() {
               to={item.path}
               className={`navItem ${isActive ? "navItemActive" : ""}`}
               title={item.label}
+              onClick={onClose}
             >
               <span className="navIcon">
                 <img src={item.icon} alt={item.label} />

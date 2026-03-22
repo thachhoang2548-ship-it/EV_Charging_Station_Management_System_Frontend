@@ -10,6 +10,47 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent; /* Tắt highlight mặc định khi chạm trên mobile */
+}
+
+/* ── Mobile Spacing & Whitespace Reset ── */
+@media (max-width: 1024px) {
+  input, textarea, select {
+    font-size: 16px !important; /* Chống iOS auto-zoom */
+  }
+
+  /* --- Feedback chạm --- */
+  button:active, a:active {
+    opacity: 0.85;
+    transform: scale(0.97);
+  }
+
+  /* --- 1. Không gian thở (Screen Padding) --- */
+  .dashboard-container,
+  .main-content,
+  .page-container {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
+
+  /* --- 2. Line-height thoáng cho text --- */
+  body {
+    line-height: 1.6;
+  }
+  p, li, span, label, td, th {
+    line-height: 1.55;
+  }
+  h1, h2, h3 {
+    line-height: 1.3;
+  }
+
+  /* --- 3. Nút bấm thoáng đãng --- */
+  button, .btn, [role="button"] {
+    min-height: 44px;
+    padding: 12px 20px;
+    margin-top: 8px;
+    margin-bottom: 8px;
+  }
 }
 
 html {
