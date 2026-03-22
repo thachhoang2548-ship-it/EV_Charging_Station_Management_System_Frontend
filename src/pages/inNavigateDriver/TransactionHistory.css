@@ -600,56 +600,127 @@
 
 @media (max-width: 768px) {
   .tx-hero {
-    padding: 28px 20px 26px;
-    border-radius: 16px;
+    padding: 24px 18px 22px;
+    border-radius: 14px;
+    margin-bottom: 24px; /* Section gap */
   }
   .tx-hero-title {
-    font-size: 1.35rem;
+    font-size: 1.25rem;
+    margin-bottom: 6px;
+  }
+  .tx-hero-sub {
+    margin-bottom: 20px;
+    line-height: 1.5;
   }
   .tx-counters {
     grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
-    padding: 14px 10px;
+    gap: 14px; /* Gap giữa counter cells */
+    padding: 16px 12px;
   }
   .tx-counter:not(:last-child)::after {
     display: none;
   }
 
+  /* Controls: stack + spacing */
   .tx-controls {
     flex-direction: column;
-    gap: 10px;
+    gap: 12px;
+    margin-bottom: 24px;
   }
   .tx-search {
     min-width: unset;
   }
+  .tx-search-input {
+    padding: 13px 14px 13px 42px; /* Thoáng hơn */
+  }
+  .tx-select {
+    padding: 13px 14px;
+    min-width: unset;
+    width: 100%;
+  }
 
+  /* Tabs: scroll padding */
+  .tx-tabs {
+    margin-bottom: 20px;
+    gap: 10px;
+    padding-left: 2px; /* Chống bị cắt đầu tab */
+  }
+  .tx-tab {
+    padding: 10px 18px;
+  }
+
+  /* Alert: breathing room */
+  .tx-alert {
+    margin-bottom: 20px;
+    padding: 14px 18px;
+    line-height: 1.5;
+  }
+
+  /* List: card gap rõ ràng */
+  .tx-list {
+    gap: 16px; /* Khoảng cách rõ giữa các card */
+  }
+
+  /* Card body */
   .tx-card-body {
     flex-direction: column;
     align-items: flex-start;
-    padding: 16px;
-    gap: 12px;
+    padding: 18px;
+    gap: 14px;
+  }
+  .tx-card-desc {
+    line-height: 1.45;
+  }
+  .tx-card-details {
+    gap: 8px;
+    margin-top: 4px;
   }
   .tx-card-side {
     width: 100%;
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    padding-top: 12px;
+    padding-top: 14px;
     border-top: 1px solid #f3f4f6;
+  }
+
+  /* Container bottom padding */
+  .dashboard-container {
+    padding-bottom: 88px;
+  }
+
+  /* Hero flex-wrap: nút Làm mới xuống dòng */
+  .tx-hero > div {
+    flex-wrap: wrap;
+    gap: 14px;
+  }
+  .tx-refresh {
+    width: 100%;
+    justify-content: center;
+    min-height: 44px;
+    padding: 10px 20px;
+  }
+
+  /* Pay button thoáng */
+  .tx-btn-pay {
+    padding: 8px 16px;
+    font-size: 0.82rem;
+    min-height: 36px;
   }
 }
 
 @media (max-width: 480px) {
   .tx-hero {
-    padding: 22px 16px 22px;
+    padding: 20px 16px;
     border-radius: 14px;
-    margin-bottom: 20px;
+    margin-bottom: 22px;
   }
   .tx-hero-title {
-    font-size: 1.2rem;
+    font-size: 1.15rem;
   }
   .tx-hero-sub {
     font-size: 0.85rem;
+    line-height: 1.5;
   }
   .tx-counter-num {
     font-size: 1.3rem;
@@ -658,13 +729,21 @@
     font-size: 0.65rem;
   }
   .tx-tab {
-    padding: 7px 14px;
+    padding: 9px 16px;
     font-size: 0.8rem;
+  }
+  .tx-card-body {
+    padding: 16px;
+    gap: 12px;
   }
   .tx-card-desc {
     font-size: 0.92rem;
+    line-height: 1.45;
   }
   .tx-card-price {
     font-size: 1rem;
   }
-}
+  .tx-list {
+    gap: 14px;
+  }
+}
