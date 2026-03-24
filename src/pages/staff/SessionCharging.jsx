@@ -294,9 +294,8 @@ export default function SessionCharging() {
 
       <div className="action-section">
         <h2>Quản lý phiên sạc</h2>
-        <div>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
           <button
-            style={{ marginRight: "10px" }}
             className="btn-add-staff"
             onClick={() => navigate(paths.instantCharging)}
           >

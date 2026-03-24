@@ -3,7 +3,6 @@ import FormProfile from './FormChangePassword.jsx';
 import './Header.css';
 import man from '../../assets/icon/man.png';
 import girl from '../../assets/icon/girl.png';
-import { KeyRound } from 'lucide-react';
 
 // ── Avatar with initial-letter fallback ──
 function UserAvatar({ name, gender, avatarUrl, size = 36 }) {
@@ -71,7 +70,17 @@ export default function Header() {
             onClick={() => setFormProfile(true)}
             title="Đổi mật khẩu"
           >
-            <KeyRound size={15} />
+            <svg 
+              xmlns="http://www.w3.org/2000/svg" 
+              width="16" height="16" 
+              viewBox="0 0 24 24" fill="none" 
+              stroke="currentColor" strokeWidth="2.5" 
+              strokeLinecap="round" strokeLinejoin="round"
+              style={{ display: 'block', flexShrink: 0 }}
+            >
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+            </svg>
           </button>
 
           <div className="hdr-user-widget">

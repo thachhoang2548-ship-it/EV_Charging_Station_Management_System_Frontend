@@ -366,27 +366,28 @@ export default function ManagementTransaction() {
         <div className="table-scroll-container">
           {/* Filter Section */}
           <div className="filter-section">
-            <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
-              <Nav
-                justify
-                variant="tabs"
-                activeKey={filter || "all"}
-                onSelect={(k) => handleFilterChange(k === "all" ? null : k)}
-                style={{ flex: 1 }}
-              >
-                <Nav.Item>
-                  <Nav.Link eventKey="all">Tất cả giao dịch</Nav.Link>
-                </Nav.Item>
-                <Nav.Item>
-                  <Nav.Link eventKey="COMPLETED">Hoàn tất</Nav.Link>
-                </Nav.Item>
-                <Nav.Item>
-                  <Nav.Link eventKey="PENDING">Đang xử lý</Nav.Link>
-                </Nav.Item>
-                <Nav.Item>
-                  <Nav.Link eventKey="FAILED">Thất bại</Nav.Link>
-                </Nav.Item>
-              </Nav>
+            <div style={{ display: "flex", gap: "10px", alignItems: "center", flexWrap: "wrap" }}>
+              <div style={{ flex: 1, minWidth: "250px", overflowX: "auto" }}>
+                <Nav
+                  variant="tabs"
+                  activeKey={filter || "all"}
+                  onSelect={(k) => handleFilterChange(k === "all" ? null : k)}
+                  style={{ flexWrap: "nowrap", whiteSpace: "nowrap", borderBottom: "none" }}
+                >
+                  <Nav.Item>
+                    <Nav.Link eventKey="all">Tất cả giao dịch</Nav.Link>
+                  </Nav.Item>
+                  <Nav.Item>
+                    <Nav.Link eventKey="COMPLETED">Hoàn tất</Nav.Link>
+                  </Nav.Item>
+                  <Nav.Item>
+                    <Nav.Link eventKey="PENDING">Đang xử lý</Nav.Link>
+                  </Nav.Item>
+                  <Nav.Item>
+                    <Nav.Link eventKey="FAILED">Thất bại</Nav.Link>
+                  </Nav.Item>
+                </Nav>
+              </div>
 
               <button
                 onClick={fetchInvoices}
