@@ -20,6 +20,7 @@ export default function DriverLayout() {
     paths.paymentSuccess,
     paths.paymentFailed,
     paths.rules,
+    paths.privacyPolicy,
     paths.stations,
   ];
   const isAuthRoute =

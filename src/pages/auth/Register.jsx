@@ -412,11 +412,11 @@ const Register = () => {
               />
               <span className="auth-checkbox-text">
                 Tôi đồng ý với{" "}
-                <a href="#terms" className="auth-link">
+                <a href="/rules" target="_blank" rel="noopener noreferrer" className="auth-link">
                   Điều khoản Dịch vụ
                 </a>{" "}
                 và{" "}
-                <a href="#privacy" className="auth-link">
+                <a href="/privacy-policy" target="_blank" rel="noopener noreferrer" className="auth-link">
                   Chính sách Bảo mật
                 </a>
               </span>

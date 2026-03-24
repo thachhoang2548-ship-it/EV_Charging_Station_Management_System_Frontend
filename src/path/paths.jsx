@@ -8,6 +8,7 @@ export const paths = {
   paymentSuccess: "/payment-success",
   paymentFailed: "/payment-failed",
   error: "/error",
+  privacyPolicy: "/privacy-policy",
   //driver
   home: "/",
   about: "/about",
