@@ -2,6 +2,7 @@ import { Outlet } from "react-router-dom";
 import { useState } from "react";
 import AdminNavigate from "../components/navigate/AdminNavigate";
 import StaffNavigate from "../components/navigate/StaffNavigate.jsx";
+import PortalBottomNav from "../components/navigate/PortalBottomNav.jsx";
 import EVLogoIcon from "../components/logo/EVLogoIcon.jsx";
 import "./AdminLayout.css";
 
@@ -72,6 +73,8 @@ export default function AdminLayout() {
       <main className="admin-main">
         <Outlet />
       </main>
+
+      <PortalBottomNav />
     </div>
   );
 }

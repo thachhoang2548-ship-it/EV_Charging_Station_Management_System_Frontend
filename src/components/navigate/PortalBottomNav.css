@@ -1,0 +1,77 @@
+/* Mobile only bottom nav */
+.portal-bottom-nav {
+  display: none; /* hidden on desktop */
+}
+
+@media (max-width: 768px) {
+  .portal-bottom-nav {
+    display: block;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    height: 64px;
+    background: #ffffff;
+    border-top: 1px solid #e2e8f0;
+    box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.06);
+    z-index: 996;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  .portal-bn-scroll {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+  }
+  
+  .portal-bn-scroll::-webkit-scrollbar {
+    display: none; /* Chrome/Safari */
+  }
+
+  /* Make items slightly flex-shrink so they fit or scroll nicely */
+  .portal-bn-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    color: #94a3b8;
+    transition: color 0.2s;
+    min-width: 65px;
+    flex-shrink: 0; 
+    height: 100%;
+    flex: 1; /* Stretch out to take available space */
+  }
+
+  .portal-bn-item:active {
+    transform: scale(0.92);
+  }
+
+  .portal-bn-icon {
+    width: 20px;
+    height: 20px;
+    filter: brightness(0) invert(0.8);
+    margin-bottom: 2px;
+  }
+
+  .portal-bn-label {
+    font-size: 0.65rem;
+    font-weight: 600;
+    text-align: center;
+    white-space: nowrap;
+    letter-spacing: 0.2px;
+  }
+
+  .portal-bn-item.active {
+    color: #16a34a; /* Green for Admin/Staff matching theme */
+  }
+  
+  .portal-bn-item.active .portal-bn-icon {
+    /* filter to make it #16a34a equivalent */
+    filter: brightness(0) saturate(100%) invert(48%) sepia(51%) saturate(543%) hue-rotate(85deg) brightness(96%) contrast(92%) drop-shadow(0 2px 4px rgba(22, 163, 74, 0.3));
+    transform: none;
+  }
+}

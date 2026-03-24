@@ -68,14 +68,6 @@ export default function DriverSidebarLayout() {
       <aside
         className={`driver-sidebar ${drawerOpen ? "driver-sidebar--open" : ""}`}
       >
-        {/* Nút đóng drawer (chỉ hiển thị trên mobile) */}
-        <button
-          className="drawer-close-btn"
-          onClick={() => setDrawerOpen(false)}
-          aria-label="Đóng menu"
-        >
-          <X size={20} />
-        </button>
         <DriverSidebarNavigate onClose={() => setDrawerOpen(false)} />
       </aside>
 
