@@ -4,24 +4,51 @@ import {
   markNotificationAsReadApi,
 } from "../../api/driverApi.js";
 import { toast } from "react-toastify";
-import NotificationCard from "../../components/driver/NotifiationCard.jsx";
 import Header from "../../components/admin/Header.jsx";
 import "../admin/Dashboard.css";
 import "./Notification.css";
 import {
   Bell, BellRing, Zap, PlugZap, Clock, Battery,
-  DollarSign, CreditCard, X, Info, Inbox,
+  DollarSign, CreditCard, X, Info, CheckCircle2,
+  CalendarCheck, XCircle, AlertTriangle, ShieldAlert,
 } from "lucide-react";
 
-/* --- type helpers (same as Card) --- */
+/* ── type config (icon + bg cho vòng tròn) ── */
 const TYPE_MAP = {
-  CHARGING_COMPLETED: { Icon: Zap, cls: "charging" },
-  SYSTEM:             { Icon: Info, cls: "system" },
-  WARNING:            { Icon: Info, cls: "warning" },
+  BOOKING_CONFIRMED:  { Icon: CalendarCheck,  bg: "#dcfce7", color: "#16a34a", label: "Đặt chỗ" },
+  BOOKING_CANCELED:   { Icon: XCircle,        bg: "#fee2e2", color: "#dc2626", label: "Hủy đặt chỗ" },
+  CHARGING_STARTED:   { Icon: PlugZap,        bg: "#dbeafe", color: "#2563eb", label: "Bắt đầu sạc" },
+  CHARGING_COMPLETED: { Icon: Zap,            bg: "#dcfce7", color: "#16a34a", label: "Sạc hoàn tất" },
+  PAYMENT_SUCCESS:    { Icon: CreditCard,     bg: "#d1fae5", color: "#059669", label: "Thanh toán" },
+  BOOKING_OVERDUE:    { Icon: AlertTriangle,  bg: "#fef3c7", color: "#d97706", label: "Quá hạn" },
+  USER_BANNED:        { Icon: ShieldAlert,    bg: "#fee2e2", color: "#dc2626", label: "Cảnh báo" },
+  SYSTEM:             { Icon: Info,           bg: "#e0e7ff", color: "#4f46e5", label: "Hệ thống" },
+  WARNING:            { Icon: AlertTriangle,  bg: "#fef3c7", color: "#d97706", label: "Cảnh báo" },
 };
-const getTypeInfo = (type) => TYPE_MAP[type] || { Icon: Info, cls: "default" };
+const getTypeInfo = (type) =>
+  TYPE_MAP[type] || { Icon: Bell, bg: "#f3f4f6", color: "#6b7280", label: "Thông báo" };
 
-/* --- tabs config --- */
+/* ── Relative time (kiểu Facebook) ── */
+const relativeTime = (raw) => {
+  if (!raw) return "";
+  const now = Date.now();
+  const t = new Date(raw).getTime();
+  const diffSec = Math.floor((now - t) / 1000);
+  if (diffSec < 60) return "Vừa xong";
+  const diffMin = Math.floor(diffSec / 60);
+  if (diffMin < 60) return `${diffMin} phút trước`;
+  const diffHrs = Math.floor(diffMin / 60);
+  if (diffHrs < 24) return `${diffHrs} giờ trước`;
+  const diffDay = Math.floor(diffHrs / 24);
+  if (diffDay < 7) return `${diffDay} ngày trước`;
+  const diffWeek = Math.floor(diffDay / 7);
+  if (diffWeek < 4) return `${diffWeek} tuần trước`;
+  return new Date(raw).toLocaleDateString("vi-VN", {
+    day: "2-digit", month: "2-digit", year: "numeric",
+  });
+};
+
+/* ── tabs ── */
 const TAB_CONFIG = [
   { key: "all",      label: "Tất cả" },
   { key: "unread",   label: "Chưa đọc" },
@@ -29,18 +56,23 @@ const TAB_CONFIG = [
   { key: "charging", label: "Sạc điện" },
 ];
 
+/* ══════════════════════════════════════════
+   COMPONENT
+   ══════════════════════════════════════════ */
 export default function Notification() {
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedNotification, setSelectedNotification] = useState(null);
   const [activeTab, setActiveTab] = useState("all");
 
+  /* ── fetch ── */
   const fetchNotifications = async () => {
     try {
       setLoading(true);
       const response = await getNotificationsApi();
       if (response.success) {
-        setNotifications(response.data.content || []);
+        const data = Array.isArray(response.data) ? response.data : [];
+        setNotifications(data);
       }
     } catch (error) {
       console.error("Failed to fetch my notifications:", error);
@@ -50,30 +82,26 @@ export default function Notification() {
     }
   };
 
-  useEffect(() => {
-    fetchNotifications();
-  }, []);
+  useEffect(() => { fetchNotifications(); }, []);
 
-  /* --- format money --- */
+  /* ── format money ── */
   const formatMoney = (value) => {
     if (!value) return "";
     const number = parseFloat(value.replace(/[^\d.-]/g, ""));
     if (isNaN(number)) return value;
     return number.toLocaleString("vi-VN", {
-      style: "currency",
-      currency: "VND",
-      minimumFractionDigits: 0,
+      style: "currency", currency: "VND", minimumFractionDigits: 0,
     });
   };
 
-  /* --- mark as read (optimistic) --- */
+  /* ── mark as read (optimistic) ── */
   const handleReaded = async (notification) => {
     if (notification.isRead) return;
 
     setNotifications((prev) =>
       prev.map((n) =>
         n.notificationId === notification.notificationId
-          ? { ...n, isRead: true }
+          ? { ...n, isRead: true, status: "READ" }
           : n
       )
     );
@@ -85,43 +113,36 @@ export default function Notification() {
         setNotifications((prev) =>
           prev.map((n) =>
             n.notificationId === notification.notificationId
-              ? { ...n, isRead: false }
+              ? { ...n, isRead: false, status: "UNREAD" }
               : n
           )
         );
       }
     } catch (error) {
       console.error("Lỗi khi đánh dấu đã đọc:", error);
-      toast.error("Lỗi khi đánh dấu đã đọc.");
       setNotifications((prev) =>
         prev.map((n) =>
           n.notificationId === notification.notificationId
-            ? { ...n, isRead: false }
+            ? { ...n, isRead: false, status: "UNREAD" }
             : n
         )
       );
     }
   };
 
-  /* --- sort --- */
-  const sortedNotifications = [...notifications].sort(
-    (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-  );
-
-  /* --- filter by tab --- */
-  const filteredNotifications = sortedNotifications.filter((n) => {
+  /* ── filter by tab ── */
+  const filteredNotifications = notifications.filter((n) => {
     if (activeTab === "unread")   return !n.isRead && n.status === "UNREAD";
     if (activeTab === "read")     return n.isRead || n.status !== "UNREAD";
     if (activeTab === "charging") return n.type === "CHARGING_COMPLETED";
     return true;
   });
 
-  /* --- derived stats --- */
+  /* ── derived stats ── */
   const totalCount  = notifications.length;
   const unreadCount = notifications.filter((n) => !n.isRead && n.status === "UNREAD").length;
   const readCount   = totalCount - unreadCount;
 
-  /* --- tab counts --- */
   const tabCounts = {
     all:      totalCount,
     unread:   unreadCount,
@@ -129,8 +150,8 @@ export default function Notification() {
     charging: notifications.filter((n) => n.type === "CHARGING_COMPLETED").length,
   };
 
-  /* --- card click -> open modal --- */
-  const handleCardClick = (notification) => {
+  /* ── card click → open modal ── */
+  const handleItemClick = (notification) => {
     setSelectedNotification(notification);
     if (notification.status === "UNREAD") {
       handleReaded(notification);
@@ -139,7 +160,7 @@ export default function Notification() {
 
   const closeModal = () => setSelectedNotification(null);
 
-  /* --- parse charging content --- */
+  /* ── parse charging content ── */
   const parseChargingContent = (content) => {
     const info = {};
     const patterns = {
@@ -149,7 +170,7 @@ export default function Notification() {
       energy:    /Năng lượng:\s*([^|]+)/,
       timeFee:   /Phí thời gian:\s*([^|]+)/,
       energyFee: /Phí điện năng:\s*([^|]+)/,
-      total:     /Tổng:\s*(.+)/,
+      total:     /Tổng(?:\s*phí)?:\s*(.+)/,
     };
     Object.entries(patterns).forEach(([key, regex]) => {
       const match = content.match(regex);
@@ -158,22 +179,22 @@ export default function Notification() {
     return Object.keys(info).length > 0 ? info : null;
   };
 
-  /* --- charging info items config --- */
+  /* ── charging detail items ── */
   const CHARGE_ITEMS = [
     { key: "point",     label: "ĐIỂM SẠC",       Icon: PlugZap,    color: "blue" },
-    { key: "duration",  label: "THỜI LƯỢNG",     Icon: Clock,      color: "purple" },
-    { key: "soc",       label: "TĂNG SOC",                  Icon: Battery,    color: "green" },
+    { key: "duration",  label: "THỜI LƯỢNG",      Icon: Clock,      color: "purple" },
+    { key: "soc",       label: "TĂNG SOC",        Icon: Battery,    color: "green" },
     { key: "energy",    label: "NĂNG LƯỢNG",      Icon: Zap,        color: "amber" },
-    { key: "timeFee",   label: "PHÍ THỜI GIAN",       Icon: DollarSign,  color: "cyan", fmt: true },
-    { key: "energyFee", label: "PHÍ ĐIỆN NĂNG", Icon: DollarSign, color: "cyan", fmt: true },
+    { key: "timeFee",   label: "PHÍ THỜI GIAN",   Icon: DollarSign, color: "cyan", fmt: true },
+    { key: "energyFee", label: "PHÍ ĐIỆN NĂNG",   Icon: DollarSign, color: "cyan", fmt: true },
   ];
 
-  /* ========== RENDER ========== */
+  /* ══════════ RENDER ══════════ */
   return (
     <div className="dashboard-container">
       <Header />
 
-      {/* -- HERO BANNER -- */}
+      {/* ── HERO BANNER ── */}
       <div className="nt-hero">
         <div className="nt-hero-chip">
           <BellRing size={14} /> Trung tâm thông báo
@@ -181,7 +202,6 @@ export default function Notification() {
         <h1 className="nt-hero-title">Thông Báo</h1>
         <p className="nt-hero-sub">Theo dõi cập nhật và thông tin từ hệ thống</p>
 
-        {/* Glass counters */}
         <div className="nt-counters">
           <div className="nt-counter">
             <div className="nt-counter-num">{loading ? "—" : totalCount}</div>
@@ -198,7 +218,7 @@ export default function Notification() {
         </div>
       </div>
 
-      {/* -- FILTER TABS -- */}
+      {/* ── FILTER TABS ── */}
       <div className="nt-tabs">
         {TAB_CONFIG.map((tab) => (
           <button
@@ -212,7 +232,7 @@ export default function Notification() {
         ))}
       </div>
 
-      {/* -- CONTENT -- */}
+      {/* ── NOTIFICATION LIST (META Style) ── */}
       {loading ? (
         <div className="nt-loading">
           <div className="nt-spinner" />
@@ -220,31 +240,66 @@ export default function Notification() {
         </div>
       ) : filteredNotifications.length === 0 ? (
         <div className="nt-empty">
-          <Inbox className="nt-empty-icon" />
-          <p className="nt-empty-title">Không có thông báo nào</p>
+          <div className="nt-empty-illustration">
+            <div className="nt-empty-bell-wrapper">
+              <Bell className="nt-empty-bell-icon" />
+            </div>
+            <div className="nt-empty-sparkle nt-empty-sparkle--1" />
+            <div className="nt-empty-sparkle nt-empty-sparkle--2" />
+            <div className="nt-empty-sparkle nt-empty-sparkle--3" />
+          </div>
+          <p className="nt-empty-title">
+            {activeTab === "all" ? "Hộp thư trống" : "Không có kết quả"}
+          </p>
           <p className="nt-empty-desc">
             {activeTab === "all"
-              ? "Bạn chưa có thông báo nào từ hệ thống"
-              : "Không có thông báo phù hợp với bộ lọc"}
+              ? "Bạn chưa có thông báo nào. Khi đặt lịch sạc hoặc hoàn tất phiên sạc, thông báo sẽ xuất hiện tại đây."
+              : `Không có thông báo nào trong mục "${TAB_CONFIG.find(t => t.key === activeTab)?.label}"`}
           </p>
         </div>
       ) : (
-        <div className="nt-list">
-          {filteredNotifications.map((notification) => (
-            <div
-              key={notification.notificationId}
-              onClick={() => handleCardClick(notification)}
-            >
-              <NotificationCard
-                notification={notification}
-                onSelect={handleReaded}
-              />
-            </div>
-          ))}
+        <div className="nt-meta-list">
+          {filteredNotifications.map((n) => {
+            const { Icon, bg, color } = getTypeInfo(n.type);
+            const isUnread = !n.isRead && n.status === "UNREAD";
+
+            return (
+              <div
+                key={n.notificationId}
+                className={`nt-meta-item ${isUnread ? "nt-meta-item--unread" : ""}`}
+                onClick={() => handleItemClick(n)}
+              >
+                {/* ── Left: Circular Icon ── */}
+                <div
+                  className="nt-meta-avatar"
+                  style={{ background: bg, color: color }}
+                >
+                  <Icon size={22} />
+                </div>
+
+                {/* ── Middle: Rich Text + Relative Time ── */}
+                <div className="nt-meta-content">
+                  <p className="nt-meta-text">
+                    <span className="nt-meta-bold">{n.title}</span>
+                    {n.contentNoti && <> — {n.contentNoti}</>}
+                    {!n.contentNoti && n.content && <> — {n.content}</>}
+                  </p>
+                  <span className={`nt-meta-time ${isUnread ? "nt-meta-time--unread" : ""}`}>
+                    {relativeTime(n.createdAt)}
+                  </span>
+                </div>
+
+                {/* ── Right: Unread Dot ── */}
+                <div className="nt-meta-status">
+                  {isUnread && <span className="nt-meta-dot" />}
+                </div>
+              </div>
+            );
+          })}
         </div>
       )}
 
-      {/* -- MODAL -- */}
+      {/* ── MODAL ── */}
       {selectedNotification && (
         <div className="nt-modal-overlay" onClick={closeModal}>
           <div className="nt-modal" onClick={(e) => e.stopPropagation()}>
@@ -268,8 +323,13 @@ export default function Notification() {
             <div className="nt-modal-body">
               {(() => {
                 if (selectedNotification.type === "CHARGING_COMPLETED") {
-                  const chargingInfo = parseChargingContent(selectedNotification.content);
-                  if (!chargingInfo) return null;
+                  const raw = selectedNotification.contentNoti || selectedNotification.content;
+                  const chargingInfo = raw ? parseChargingContent(raw) : null;
+                  if (!chargingInfo) return (
+                    <div className="nt-modal-content-block">
+                      {raw || "Không có nội dung"}
+                    </div>
+                  );
 
                   return (
                     <div className="nt-charge-grid">
@@ -286,7 +346,6 @@ export default function Notification() {
                         ) : null
                       )}
 
-                      {/* Total */}
                       {chargingInfo.total && (
                         <div className="nt-charge-item nt-charge-item--green nt-charge-total">
                           <div className="nt-charge-label">
@@ -304,7 +363,7 @@ export default function Notification() {
                 /* Default content */
                 return (
                   <div className="nt-modal-content-block">
-                    {selectedNotification.content}
+                    {selectedNotification.contentNoti || selectedNotification.content || "Không có nội dung"}
                   </div>
                 );
               })()}
