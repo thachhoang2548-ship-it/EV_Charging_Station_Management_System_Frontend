@@ -15,6 +15,9 @@ import {
   FiUsers,
 } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { toast } from "react-toastify";
+import { selectIsLoggedIn } from "../../redux/slices/authSlice.js";
 import MeshBackground from "../../components/MeshBackground/MeshBackground.jsx";
 import HomeFooter from "../../components/HomeFooter/HomeFooter.jsx";
 import { paths } from "../../path/paths.jsx";
@@ -82,6 +85,15 @@ const CONTACTS = [
 
 export default function About() {
   const navigate = useNavigate();
+  const isLoggedIn = useSelector(selectIsLoggedIn);
+
+  const handleLoginClick = () => {
+    if (isLoggedIn) {
+      toast.info("Bạn đã đăng nhập rồi!");
+    } else {
+      navigate(paths.login);
+    }
+  };
 
   return (
     <div >
@@ -162,7 +174,7 @@ export default function About() {
         </span>
         <h2>Sẵn sàng bắt đầu?</h2>
         <p>Đăng nhập ngay hôm nay để tham gia cộng đồng người dùng xe điện.</p>
-        <button type="button" className="about-cta-btn" onClick={() => navigate(paths.login)}>
+        <button type="button" className="about-cta-btn" onClick={handleLoginClick}>
           <FiLogIn />
           Đăng nhập ngay
         </button>

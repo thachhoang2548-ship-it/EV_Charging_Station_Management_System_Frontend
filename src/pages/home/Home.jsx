@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { toast } from "react-toastify";
+import { selectIsLoggedIn } from "../../redux/slices/authSlice";
 import "./Home.css";
 import paths from "../../path/paths";
 import HomeFooter from "../../components/HomeFooter/HomeFooter";
@@ -88,8 +91,17 @@ const REVIEWS = [
 
 const Home = () => {
   const navigate = useNavigate();
+  const isLoggedIn = useSelector(selectIsLoggedIn);
   const [search, setSearch] = useState("");
   const [activeTab, setActiveTab] = useState("all");
+
+  const handleRegisterClick = () => {
+    if (isLoggedIn) {
+      toast.info("Bạn đã đăng nhập rồi!");
+    } else {
+      navigate(paths.register);
+    }
+  };
 
   return (
     <div className="tev-root">
@@ -424,7 +436,7 @@ const Home = () => {
           <div className="tev-cta-actions">
             <button
               className="tev-btn-white"
-              onClick={() => navigate(paths.register)}
+              onClick={handleRegisterClick}
             >
               Đăng ký miễn phí
             </button>
