@@ -319,7 +319,7 @@
     left: 0;
     top: 60px;
     bottom: 0;
-    width: 240px;
+    width: 280px;
     max-width: 85vw;
     background-color: var(--bg-sidebar);
     border-right: 1px solid var(--border);
@@ -356,6 +356,7 @@
     overflow: auto;
     width: 100%;
     padding-top: 0;
+    padding-bottom: 80px; /* Space for Bottom Nav */
   }
 
   /* Padding responsive cho mobile */
@@ -412,8 +413,8 @@
 /* Extra small devices (320px - 480px) */
 @media (max-width: 480px) {
   .admin-sidebar-mobile {
-    width: 100%;
-    max-width: 100%;
+    width: 280px;
+    max-width: 80vw;
   }
 
   .dashboard-container,
