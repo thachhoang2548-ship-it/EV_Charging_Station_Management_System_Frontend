@@ -1,4 +1,4 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import AdminNavigate from "../components/navigate/AdminNavigate";
 import StaffNavigate from "../components/navigate/StaffNavigate.jsx";
@@ -9,6 +9,7 @@ import "./AdminLayout.css";
 export default function AdminLayout() {
   const role = localStorage.getItem("role");
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+  const navigate = useNavigate();
 
   const toggleMobileSidebar = () => {
     setIsMobileSidebarOpen(!isMobileSidebarOpen);
@@ -44,7 +45,11 @@ export default function AdminLayout() {
 
       {/* Mobile Top Header - chứa Logo + Hamburger Button */}
       <header className="admin-mobile-header">
-        <div className="admin-mobile-header-logo">
+        <div 
+          className="admin-mobile-header-logo"
+          onClick={() => navigate("/")}
+          style={{ cursor: "pointer" }}
+        >
           <div className="admin-mobile-header-icon">
             <EVLogoIcon strokeWidth={2.5} />
           </div>
