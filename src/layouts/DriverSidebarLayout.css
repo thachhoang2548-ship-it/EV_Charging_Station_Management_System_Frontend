@@ -5,11 +5,11 @@
 /* ── Root layout ── */
 .driver-sidebar-layout {
   display: flex;
-  flex-direction: column;        /* Mobile: stack vertically */
+  flex-direction: column; /* Mobile: stack vertically */
   height: 100vh;
   overflow: hidden;
   background-color: #f8fafc;
-  font-family: 'Inter', 'SVN-Gilroy', 'Segoe UI', sans-serif;
+  font-family: "Inter", "SVN-Gilroy", "Segoe UI", sans-serif;
 }
 
 /* ══════════════════════════════════════════════════════════════
@@ -20,68 +20,103 @@
   align-items: center;
   justify-content: space-between;
   height: 56px;
-  padding: 0 16px;
+  padding: 0 12px;
   background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
   flex-shrink: 0;
   z-index: 500;
+  gap: 12px;
 }
 
-.mobile-header-hamburger {
+.mobile-header-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+}
+
+.mobile-header-icon {
   width: 40px;
   height: 40px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(255,255,255,0.18);
-  border: none;
-  border-radius: 10px;
-  color: #fff;
-  cursor: pointer;
-  transition: background 0.2s;
-  -webkit-tap-highlight-color: transparent;
-}
-.mobile-header-hamburger:active {
-  background: rgba(255,255,255,0.3);
+  flex-shrink: 0;
 }
 
-.mobile-header-brand {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  text-decoration: none;
-  color: #fff;
-}
-.mobile-header-logo-svg {
+.mobile-header-icon svg {
   width: 22px;
   height: 22px;
-  color: #fff;
+  color: #ffffff;
 }
-.mobile-header-title {
-  font-size: 1.1rem;
-  font-weight: 800;
-  color: #fff;
-  letter-spacing: -0.3px;
-}
-.mobile-header-title span { color: #bbf7d0; }
 
-/* Home icon on mobile header */
-.mobile-header-home {
-  width: 40px;
-  height: 40px;
+.mobile-header-text-group {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(255,255,255,0.18);
-  border: none;
-  border-radius: 10px;
-  color: #fff;
-  cursor: pointer;
-  text-decoration: none;
-  transition: background 0.2s;
-  -webkit-tap-highlight-color: transparent;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
 }
-.mobile-header-home:active {
-  background: rgba(255,255,255,0.3);
+
+.mobile-header-text {
+  font-size: 18px;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: -0.3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.2;
+}
+
+.mobile-header-text strong {
+  color: #bbf7d0;
+}
+
+.mobile-header-role {
+  font-size: 10px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.75);
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.2;
+}
+
+/* ============================================================
+   HAMBURGER BUTTON - Mobile only
+   ============================================================ */
+.mobile-hamburger-btn {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  border: 1.5px solid rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  padding: 10px;
+  position: relative;
+  z-index: 999;
+  transition: all 0.3s ease;
+  border-radius: 10px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+.mobile-hamburger-btn:hover {
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+}
+
+.hamburger-line {
+  width: 24px;
+  height: 3px;
+  background-color: #1e293b;
+  border-radius: 2px;
+  transition: all 0.3s ease;
 }
 
 /* ══════════════════════════════════════════════════════════════
@@ -170,7 +205,10 @@
   align-items: center;
   justify-content: space-around;
   z-index: 500;
-  padding-bottom: env(safe-area-inset-bottom, 0px); /* iPhone tai thỏ / Dynamic Island */
+  padding-bottom: env(
+    safe-area-inset-bottom,
+    0px
+  ); /* iPhone tai thỏ / Dynamic Island */
   box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.06);
 }
 
@@ -210,15 +248,33 @@
 /* ══════════════════════════════════════════════════════════════
    SCROLLBARS
    ══════════════════════════════════════════════════════════════ */
-.driver-sidebar::-webkit-scrollbar { width: 4px; }
-.driver-sidebar::-webkit-scrollbar-track { background: transparent; }
-.driver-sidebar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 2px; }
-.driver-sidebar::-webkit-scrollbar-thumb:hover { background: #16a34a; }
+.driver-sidebar::-webkit-scrollbar {
+  width: 4px;
+}
+.driver-sidebar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.driver-sidebar::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 2px;
+}
+.driver-sidebar::-webkit-scrollbar-thumb:hover {
+  background: #16a34a;
+}
 
-.driver-sidebar-main::-webkit-scrollbar { width: 6px; }
-.driver-sidebar-main::-webkit-scrollbar-track { background: transparent; }
-.driver-sidebar-main::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
-.driver-sidebar-main::-webkit-scrollbar-thumb:hover { background: #16a34a; }
+.driver-sidebar-main::-webkit-scrollbar {
+  width: 6px;
+}
+.driver-sidebar-main::-webkit-scrollbar-track {
+  background: transparent;
+}
+.driver-sidebar-main::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+.driver-sidebar-main::-webkit-scrollbar-thumb:hover {
+  background: #16a34a;
+}
 
 /* ══════════════════════════════════════════════════════════════
    DESKTOP (≥ 1024px) — sidebar cố định, ẩn mobile header & bottom nav

@@ -7,7 +7,7 @@ import charger from "../../assets/icon/admin/charger_ad.png";
 import price from "../../assets/icon/admin/best-price.png";
 import policy from "../../assets/icon/admin/policy.png";
 import chargingPoint from "../../assets/icon/admin/charging-building.png";
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink, Link, useLocation } from "react-router-dom";
 import "./AdminNavigate.css";
 import { useNavigate } from "react-router-dom";
 import paths from "../../path/paths.jsx";
@@ -76,8 +76,13 @@ export default function AdminNavigate({ onNavClick }) {
 
   return (
     <div className="navContainer">
-      {/* Brand Header */}
-      <div className="navBrand">
+      {/* Brand Header — clickable, links to Home */}
+      <Link
+        to={paths.home}
+        className="navBrand"
+        title="Về trang chủ"
+        onClick={onNavClick}
+      >
         <div className="navBrandIcon">
           <EVLogoIcon className="navBrandIconSvg" strokeWidth={2.5} />
         </div>
@@ -87,7 +92,7 @@ export default function AdminNavigate({ onNavClick }) {
           </span>
           <span className="navBrandRole">Admin Portal</span>
         </div>
-      </div>
+      </Link>
 
       <div className="navDivider" />
 

@@ -8,10 +8,10 @@ import "./DriverSidebarLayout.css";
 
 // Bottom Nav: 4 tab chính cho mobile
 const BOTTOM_TABS = [
-  { path: paths.guide,           icon: Home,   label: "Trang chủ" },
-  { path: paths.stations,        icon: MapPin, label: "Trạm sạc"  },
-  { path: paths.chargingSession, icon: Zap,    label: "Phiên sạc"  },
-  { path: paths.profile,         icon: User,   label: "Hồ sơ"      },
+  { path: paths.guide, icon: Home, label: "Trang chủ" },
+  { path: paths.stations, icon: MapPin, label: "Trạm sạc" },
+  { path: paths.chargingSession, icon: Zap, label: "Phiên sạc" },
+  { path: paths.profile, icon: User, label: "Hồ sơ" },
 ];
 
 export default function DriverSidebarLayout() {
@@ -26,30 +26,36 @@ export default function DriverSidebarLayout() {
   // Chặn scroll body khi drawer mở
   useEffect(() => {
     document.body.style.overflow = drawerOpen ? "hidden" : "";
-    return () => { document.body.style.overflow = ""; };
+    return () => {
+      document.body.style.overflow = "";
+    };
   }, [drawerOpen]);
 
   return (
     <div className="driver-sidebar-layout">
       {/* ══════════ MOBILE HEADER (< 1024px) ══════════ */}
       <header className="mobile-header">
+        <div className="mobile-header-logo">
+          <div className="mobile-header-icon">
+            <EVLogoIcon strokeWidth={2.5} />
+          </div>
+          <div className="mobile-header-text-group">
+            <span className="mobile-header-text">
+              EV<strong>Charge</strong>
+            </span>
+            <span className="mobile-header-role">Driver Portal</span>
+          </div>
+        </div>
         <button
-          className="mobile-header-hamburger"
+          className={`mobile-hamburger-btn ${drawerOpen ? "active" : ""}`}
           onClick={() => setDrawerOpen(true)}
-          aria-label="Mở menu"
+          aria-label="Toggle Menu"
+          aria-expanded={drawerOpen}
         >
-          <Menu size={22} />
+          <span className="hamburger-line"></span>
+          <span className="hamburger-line"></span>
+          <span className="hamburger-line"></span>
         </button>
-
-        <Link to={paths.home} className="mobile-header-brand">
-          <EVLogoIcon className="mobile-header-logo-svg" strokeWidth={2.5} />
-          <span className="mobile-header-title">EV<span>Charge</span></span>
-        </Link>
-
-        {/* Home icon — quick access to landing page */}
-        <Link to={paths.home} className="mobile-header-home" aria-label="Về trang chủ">
-          <Home size={20} />
-        </Link>
       </header>
 
       {/* ══════════ DRAWER OVERLAY ══════════ */}
@@ -59,7 +65,9 @@ export default function DriverSidebarLayout() {
       />
 
       {/* ══════════ SIDEBAR / DRAWER ══════════ */}
-      <aside className={`driver-sidebar ${drawerOpen ? "driver-sidebar--open" : ""}`}>
+      <aside
+        className={`driver-sidebar ${drawerOpen ? "driver-sidebar--open" : ""}`}
+      >
         {/* Nút đóng drawer (chỉ hiển thị trên mobile) */}
         <button
           className="drawer-close-btn"

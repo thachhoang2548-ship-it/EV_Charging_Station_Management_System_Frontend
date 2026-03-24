@@ -3,7 +3,7 @@ import charging from "../../assets/icon/staff/charging-station.png";
 import accident from "../../assets/icon/staff/incident-report.png";
 import transition from "../../assets/icon/staff/payment-method.png";
 import incident from "../../assets/icon/admin/incident.png";
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink, Link, useLocation } from "react-router-dom";
 import "./AdminNavigate.css";
 import { useNavigate } from "react-router-dom";
 import paths from "../../path/paths.jsx";
@@ -52,8 +52,13 @@ export default function StaffNavigate({ onNavClick }) {
 
   return (
     <div className="navContainer">
-      {/* Brand Header */}
-      <div className="navBrand">
+      {/* Brand Header — clickable, links to Home */}
+      <Link
+        to={paths.home}
+        className="navBrand"
+        title="Về trang chủ"
+        onClick={onNavClick}
+      >
         <div className="navBrandIcon">
           <EVLogoIcon className="navBrandIconSvg" strokeWidth={2.5} />
         </div>
@@ -63,7 +68,7 @@ export default function StaffNavigate({ onNavClick }) {
           </span>
           <span className="navBrandRole">Staff Portal</span>
         </div>
-      </div>
+      </Link>
 
       <div className="navDivider" />
 
