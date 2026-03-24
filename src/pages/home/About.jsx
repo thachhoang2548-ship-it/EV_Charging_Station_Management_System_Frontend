@@ -75,7 +75,7 @@ const PILLARS = [
 ];
 
 const CONTACTS = [
-  { label: "Email", value: "contact@ev.vn", icon: FiMail },
+  { label: "Email", value: "accounmenttt123123@gmail.com", icon: FiMail },
   { label: "Điện thoại", value: "+84 93 151 9293", icon: FiPhone },
   { label: "Địa chỉ", value: ["Thành phố Hồ Chí Minh", "Việt Nam"], icon: FiMapPin },
 ];
