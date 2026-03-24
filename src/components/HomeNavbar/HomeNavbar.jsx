@@ -6,18 +6,23 @@ import paths from "../../path/paths";
 import EVLogoIcon from "../logo/EVLogoIcon.jsx";
 import { selectIsLoggedIn } from "../../redux/slices/authSlice.js";
 import {
-  User, LayoutDashboard, CreditCard, LogOut, ChevronDown,
-  Menu, X
+  User,
+  LayoutDashboard,
+  CreditCard,
+  LogOut,
+  ChevronDown,
+  Menu,
+  X,
 } from "lucide-react";
 import man from "../../assets/icon/man.png";
 import girl from "../../assets/icon/girl.png";
 import "./HomeNavbar.css";
 
 const NAV_LINKS = [
-  { label: "Trang chủ",      path: paths.home,     exact: true },
-  { label: "Giới thiệu",     path: paths.about,    exact: true },
+  { label: "Trang chủ", path: paths.home, exact: true },
+  { label: "Giới thiệu", path: paths.about, exact: true },
   { label: "Bản đồ trạm sạc", path: paths.stations, exact: false },
-  { label: "Điều khoản",     path: paths.rules,    exact: true },
+  { label: "Điều khoản", path: paths.rules, exact: true },
 ];
 
 const HomeNavbar = () => {
@@ -73,13 +78,38 @@ const HomeNavbar = () => {
     return location.pathname.startsWith(item.path);
   };
 
+  // ── Get dashboard path based on role ──
+  const getDashboardPath = () => {
+    if (role === "ADMIN") return paths.adminDashboard;
+    if (role === "STAFF") return paths.staffDashboard;
+    return paths.guide; // Default to driver guide
+  };
+
+  // ── Get profile/dashboard path based on role ──
+  const getProfilePath = () => {
+    if (role === "ADMIN") return paths.adminDashboard;
+    if (role === "STAFF") return paths.staffDashboard;
+    return paths.profile; // Driver goes to profile
+  };
+
+  // ── Get portal label based on role ──
+  const getDashboardLabel = () => {
+    if (role === "ADMIN") return "Vào Bảng điều khiển";
+    if (role === "STAFF") return "Vào Bảng điều khiển";
+    return "Vào Driver Portal";
+  };
+
   return (
     <header className="tev-nav">
       <div className="tev-nav-inner">
         {/* ══ LEFT: Logo ══ */}
         <div className="tev-logo" onClick={goHome}>
-          <div className="tev-logo-icon"><EVLogoIcon /></div>
-          <span className="tev-logo-text"><span>EV</span>Charge</span>
+          <div className="tev-logo-icon">
+            <EVLogoIcon />
+          </div>
+          <span className="tev-logo-text">
+            <span>EV</span>Charge
+          </span>
         </div>
 
         {/* ══ CENTER: Nav links ══ */}
@@ -92,7 +122,10 @@ const HomeNavbar = () => {
               onClick={(e) => {
                 e.preventDefault();
                 if (item.exact && item.path === paths.home) goHome();
-                else { navigate(item.path); closeMenu(); }
+                else {
+                  navigate(item.path);
+                  closeMenu();
+                }
               }}
             >
               {item.label}
@@ -103,25 +136,55 @@ const HomeNavbar = () => {
           <div className="tev-nav-mobile-actions">
             {isLoggedIn ? (
               <>
-                <button className="tev-btn-primary" onClick={() => { navigate(paths.guide); closeMenu(); }}>
-                  <LayoutDashboard size={16} /> Vào Driver Portal
+                <button
+                  className="tev-btn-primary"
+                  onClick={() => {
+                    navigate(getDashboardPath());
+                    closeMenu();
+                  }}
+                >
+                  <LayoutDashboard size={16} /> {getDashboardLabel()}
                 </button>
-                <button className="tev-btn-ghost" onClick={() => { navigate(paths.profile); closeMenu(); }}>
-                  <User size={16} /> Hồ sơ của tôi
-                </button>
-                <button className="tev-btn-ghost" onClick={() => { navigate(paths.transactionHistory); closeMenu(); }}>
-                  <CreditCard size={16} /> Lịch sử giao dịch
-                </button>
-                <button className="tev-mobile-logout" onClick={handleLogout} disabled={logoutLoading}>
-                  <LogOut size={16} /> {logoutLoading ? "Đang đăng xuất..." : "Đăng xuất"}
+                {role === "DRIVER" && (
+                  <>
+                    <button
+                      className="tev-btn-ghost"
+                      onClick={() => {
+                        navigate(paths.transactionHistory);
+                        closeMenu();
+                      }}
+                    >
+                      <CreditCard size={16} /> Lịch sử giao dịch
+                    </button>
+                  </>
+                )}
+                <button
+                  className="tev-mobile-logout"
+                  onClick={handleLogout}
+                  disabled={logoutLoading}
+                >
+                  <LogOut size={16} />{" "}
+                  {logoutLoading ? "Đang đăng xuất..." : "Đăng xuất"}
                 </button>
               </>
             ) : (
               <>
-                <button className="tev-btn-ghost" onClick={() => { navigate(paths.login); closeMenu(); }}>
+                <button
+                  className="tev-btn-ghost"
+                  onClick={() => {
+                    navigate(paths.login);
+                    closeMenu();
+                  }}
+                >
                   Đăng nhập
                 </button>
-                <button className="tev-btn-primary" onClick={() => { navigate(paths.register); closeMenu(); }}>
+                <button
+                  className="tev-btn-primary"
+                  onClick={() => {
+                    navigate(paths.register);
+                    closeMenu();
+                  }}
+                >
                   Đăng ký miễn phí
                 </button>
               </>
@@ -136,7 +199,7 @@ const HomeNavbar = () => {
             <div className="tev-user-menu" ref={dropdownRef}>
               <button
                 className={`tev-user-trigger${dropdownOpen ? " open" : ""}`}
-                onClick={() => setDropdownOpen(v => !v)}
+                onClick={() => setDropdownOpen((v) => !v)}
               >
                 <img
                   src={userGender === "M" ? man : girl}
@@ -144,7 +207,10 @@ const HomeNavbar = () => {
                   className="tev-user-avatar"
                 />
                 <span className="tev-user-name">{userName}</span>
-                <ChevronDown size={14} className={`tev-chevron${dropdownOpen ? " rotated" : ""}`} />
+                <ChevronDown
+                  size={14}
+                  className={`tev-chevron${dropdownOpen ? " rotated" : ""}`}
+                />
               </button>
 
               {dropdownOpen && (
@@ -165,20 +231,36 @@ const HomeNavbar = () => {
 
                   <div className="tev-dropdown-divider" />
 
-                  <button className="tev-dropdown-item highlight" onClick={() => { navigate(paths.guide); setDropdownOpen(false); }}>
-                    <LayoutDashboard size={16} /> Vào Driver Portal
+                  <button
+                    className="tev-dropdown-item highlight"
+                    onClick={() => {
+                      navigate(getDashboardPath());
+                      setDropdownOpen(false);
+                    }}
+                  >
+                    <LayoutDashboard size={16} /> {getDashboardLabel()}
                   </button>
-                  <button className="tev-dropdown-item" onClick={() => { navigate(paths.profile); setDropdownOpen(false); }}>
-                    <User size={16} /> Hồ sơ của tôi
-                  </button>
-                  <button className="tev-dropdown-item" onClick={() => { navigate(paths.transactionHistory); setDropdownOpen(false); }}>
-                    <CreditCard size={16} /> Lịch sử giao dịch
-                  </button>
+                  {role === "DRIVER" && (
+                    <button
+                      className="tev-dropdown-item"
+                      onClick={() => {
+                        navigate(paths.transactionHistory);
+                        setDropdownOpen(false);
+                      }}
+                    >
+                      <CreditCard size={16} /> Lịch sử giao dịch
+                    </button>
+                  )}
 
                   <div className="tev-dropdown-divider" />
 
-                  <button className="tev-dropdown-item logout" onClick={handleLogout} disabled={logoutLoading}>
-                    <LogOut size={16} /> {logoutLoading ? "Đang đăng xuất..." : "Đăng xuất"}
+                  <button
+                    className="tev-dropdown-item logout"
+                    onClick={handleLogout}
+                    disabled={logoutLoading}
+                  >
+                    <LogOut size={16} />{" "}
+                    {logoutLoading ? "Đang đăng xuất..." : "Đăng xuất"}
                   </button>
                 </div>
               )}
@@ -186,10 +268,16 @@ const HomeNavbar = () => {
           ) : (
             /* ── Guest: Login + Register ── */
             <>
-              <button className="tev-btn-ghost" onClick={() => navigate(paths.login)}>
+              <button
+                className="tev-btn-ghost"
+                onClick={() => navigate(paths.login)}
+              >
                 Đăng nhập
               </button>
-              <button className="tev-btn-primary" onClick={() => navigate(paths.register)}>
+              <button
+                className="tev-btn-primary"
+                onClick={() => navigate(paths.register)}
+              >
                 Đăng ký miễn phí
               </button>
             </>
@@ -198,7 +286,7 @@ const HomeNavbar = () => {
           {/* Hamburger — mobile only */}
           <button
             className={`tev-hamburger${menuOpen ? " active" : ""}`}
-            onClick={() => setMenuOpen(v => !v)}
+            onClick={() => setMenuOpen((v) => !v)}
             aria-label="Toggle menu"
           >
             {menuOpen ? <X size={20} /> : <Menu size={20} />}
