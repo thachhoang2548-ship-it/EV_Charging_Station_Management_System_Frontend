@@ -107,7 +107,7 @@ const HomeFooter = () => {
                 <span>Hỗ trợ 24/7</span>
               </div>
             </div>
-          </div>
+          </div>``
 
         </div>
       </div>
