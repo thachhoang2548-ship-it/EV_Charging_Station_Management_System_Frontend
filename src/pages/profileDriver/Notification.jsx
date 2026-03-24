@@ -4,6 +4,8 @@ import {
   markNotificationAsReadApi,
 } from "../../api/driverApi.js";
 import { toast } from "react-toastify";
+import { formatDistanceToNow } from "date-fns";
+import { vi } from "date-fns/locale";
 import Header from "../../components/admin/Header.jsx";
 import "../admin/Dashboard.css";
 import "./Notification.css";
@@ -28,24 +30,20 @@ const TYPE_MAP = {
 const getTypeInfo = (type) =>
   TYPE_MAP[type] || { Icon: Bell, bg: "#f3f4f6", color: "#6b7280", label: "Thông báo" };
 
-/* ── Relative time (kiểu Facebook) ── */
+/* ── Force UTC: Backend trả timestamp thiếu 'Z', JS parse nhầm thành local ── */
+const parseUTC = (raw) => {
+  if (!raw) return null;
+  const str = typeof raw === "string" ? raw : String(raw);
+  const safeStr = str.endsWith("Z") || str.includes("+") ? str : str + "Z";
+  return new Date(safeStr);
+};
+
+/* ── Relative time (date-fns + tiếng Việt) ── */
 const relativeTime = (raw) => {
-  if (!raw) return "";
-  const now = Date.now();
-  const t = new Date(raw).getTime();
-  const diffSec = Math.floor((now - t) / 1000);
-  if (diffSec < 60) return "Vừa xong";
-  const diffMin = Math.floor(diffSec / 60);
-  if (diffMin < 60) return `${diffMin} phút trước`;
-  const diffHrs = Math.floor(diffMin / 60);
-  if (diffHrs < 24) return `${diffHrs} giờ trước`;
-  const diffDay = Math.floor(diffHrs / 24);
-  if (diffDay < 7) return `${diffDay} ngày trước`;
-  const diffWeek = Math.floor(diffDay / 7);
-  if (diffWeek < 4) return `${diffWeek} tuần trước`;
-  return new Date(raw).toLocaleDateString("vi-VN", {
-    day: "2-digit", month: "2-digit", year: "numeric",
-  });
+  const date = parseUTC(raw);
+  if (!date || isNaN(date.getTime())) return "";
+  return formatDistanceToNow(date, { addSuffix: true, locale: vi })
+    .replace("khoảng ", "");
 };
 
 /* ── tabs ── */
@@ -372,7 +370,7 @@ export default function Notification() {
             {/* Footer */}
             <div className="nt-modal-footer">
               <Clock size={15} />
-              {new Date(selectedNotification.createdAt).toLocaleString("vi-VN")}
+              {parseUTC(selectedNotification.createdAt)?.toLocaleString("vi-VN") || ""}
             </div>
           </div>
         </div>

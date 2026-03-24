@@ -1,7 +1,17 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { notificationAPI } from "../../api/notificationApi.js";
 import { isAuthenticated } from "../../utils/authUtils.js";
+import { formatDistanceToNow } from "date-fns";
+import { vi } from "date-fns/locale";
 import "./NotificationBell.css";
+
+/* Force UTC: Backend trả timestamp thiếu 'Z' */
+const parseUTC = (raw) => {
+  if (!raw) return null;
+  const str = typeof raw === "string" ? raw : String(raw);
+  const safeStr = str.endsWith("Z") || str.includes("+") ? str : str + "Z";
+  return new Date(safeStr);
+};
 
 export default function NotificationBell() {
   const [notifications, setNotifications] = useState([]);
@@ -138,25 +148,10 @@ export default function NotificationBell() {
   };
 
   const formatTime = (timestamp) => {
-    if (!timestamp) return "";
-
-    const now = new Date();
-    const time = new Date(timestamp);
-    const diffMs = now - time;
-    const diffMins = Math.floor(diffMs / 60000);
-    const diffHours = Math.floor(diffMs / 3600000);
-    const diffDays = Math.floor(diffMs / 86400000);
-
-    if (diffMins < 1) return "Vừa xong";
-    if (diffMins < 60) return `${diffMins} phút trước`;
-    if (diffHours < 24) return `${diffHours} giờ trước`;
-    if (diffDays < 7) return `${diffDays} ngày trước`;
-
-    return time.toLocaleDateString("vi-VN", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-    });
+    const date = parseUTC(timestamp);
+    if (!date || isNaN(date.getTime())) return "";
+    return formatDistanceToNow(date, { addSuffix: true, locale: vi })
+      .replace("khoảng ", "");
   };
 
   const getNotificationIcon = (type) => {
