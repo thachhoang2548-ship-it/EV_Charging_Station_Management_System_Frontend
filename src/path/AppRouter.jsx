@@ -23,6 +23,7 @@ import Register from "../pages/auth/Register.jsx";
 import Verify from "../pages/auth/Verify.jsx";
 import ForgotPassword from "../pages/auth/ForgotPassword.jsx";
 import ResetPassword from "../pages/auth/ResetPassword.jsx";
+import PrivacyPolicy from "../pages/legal/PrivacyPolicy.jsx";
 
 // Driver Pages =====================================
 import Home from "../pages/home/Home.jsx";
@@ -99,6 +100,7 @@ const AppRouter = () => {
             <Route path={paths.paymentFailed} element={<PaymentFailed />} />
 
             <Route path={paths.rules} element={<Rules />} />
+            <Route path={paths.privacyPolicy} element={<PrivacyPolicy />} />
           </Route>
 
           {/* Stations & StationDetail: public (chưa login xem được, chỉ book mới cần login) */}
