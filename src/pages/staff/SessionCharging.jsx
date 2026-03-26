@@ -127,6 +127,13 @@ export default function SessionCharging() {
     );
   };
 
+  const getStatusText = (status) => {
+    const st = String(status || "").toLowerCase().replace(/\s+/g, "_");
+    if (st === "completed") return "Đã hoàn thành";
+    if (st === "in_progress" || st === "charging" || st === "active" || st === "ongoing") return "Đang sạc";
+    return st;
+  };
+
   const ongoing = sessions.filter((s) => isOngoingStatus(s));
   const completed = sessions.filter((s) => !isOngoingStatus(s));
 
@@ -386,9 +393,7 @@ export default function SessionCharging() {
                     const initialSoc = s?.initialSoc || "-";
                     const finalSoc = s?.finalSoc || "-";
                     const status = s?.status || "";
-                    const statusKey = String(status)
-                      .toLowerCase()
-                      .replace(/\s+/g, "_");
+                    const statusText = getStatusText(status);
 
                     // ✅ Lấy pointNumber từ API hoặc sessionStorage
                     let pointNumber =
@@ -416,7 +421,7 @@ export default function SessionCharging() {
                         <td>{energyKWh}</td>
                         <td>{initialSoc}</td>
                         <td>{finalSoc}</td>
-                        <td>{statusKey}</td>
+                        <td>{statusText}</td>
                         <td>{bookingId}</td>
                         <td>
                           <ActionMenu
@@ -468,9 +473,7 @@ export default function SessionCharging() {
                     const initialSoc = s?.initialSoc || "-";
                     const finalSoc = s?.finalSoc || "-";
                     const status = s?.status || "";
-                    const statusKey = String(status)
-                      .toLowerCase()
-                      .replace(/\s+/g, "_");
+                    const statusText = getStatusText(status);
 
                     // ✅ Lấy pointNumber từ API, sessionStorage cache, hoặc completed_session cache
                     let pointNumber =
@@ -514,7 +517,7 @@ export default function SessionCharging() {
                         <td>{energyKWh}</td>
                         <td>{initialSoc}</td>
                         <td>{finalSoc}</td>
-                        <td>{statusKey}</td>
+                        <td>{statusText}</td>
                         <td>{bookingId}</td>
                       </tr>
                     );
