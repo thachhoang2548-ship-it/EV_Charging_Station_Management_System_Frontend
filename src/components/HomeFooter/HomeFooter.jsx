@@ -33,7 +33,7 @@ const HomeFooter = () => {
                   <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </div>
-              <span className="tev-footer-logo-text">Trạm<span>EV</span></span>
+              <span className="tev-footer-logo-text"><span>EV</span>Charge</span>
             </div>
             <p className="tev-footer-desc">
               Cộng đồng người dùng trạm sạc xe điện công cộng lớn nhất Việt Nam.
@@ -90,14 +90,14 @@ const HomeFooter = () => {
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="16" height="16">
                   <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 19.79 19.79 0 01.99 1.18 2 2 0 013 .01h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 6.91a16 16 0 006 6l.25-.25c.59-.59 1.4-.78 2.11-.45a12.84 12.84 0 002.81.7A2 2 0 0121.99 15z"/>
                 </svg>
-                <span>0772 882 174</span>
+                <span>+84 93 151 9293</span>
               </div>
               <div className="tev-contact-item">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="16" height="16">
                   <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
                   <polyline points="22,6 12,13 2,6"/>
                 </svg>
-                <span>accounmenttt123123@gmail.com</span>
+                <span>contact@ev.vn</span>
               </div>
               <div className="tev-contact-item">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="16" height="16">
@@ -107,7 +107,7 @@ const HomeFooter = () => {
                 <span>Hỗ trợ 24/7</span>
               </div>
             </div>
-          </div>``
+          </div>
 
         </div>
       </div>
