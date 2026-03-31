@@ -237,7 +237,7 @@ const Login = () => {
                     sessionStorage.setItem("oauth_redirect", from);
                   }
                   window.location.href =
-                    "https://api.evcsystem.online/login/oauth2/code/google";
+                    "https://api.evcsystem.online/oauth2/authorization/google";
                 }}
               >
                 G
