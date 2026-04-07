@@ -7,7 +7,7 @@ import man from "../../assets/icon/man.png";
 import girl from "../../assets/icon/girl.png";
 import {
   ArrowLeft, Save, User, Phone, Mail, MapPin,
-  Camera, Contact, X, Lock
+  Camera, Contact, X
 } from "lucide-react";
 
 export default function EditProfile() {
@@ -167,22 +167,25 @@ export default function EditProfile() {
                 />
               </div>
 
-              {/* Số điện thoại — locked */}
+              {/* Số điện thoại */}
               <div className="ep-field">
                 <label className="ep-label">
                   <Phone size={13} /> Số điện thoại <span className="required">*</span>
                 </label>
                 <input
                   type="text"
-                  className="ep-input locked"
-                  placeholder="Số điện thoại"
+                  className="ep-input"
+                  placeholder="Nhập số điện thoại"
                   name="phoneNumber"
                   value={form.phoneNumber}
-                  disabled
+                  onChange={handleChange}
+                  required
                 />
-                <span className="ep-field-hint">
-                  <Lock size={10} /> Không thể thay đổi — dùng làm tài khoản đăng nhập
-                </span>
+                {form.phoneNumber !== (location.state?.profile?.phoneNumber || "") && (
+                  <span className="ep-field-hint ep-field-hint--warning">
+                    ⚠️ Thay đổi SĐT sẽ thay đổi tài khoản đăng nhập của bạn
+                  </span>
+                )}
               </div>
             </div>
           </div>
