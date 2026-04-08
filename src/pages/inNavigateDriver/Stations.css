@@ -424,6 +424,12 @@
   transform: translateY(-1px);
 }
 
+.btn-detail.disabled {
+  background: #e5e7eb;
+  color: #9ca3af;
+  cursor: not-allowed;
+}
+
 /* =========================================================
    EMPTY STATE
    ========================================================= */

@@ -7,6 +7,7 @@ import Header from "../../components/admin/Header.jsx";
 import HomeNavbar from "../../components/HomeNavbar/HomeNavbar.jsx";
 import { selectIsLoggedIn } from "../../redux/slices/authSlice.js";
 import { stationAPI } from "../../api/stationApi.js";
+import { selectUser } from "../../redux/slices/authSlice.js";
 import {
   Search,
   MapPin,
@@ -29,6 +30,9 @@ export default function Stations() {
   const [loading, setLoading] = useState(true);
   const [userLocation, setUserLocation] = useState(null);
   const [searchQuery, setSearchQuery] = useState(searchParams.get("q") || "");
+
+  const user = useSelector(selectUser);
+  const isBanned = user?.status === "BANNED";
 
   // --- PHÂN TRANG ---
   const [currentPage, setCurrentPage] = useState(1);
@@ -309,17 +313,26 @@ export default function Stations() {
                 {/* Actions */}
                 <div className="station-actions">
                   <button
-                    className="btn-navigate"
-                    onClick={() => handleNavigate(station.lat, station.lng)}
+                      className="btn-navigate"
+                      onClick={() => handleNavigate(station.lat, station.lng)}
                   >
                     <Navigation size={14} /> Chỉ đường
                   </button>
-                  <button
-                    className="btn-detail"
-                    onClick={() => navigate(`/stations/${station.id}`)}
-                  >
-                    <Info size={14} /> Chi tiết
-                  </button>
+
+                  {!isBanned && (
+                      <button
+                          className="btn-detail"
+                          onClick={() => navigate(`/stations/${station.id}`)}
+                      >
+                        <Info size={14} /> Chi tiết
+                      </button>
+                  )}
+
+                  {isBanned && (
+                      <button className="btn-detail disabled" disabled>
+                        🚫 Tài khoản bị khóa
+                      </button>
+                  )}
                 </div>
               </div>
             );
